@@ -137,6 +137,25 @@ export class DaemonClient extends EventEmitter {
     await this.sendRequest({ type: 'environments.refresh', requestId: '' });
   }
 
+  async listProjects(providerId: string): Promise<unknown[]> {
+    const result = await this.sendRequest({
+      type: 'environments.listProjects',
+      requestId: '',
+      providerId,
+    });
+    return result as unknown[];
+  }
+
+  async listMachineClasses(providerId: string, repo?: string): Promise<unknown[]> {
+    const result = await this.sendRequest({
+      type: 'environments.listMachineClasses',
+      requestId: '',
+      providerId,
+      repo,
+    });
+    return result as unknown[];
+  }
+
   // ---------------------------------------------------------------------------
   // Private
   // ---------------------------------------------------------------------------

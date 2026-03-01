@@ -16,6 +16,7 @@ const MOCK_ENVS: Environment[] = [
     checkoutLocation: 'my-app',
     sshHost: 'env-1.mock.environment',
     workspacePath: '/workspaces/my-app',
+    webUrl: 'https://app.mock.io/environments/env-1',
   },
   {
     id: 'env-2',
@@ -29,6 +30,7 @@ const MOCK_ENVS: Environment[] = [
     checkoutLocation: 'my-api',
     sshHost: 'env-2.mock.environment',
     workspacePath: '/workspaces/my-api',
+    webUrl: 'https://app.mock.io/environments/env-2',
   },
   {
     id: 'env-3',
@@ -42,6 +44,7 @@ const MOCK_ENVS: Environment[] = [
     checkoutLocation: 'other-service',
     sshHost: 'env-3.mock.environment',
     workspacePath: '/workspaces/other-service',
+    webUrl: 'https://app.mock.io/environments/env-3',
   },
 ];
 

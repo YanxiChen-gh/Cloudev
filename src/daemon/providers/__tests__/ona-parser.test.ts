@@ -129,6 +129,7 @@ describe('mapEnvironment', () => {
       checkoutLocation: '',
       sshHost: 'env-123.gitpod.environment',
       workspacePath: '/workspaces',
+      webUrl: '',
     });
   });
 
@@ -164,6 +165,7 @@ describe('mapEnvironment', () => {
       checkoutLocation: '',
       sshHost: 'env-minimal.gitpod.environment',
       workspacePath: '/workspaces',
+      webUrl: '',
     });
   });
 

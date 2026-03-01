@@ -171,6 +171,7 @@ export function mapEnvironment(raw: Record<string, unknown>, providerId: string)
     checkoutLocation,
     sshHost: `${id}.gitpod.environment`,
     workspacePath: checkoutLocation ? `/workspaces/${checkoutLocation}` : '/workspaces',
+    webUrl: '', // set by OnaProvider using context host
   };
 }
 

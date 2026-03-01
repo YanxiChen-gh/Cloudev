@@ -123,6 +123,30 @@
         "command": "cloudev.copyPublicUrl",
         "category": "Cloudev",
         "title": "Copy Public URL"
+      },
+      {
+        "command": "cloudev.openInDashboard",
+        "category": "Cloudev",
+        "title": "Open in Dashboard",
+        "icon": "$(globe)"
+      },
+      {
+        "command": "cloudev.copySshCommand",
+        "category": "Cloudev",
+        "title": "Copy SSH Command",
+        "icon": "$(terminal)"
+      },
+      {
+        "command": "cloudev.addFavorite",
+        "category": "Cloudev",
+        "title": "Add to Favorites",
+        "icon": "$(star-empty)"
+      },
+      {
+        "command": "cloudev.removeFavorite",
+        "category": "Cloudev",
+        "title": "Remove from Favorites",
+        "icon": "$(star-full)"
       }
     ],
     "menus": {
@@ -141,23 +165,33 @@
       "view/item/context": [
         {
           "command": "cloudev.startEnvironment",
-          "when": "view == cloudev.environments && viewItem == environment-stopped",
+          "when": "view == cloudev.environments && viewItem =~ /^environment-stopped/",
           "group": "inline@1"
         },
         {
           "command": "cloudev.openInNewWindow",
-          "when": "view == cloudev.environments && viewItem =~ /^environment-running|environment-forwarding$/",
+          "when": "view == cloudev.environments && viewItem =~ /^environment-running|^environment-forwarding/",
           "group": "inline@1"
         },
         {
           "command": "cloudev.startPortForwarding",
-          "when": "view == cloudev.environments && viewItem == environment-running",
+          "when": "view == cloudev.environments && viewItem =~ /^environment-running/",
           "group": "inline@2"
         },
         {
           "command": "cloudev.stopPortForwarding",
-          "when": "view == cloudev.environments && viewItem == environment-forwarding",
+          "when": "view == cloudev.environments && viewItem =~ /^environment-forwarding/",
           "group": "inline@2"
+        },
+        {
+          "command": "cloudev.addFavorite",
+          "when": "view == cloudev.environments && viewItem =~ /^environment-[a-z]+$/",
+          "group": "inline@3"
+        },
+        {
+          "command": "cloudev.removeFavorite",
+          "when": "view == cloudev.environments && viewItem =~ /\\.fav$/ && viewItem =~ /^environment-/",
+          "group": "inline@3"
         },
         {
           "command": "cloudev.openPort",
@@ -165,34 +199,49 @@
           "group": "inline@1"
         },
         {
+          "command": "cloudev.addFavorite",
+          "when": "view == cloudev.environments && viewItem =~ /^port(-with-url)?$/",
+          "group": "inline@2"
+        },
+        {
+          "command": "cloudev.removeFavorite",
+          "when": "view == cloudev.environments && viewItem =~ /\\.fav$/ && viewItem =~ /^port/",
+          "group": "inline@2"
+        },
+        {
           "command": "cloudev.startEnvironment",
-          "when": "view == cloudev.environments && viewItem == environment-stopped",
+          "when": "view == cloudev.environments && viewItem =~ /^environment-stopped/",
           "group": "1_lifecycle@1"
         },
         {
           "command": "cloudev.stopEnvironment",
-          "when": "view == cloudev.environments && viewItem =~ /^environment-running|environment-forwarding$/",
+          "when": "view == cloudev.environments && viewItem =~ /^environment-running|^environment-forwarding/",
           "group": "1_lifecycle@2"
         },
         {
           "command": "cloudev.restartEnvironment",
-          "when": "view == cloudev.environments && viewItem =~ /^environment-running|environment-forwarding$/",
+          "when": "view == cloudev.environments && viewItem =~ /^environment-running|^environment-forwarding/",
           "group": "1_lifecycle@3"
         },
         {
           "command": "cloudev.startPortForwarding",
-          "when": "view == cloudev.environments && viewItem == environment-running",
+          "when": "view == cloudev.environments && viewItem =~ /^environment-running/",
           "group": "2_ports@1"
         },
         {
           "command": "cloudev.stopPortForwarding",
-          "when": "view == cloudev.environments && viewItem == environment-forwarding",
+          "when": "view == cloudev.environments && viewItem =~ /^environment-forwarding/",
           "group": "2_ports@1"
         },
         {
           "command": "cloudev.openInNewWindow",
-          "when": "view == cloudev.environments && viewItem =~ /^environment-running|environment-forwarding$/",
+          "when": "view == cloudev.environments && viewItem =~ /^environment-running|^environment-forwarding/",
           "group": "3_connect@1"
+        },
+        {
+          "command": "cloudev.openInDashboard",
+          "when": "view == cloudev.environments && viewItem =~ /^environment-/",
+          "group": "3_connect@2"
         },
         {
           "command": "cloudev.copyEnvInfo",
@@ -200,9 +249,34 @@
           "group": "4_copy@1"
         },
         {
+          "command": "cloudev.copySshCommand",
+          "when": "view == cloudev.environments && viewItem =~ /^environment-running|^environment-forwarding/",
+          "group": "4_copy@2"
+        },
+        {
+          "command": "cloudev.addFavorite",
+          "when": "view == cloudev.environments && viewItem =~ /^environment-[a-z]+$/",
+          "group": "4_copy@3"
+        },
+        {
+          "command": "cloudev.removeFavorite",
+          "when": "view == cloudev.environments && viewItem =~ /\\.fav$/ && viewItem =~ /^environment-/",
+          "group": "4_copy@3"
+        },
+        {
           "command": "cloudev.deleteEnvironment",
-          "when": "view == cloudev.environments && viewItem == environment-stopped",
+          "when": "view == cloudev.environments && viewItem =~ /^environment-stopped/",
           "group": "5_danger@1"
+        },
+        {
+          "command": "cloudev.addFavorite",
+          "when": "view == cloudev.environments && viewItem =~ /^port(-with-url)?$/",
+          "group": "1_port@0"
+        },
+        {
+          "command": "cloudev.removeFavorite",
+          "when": "view == cloudev.environments && viewItem =~ /\\.fav$/ && viewItem =~ /^port/",
+          "group": "1_port@0"
         },
         {
           "command": "cloudev.openPort",
@@ -216,7 +290,7 @@
         },
         {
           "command": "cloudev.copyPublicUrl",
-          "when": "view == cloudev.environments && viewItem == port-with-url",
+          "when": "view == cloudev.environments && viewItem =~ /^port-with-url/",
           "group": "1_port@3"
         }
       ]

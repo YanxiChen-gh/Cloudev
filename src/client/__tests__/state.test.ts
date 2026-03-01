@@ -23,6 +23,7 @@ function makeEnv(overrides: Partial<Environment> = {}): Environment {
     checkoutLocation: 'repo',
     sshHost: 'env-1.ona.environment',
     workspacePath: '/workspaces/repo',
+    webUrl: 'https://app.ona.io/environments/env-1',
     ...overrides,
   };
 }
