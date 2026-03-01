@@ -122,11 +122,6 @@
           "group": "inline@2"
         },
         {
-          "command": "cloudev.openInNewWindow",
-          "when": "view == cloudev.environments && viewItem =~ /^environment-running|environment-forwarding$/",
-          "group": "inline@3"
-        },
-        {
           "command": "cloudev.restartEnvironment",
           "when": "view == cloudev.environments && viewItem =~ /^environment-running|environment-forwarding$/"
         },

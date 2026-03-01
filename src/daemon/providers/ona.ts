@@ -124,7 +124,7 @@ export class OnaProvider implements EnvironmentProvider {
     const host = this.sshHost(envId);
     const args: string[] = [
       '-N',
-      '-o', 'ExitOnForwardFailure=yes',
+      '-o', 'ExitOnForwardFailure=no',
       '-o', `ConnectTimeout=${SSH_TIMEOUT_S}`,
       '-o', 'StrictHostKeyChecking=no',
     ];

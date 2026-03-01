@@ -34,6 +34,15 @@ LISTEN 0      128             [::]:24783         [::]:*`;
     expect(parseSsOutput(output)).toEqual([3000]);
   });
 
+  it('includes localhost bindings (127.0.0.1) — ExitOnForwardFailure=no handles conflicts', () => {
+    const output = `State  Recv-Q Send-Q Local Address:Port  Peer Address:Port
+LISTEN 0      511          0.0.0.0:3000       0.0.0.0:*
+LISTEN 0      65536      127.0.0.1:5000       0.0.0.0:*
+LISTEN 0      65536      127.0.0.1:8126       0.0.0.0:*
+LISTEN 0      511             [::]:8080          [::]:*`;
+    expect(parseSsOutput(output)).toEqual([3000, 5000, 8080, 8126]);
+  });
+
   it('deduplicates IPv4 and IPv6 entries for the same port', () => {
     const output = `State  Recv-Q Send-Q Local Address:Port  Peer Address:Port
 LISTEN 0      511          0.0.0.0:3000       0.0.0.0:*
