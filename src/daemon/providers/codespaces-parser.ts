@@ -61,6 +61,7 @@ export function mapCodespace(raw: Record<string, unknown>, providerId: string): 
     checkoutLocation: repoName,
     sshHost: name,             // codespace name for `gh codespace ssh -c NAME`
     workspacePath: repoName ? `/workspaces/${repoName}` : '/workspaces',
+    webUrl: `https://github.com/codespaces/${name}`,
   };
 }
 

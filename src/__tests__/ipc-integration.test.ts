@@ -26,6 +26,7 @@ function makeState(): DaemonState {
         checkoutLocation: 'repo',
         sshHost: 'env-1.ona.environment',
         workspacePath: '/workspaces/repo',
+        webUrl: 'https://app.ona.io/environments/env-1',
       },
     ],
     portForwarding: { activeEnvId: null, activeEnvName: null, ports: [], portLabels: {}, portUrls: {}, status: 'idle' },

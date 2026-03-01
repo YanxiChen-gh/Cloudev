@@ -2,6 +2,8 @@ import * as vscode from 'vscode';
 import { StateStore } from '../client/state';
 import { Environment } from '../types';
 
+const FAVORITES_KEY = 'cloudev.favorites'; // stores "env:{id}" and "port:{envId}:{port}" keys
+
 // ---------------------------------------------------------------------------
 // Tree node types
 // ---------------------------------------------------------------------------
@@ -34,6 +36,7 @@ export class EnvironmentNode extends vscode.TreeItem {
     public readonly env: Environment,
     public readonly isForwarding: boolean,
     public readonly forwardedPorts: number[],
+    isFavorite?: boolean,
   ) {
     super(
       env.name || env.id,
@@ -42,12 +45,13 @@ export class EnvironmentNode extends vscode.TreeItem {
         : vscode.TreeItemCollapsibleState.None,
     );
 
-    // Show branch + port count when forwarding
+    // Show branch + port count when forwarding, with star prefix for favorites
+    const star = isFavorite ? '★ ' : '';
     const branchText = env.branch || '';
     if (isForwarding && forwardedPorts.length > 0) {
-      this.description = `${branchText} (${forwardedPorts.length} ports)`;
+      this.description = `${star}${branchText} (${forwardedPorts.length} ports)`;
     } else {
-      this.description = branchText;
+      this.description = `${star}${branchText}`;
     }
 
     // Status-based icon — forwarding env gets radio-tower, running gets green circle
@@ -71,44 +75,65 @@ export class EnvironmentNode extends vscode.TreeItem {
         this.iconPath = new vscode.ThemeIcon('question');
     }
 
-    // Context value drives inline menu actions from package.json
+    // Context value drives menu actions. Append .fav for favorites so
+    // package.json can show "Add to Favorites" vs "Remove from Favorites".
+    let cv: string;
     if (this.isForwarding) {
-      this.contextValue = 'environment-forwarding';
+      cv = 'environment-forwarding';
     } else if (env.status === 'running') {
-      this.contextValue = 'environment-running';
+      cv = 'environment-running';
     } else if (env.status === 'stopped') {
-      this.contextValue = 'environment-stopped';
+      cv = 'environment-stopped';
     } else {
-      this.contextValue = `environment-${env.status}`;
+      cv = `environment-${env.status}`;
+    }
+    this.contextValue = isFavorite ? `${cv}.fav` : cv;
+
+    const tooltipLines = [
+      `**${env.name}**`,
+      '',
+      `Status: ${env.status}`,
+      '',
+      `Branch: ${env.branch}`,
+      '',
+      `Provider: ${env.provider}`,
+      '',
+    ];
+    if (this.isForwarding) {
+      tooltipLines.push(`**Port forwarding active** (${forwardedPorts.length} ports)`, '');
+    }
+    tooltipLines.push(`Repository: ${env.repositoryUrl}`);
+    if (env.webUrl) {
+      tooltipLines.push('', `Dashboard: ${env.webUrl}`);
     }
 
-    // No TreeItem.command — single-click just selects.
-    // Actions via inline icons (hover) and right-click context menu.
-
-    this.tooltip = new vscode.MarkdownString(
-      `**${env.name}**\n\n` +
-        `Status: ${env.status}\n\n` +
-        `Branch: ${env.branch}\n\n` +
-        `Provider: ${env.provider}\n\n` +
-        (this.isForwarding
-          ? `**Port forwarding active** (${forwardedPorts.length} ports)\n\n`
-          : '') +
-        `Repository: ${env.repositoryUrl}`,
-    );
+    this.tooltip = new vscode.MarkdownString(tooltipLines.join('\n'));
   }
 }
 
 export class PortNode extends vscode.TreeItem {
   readonly kind = 'port' as const;
+  public readonly envId: string;
 
   constructor(
+    envId: string,
     public readonly port: number,
     public readonly label_text: string,
     public readonly publicUrl?: string,
+    isFavorite?: boolean,
   ) {
     super(`localhost:${port}`, vscode.TreeItemCollapsibleState.None);
-    this.contextValue = publicUrl ? 'port-with-url' : 'port';
-    this.iconPath = new vscode.ThemeIcon('globe');
+    this.envId = envId;
+
+    // Context value encodes both URL availability and favorite state
+    const base = publicUrl ? 'port-with-url' : 'port';
+    this.contextValue = isFavorite ? `${base}.fav` : base;
+
+    // Favorite ports get a star icon
+    this.iconPath = isFavorite
+      ? new vscode.ThemeIcon('star-full', new vscode.ThemeColor('terminal.ansiYellow'))
+      : new vscode.ThemeIcon('globe');
+
     this.description = label_text || '';
 
     const lines = [
@@ -118,9 +143,6 @@ export class PortNode extends vscode.TreeItem {
       lines.push(`Public: ${publicUrl}`);
     }
     this.tooltip = lines.join('\n');
-
-    // No click action — use inline icon or right-click to open in browser.
-    // Consistent with env nodes (click just selects).
   }
 }
 
@@ -134,9 +156,45 @@ export class SidebarProvider implements vscode.TreeDataProvider<TreeNode> {
   >();
   readonly onDidChangeTreeData = this._onDidChangeTreeData.event;
 
-  constructor(private readonly store: StateStore) {
+  constructor(
+    private readonly store: StateStore,
+    private readonly extensionContext: vscode.ExtensionContext,
+  ) {
     store.on('changed', () => this._onDidChangeTreeData.fire());
   }
+
+  // --- Favorite management (shared for envs and ports) ---
+
+  private getFavorites(): Set<string> {
+    return new Set(this.extensionContext.globalState.get<string[]>(FAVORITES_KEY, []));
+  }
+
+  private saveFavorites(favorites: Set<string>): void {
+    this.extensionContext.globalState.update(FAVORITES_KEY, [...favorites]);
+    this._onDidChangeTreeData.fire();
+  }
+
+  isEnvFavorite(envId: string): boolean {
+    return this.getFavorites().has(`env:${envId}`);
+  }
+
+  isPortFavorite(envId: string, port: number): boolean {
+    return this.getFavorites().has(`port:${envId}:${port}`);
+  }
+
+  addFavorite(key: string): void {
+    const favorites = this.getFavorites();
+    favorites.add(key);
+    this.saveFavorites(favorites);
+  }
+
+  removeFavorite(key: string): void {
+    const favorites = this.getFavorites();
+    favorites.delete(key);
+    this.saveFavorites(favorites);
+  }
+
+  // --- TreeDataProvider ---
 
   getTreeItem(element: TreeNode): vscode.TreeItem {
     return element;
@@ -156,23 +214,45 @@ export class SidebarProvider implements vscode.TreeDataProvider<TreeNode> {
 
     if (element instanceof ProjectNode) {
       const pf = this.store.getPortForwarding();
-      return element.environments
-        .sort((a, b) => a.name.localeCompare(b.name))
-        .map(
-          (env) =>
-            new EnvironmentNode(
-              env,
-              pf.activeEnvId === env.id,
-              pf.activeEnvId === env.id ? pf.ports : [],
-            ),
-        );
+      const nodes = element.environments.map(
+        (env) =>
+          new EnvironmentNode(
+            env,
+            pf.activeEnvId === env.id,
+            pf.activeEnvId === env.id ? pf.ports : [],
+            this.isEnvFavorite(env.id),
+          ),
+      );
+      // Sort: favorites first, then alphabetical
+      nodes.sort((a, b) => {
+        const aFav = this.isEnvFavorite(a.env.id) ? 0 : 1;
+        const bFav = this.isEnvFavorite(b.env.id) ? 0 : 1;
+        if (aFav !== bFav) return aFav - bFav;
+        return a.env.name.localeCompare(b.env.name);
+      });
+      return nodes;
     }
 
     if (element instanceof EnvironmentNode && element.isForwarding) {
       const pf = this.store.getPortForwarding();
-      return element.forwardedPorts.map(
-        (port) => new PortNode(port, pf.portLabels[port] ?? '', pf.portUrls[port]),
+      const envId = element.env.id;
+      const portNodes = element.forwardedPorts.map(
+        (port) => new PortNode(
+          envId,
+          port,
+          pf.portLabels[port] ?? '',
+          pf.portUrls[port],
+          this.isPortFavorite(envId, port),
+        ),
       );
+      // Sort favorites first, then by port number
+      portNodes.sort((a, b) => {
+        const aFav = this.isPortFavorite(envId, a.port) ? 0 : 1;
+        const bFav = this.isPortFavorite(envId, b.port) ? 0 : 1;
+        if (aFav !== bFav) return aFav - bFav;
+        return a.port - b.port;
+      });
+      return portNodes;
     }
 
     return [];

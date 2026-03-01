@@ -22,6 +22,7 @@ export interface Environment {
   checkoutLocation: string;
   sshHost: string;       // provider-computed SSH host for manual SSH / copy
   workspacePath: string; // provider-computed remote workspace path
+  webUrl: string;        // provider web dashboard URL
 }
 
 export interface Project {
@@ -81,6 +82,8 @@ export type ClientMessage =
   | { type: 'environments.delete'; requestId: string; envId: string }
   | { type: 'environments.restart'; requestId: string; envId: string }
   | { type: 'environments.refresh'; requestId: string }
+  | { type: 'environments.listProjects'; requestId: string; providerId: string }
+  | { type: 'environments.listMachineClasses'; requestId: string; providerId: string; repo?: string }
   // Port-forwarding service
   | { type: 'port-forwarding.start'; requestId: string; envId: string }
   | { type: 'port-forwarding.stop'; requestId: string };

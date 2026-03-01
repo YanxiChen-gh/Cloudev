@@ -89,8 +89,12 @@ export class CodespacesProvider implements EnvironmentProvider {
     if (opts.branch) {
       args.push('-b', opts.branch);
     }
+    // Machine type is required — gh prompts interactively without it, which fails headless
     if (opts.machineClassId) {
       args.push('-m', opts.machineClassId);
+    } else {
+      // Default to smallest available machine
+      args.push('-m', 'basicLinux32gb');
     }
     // `gh codespace create` doesn't support --json — it prints the codespace name to stdout
     const result = await this.execFn(args);
@@ -138,9 +142,24 @@ export class CodespacesProvider implements EnvironmentProvider {
     return [];
   }
 
-  async listMachineClasses(): Promise<MachineClass[]> {
-    // Machine types require a repo context to query; return empty for now.
-    return [];
+  async listMachineClasses(repo?: string): Promise<MachineClass[]> {
+    if (!repo) return [];
+    try {
+      const output = await this.execFn([
+        'api', `repos/${repo}/codespaces/machines`, '--jq', '.machines',
+      ]);
+      const parsed = JSON.parse(output);
+      if (!Array.isArray(parsed)) return [];
+      return parsed.map((m: Record<string, unknown>) => ({
+        id: String(m.name ?? ''),
+        name: String(m.display_name ?? m.name ?? ''),
+        description: `${m.cpus} CPUs, ${Math.round(Number(m.memory_in_bytes ?? 0) / 1024 / 1024 / 1024)}GB RAM`,
+        cpus: Number(m.cpus ?? 0),
+        memoryGb: Math.round(Number(m.memory_in_bytes ?? 0) / 1024 / 1024 / 1024),
+      }));
+    } catch {
+      return [];
+    }
   }
 
   // ---------------------------------------------------------------------------
