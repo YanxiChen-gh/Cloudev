@@ -32,5 +32,5 @@ export interface EnvironmentProvider {
 
   // Metadata
   listProjects(): Promise<Project[]>;
-  listMachineClasses?(): Promise<MachineClass[]>;
+  listMachineClasses?(repo?: string): Promise<MachineClass[]>;
 }

@@ -64,6 +64,7 @@ describe('mapCodespace', () => {
       checkoutLocation: 'Hello-World',
       sshHost: 'octocat-Hello-World-abc123',
       workspacePath: '/workspaces/Hello-World',
+      webUrl: 'https://github.com/codespaces/octocat-Hello-World-abc123',
     });
   });
 

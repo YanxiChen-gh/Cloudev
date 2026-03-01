@@ -7,7 +7,7 @@ import { spawn } from 'child_process';
 import { EventEmitter } from 'events';
 import { ClientMessage, DaemonMessage, DaemonState, DaemonEvent } from '../types';
 
-const DEFAULT_SOCKET_DIR = path.join(os.homedir(), '.vanta-dev');
+const DEFAULT_SOCKET_DIR = path.join(os.homedir(), '.cloudev');
 const DEFAULT_SOCKET_PATH = path.join(DEFAULT_SOCKET_DIR, 'daemon.sock');
 const REQUEST_TIMEOUT_MS = 30_000;
 const RECONNECT_DELAY_MS = 2_000;
@@ -135,6 +135,25 @@ export class DaemonClient extends EventEmitter {
 
   async refresh(): Promise<void> {
     await this.sendRequest({ type: 'environments.refresh', requestId: '' });
+  }
+
+  async listProjects(providerId: string): Promise<unknown[]> {
+    const result = await this.sendRequest({
+      type: 'environments.listProjects',
+      requestId: '',
+      providerId,
+    });
+    return result as unknown[];
+  }
+
+  async listMachineClasses(providerId: string, repo?: string): Promise<unknown[]> {
+    const result = await this.sendRequest({
+      type: 'environments.listMachineClasses',
+      requestId: '',
+      providerId,
+      repo,
+    });
+    return result as unknown[];
   }
 
   // ---------------------------------------------------------------------------

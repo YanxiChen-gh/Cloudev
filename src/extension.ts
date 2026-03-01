@@ -35,7 +35,7 @@ export async function activate(
   }
 
   // 5. Register sidebar tree view
-  const sidebarProvider = new SidebarProvider(store);
+  const sidebarProvider = new SidebarProvider(store, context);
   const treeView = vscode.window.createTreeView('cloudev.environments', {
     treeDataProvider: sidebarProvider,
     showCollapseAll: true,
@@ -50,7 +50,7 @@ export async function activate(
   statusBar.setDaemonHealth(client.isConnected() ? 'connected' : 'disconnected');
 
   // 7. Register commands
-  registerCommands(context, client, store);
+  registerCommands(context, client, store, sidebarProvider);
 
   // 8. Register startDaemon command
   context.subscriptions.push(

@@ -30,9 +30,9 @@
       "specs": [
         {
           "git": {
-            "checkoutLocation": "obsidian",
+            "checkoutLocation": "web-app",
             "cloneTarget": "main",
-            "remoteUri": "https://github.com/VantaInc/obsidian.git",
+            "remoteUri": "https://github.com/acme-org/web-app.git",
             "targetMode": "CLONE_TARGET_MODE_REMOTE_BRANCH"
           }
         }
@@ -122,9 +122,9 @@
       "specs": [
         {
           "git": {
-            "checkoutLocation": "dbt",
+            "checkoutLocation": "data-pipeline",
             "cloneTarget": "main",
-            "remoteUri": "https://github.com/VantaInc/dbt.git",
+            "remoteUri": "https://github.com/acme-org/data-pipeline.git",
             "targetMode": "CLONE_TARGET_MODE_REMOTE_BRANCH"
           }
         }
@@ -209,9 +209,9 @@
       "specs": [
         {
           "git": {
-            "checkoutLocation": "analytics-cluster",
+            "checkoutLocation": "analytics",
             "cloneTarget": "main",
-            "remoteUri": "https://github.com/VantaInc/analytics-cluster.git",
+            "remoteUri": "https://github.com/acme-org/analytics.git",
             "targetMode": "CLONE_TARGET_MODE_REMOTE_BRANCH"
           }
         }
@@ -276,9 +276,9 @@
       "specs": [
         {
           "git": {
-            "checkoutLocation": "security",
+            "checkoutLocation": "backend",
             "cloneTarget": "main",
-            "remoteUri": "https://github.com/VantaInc/security.git",
+            "remoteUri": "https://github.com/acme-org/backend.git",
             "targetMode": "CLONE_TARGET_MODE_REMOTE_BRANCH"
           }
         }

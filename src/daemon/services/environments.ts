@@ -92,6 +92,20 @@ export class EnvironmentsService implements DaemonService {
         await this.poll();
         return;
 
+      case 'environments.listProjects': {
+        const m = msg as Extract<ClientMessage, { type: 'environments.listProjects' }>;
+        const provider = this.providers.find(p => p.id === m.providerId);
+        if (!provider) throw new Error(`Provider not found: ${m.providerId}`);
+        return provider.listProjects();
+      }
+
+      case 'environments.listMachineClasses': {
+        const m = msg as Extract<ClientMessage, { type: 'environments.listMachineClasses' }>;
+        const provider = this.providers.find(p => p.id === m.providerId);
+        if (!provider) throw new Error(`Provider not found: ${m.providerId}`);
+        return provider.listMachineClasses?.(m.repo) ?? [];
+      }
+
       default:
         throw new Error(`Unknown message type: ${msg.type}`);
     }

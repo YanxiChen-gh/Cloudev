@@ -30,7 +30,7 @@ export class OnaProvider implements EnvironmentProvider {
   readonly id = 'ona';
   readonly displayName = 'Ona';
 
-  private contexts: string[] = [];
+  private contexts: { name: string; host: string }[] = [];
   private readonly execFn: ExecFn;
 
   constructor(execFn?: ExecFn) {
@@ -48,7 +48,12 @@ export class OnaProvider implements EnvironmentProvider {
       const output = await this.execRaw(['config', 'context', 'list', '-o', 'json']);
       const parsed = JSON.parse(output);
       this.contexts = Array.isArray(parsed)
-        ? parsed.map((c: { name?: string }) => c.name ?? '').filter(Boolean)
+        ? parsed
+            .filter((c: { name?: string }) => c.name)
+            .map((c: { name?: string; host?: string }) => ({
+              name: c.name!,
+              host: String(c.host ?? '').replace(/\/$/, ''),
+            }))
         : [];
 
       if (this.contexts.length === 0) {
@@ -67,12 +72,13 @@ export class OnaProvider implements EnvironmentProvider {
     await Promise.allSettled(
       this.contexts.map(async (ctx) => {
         try {
-          const raw = await this.execWithContext(['environment', 'list', '-o', 'json'], ctx);
+          const raw = await this.execWithContext(['environment', 'list', '-o', 'json'], ctx.name);
           const envs = JSON.parse(raw);
           if (!Array.isArray(envs)) return;
           for (const env of envs) {
             const mapped = mapEnvironment(env, this.id);
             if (mapped && !envMap.has(mapped.id)) {
+              mapped.webUrl = ctx.host ? `${ctx.host}/details/${mapped.id}` : '';
               envMap.set(mapped.id, mapped);
             }
           }
@@ -100,14 +106,14 @@ export class OnaProvider implements EnvironmentProvider {
   }
 
   async create(opts: CreateOpts): Promise<string> {
-    const args = ['environment', 'create', opts.projectId];
+    const args = ['environment', 'create', opts.projectId, '--dont-wait'];
     if (opts.machineClassId) {
       args.push('--class-id', opts.machineClassId);
     }
-    args.push('-o', 'json');
+    // `gitpod environment create` no longer supports -o json.
+    // It prints the environment ID to stdout.
     const result = await this.execAnyContext(args);
-    const parsed = JSON.parse(result);
-    return parsed.id ?? '';
+    return result.trim();
   }
 
   async delete(envId: string): Promise<void> {
@@ -159,7 +165,7 @@ export class OnaProvider implements EnvironmentProvider {
   async syncSshConfig(): Promise<void> {
     await Promise.allSettled(
       this.contexts.map((ctx) =>
-        this.execWithContext(['environment', 'ssh-config'], ctx),
+        this.execWithContext(['environment', 'ssh-config'], ctx.name),
       ),
     );
   }
@@ -170,7 +176,7 @@ export class OnaProvider implements EnvironmentProvider {
     await Promise.allSettled(
       this.contexts.map(async (ctx) => {
         try {
-          const raw = await this.execWithContext(['project', 'list', '-o', 'json'], ctx);
+          const raw = await this.execWithContext(['project', 'list', '-o', 'json'], ctx.name);
           const projects = JSON.parse(raw);
           if (!Array.isArray(projects)) return;
           for (const p of projects) {
@@ -193,13 +199,19 @@ export class OnaProvider implements EnvironmentProvider {
       const raw = await this.execAnyContext(['environment', 'list-classes', '-o', 'json']);
       const classes = JSON.parse(raw);
       if (!Array.isArray(classes)) return [];
-      return classes.map((c: Record<string, unknown>) => ({
-        id: String(c.id ?? ''),
-        name: String(c.name ?? c.id ?? ''),
-        description: String(c.description ?? ''),
-        cpus: Number(c.cpus ?? 0),
-        memoryGb: Number(c.memory ?? c.memoryGb ?? 0),
-      }));
+      return classes
+        .filter((c: Record<string, unknown>) => c.enabled !== false)
+        .map((c: Record<string, unknown>) => {
+          const runner = String(c.runner ?? '');
+          const name = String(c.name ?? c.id ?? '');
+          return {
+            id: String(c.id ?? ''),
+            name: runner ? `${name} (${runner})` : name,
+            description: String(c.description ?? ''),
+            cpus: Number(c.cpus ?? 0),
+            memoryGb: Number(c.memory ?? c.memoryGb ?? 0),
+          };
+        });
     } catch {
       return [];
     }
@@ -221,7 +233,7 @@ export class OnaProvider implements EnvironmentProvider {
     let lastError: Error | undefined;
     for (const ctx of this.contexts) {
       try {
-        return await this.execWithContext(args, ctx);
+        return await this.execWithContext(args, ctx.name);
       } catch (e) {
         lastError = e as Error;
       }

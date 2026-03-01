@@ -14,7 +14,7 @@ import { OnaProvider } from './providers/ona';
 import { CodespacesProvider } from './providers/codespaces';
 import { ClientMessage, DaemonState } from '../types';
 
-const SOCKET_DIR = path.join(os.homedir(), '.vanta-dev');
+const SOCKET_DIR = path.join(os.homedir(), '.cloudev');
 const SOCKET_PATH = path.join(SOCKET_DIR, 'daemon.sock');
 const PID_PATH = path.join(SOCKET_DIR, 'daemon.pid');
 const LOG_PATH = path.join(SOCKET_DIR, 'daemon.log');

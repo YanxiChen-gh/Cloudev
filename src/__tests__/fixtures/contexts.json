@@ -3,16 +3,16 @@
     "active": true,
     "name": "app.gitpod.io",
     "host": "https://app.gitpod.io",
-    "organization": "0198ce60-f77b-7637-81a9-4b8e409a0de8",
-    "user": "019c4f44-deec-71f6-b7f4-989f25e1185e",
+    "organization": "00000000-0000-4000-a000-000000000001",
+    "user": "00000000-0000-4000-a000-000000000002",
     "environment": ""
   },
   {
     "active": false,
     "name": "default",
     "host": "https://app.gitpod.io",
-    "organization": "0198ce60-f77b-7637-81a9-4b8e409a0de8",
-    "user": "019c4f44-deec-71f6-b7f4-989f25e1185e",
+    "organization": "00000000-0000-4000-a000-000000000001",
+    "user": "00000000-0000-4000-a000-000000000002",
     "environment": ""
   }
 ]

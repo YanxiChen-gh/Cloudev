@@ -1,13 +1,14 @@
 import * as vscode from 'vscode';
-import { execFile } from 'child_process';
 import { DaemonClient } from '../client/daemon-client';
 import { StateStore } from '../client/state';
-import { Environment } from '../types';
+import { Environment, Project, MachineClass } from '../types';
+import { SidebarProvider } from './sidebar-provider';
 
 export function registerCommands(
   context: vscode.ExtensionContext,
   client: DaemonClient,
   store: StateStore,
+  sidebarProvider: SidebarProvider,
 ): void {
   // --- Start Environment ---
   context.subscriptions.push(
@@ -111,23 +112,144 @@ export function registerCommands(
       // Provider-specific prompts
       let projectId: string | undefined;
       let branch: string | undefined;
+      let machineClassId: string | undefined;
 
       if (providerId === 'codespaces') {
-        projectId = await vscode.window.showInputBox({
-          prompt: 'Enter repository (owner/repo)',
-          placeHolder: 'octocat/Hello-World',
-        });
+        // Codespaces: QuickPick from known repos + manual entry
+        const knownRepos = [...new Set(
+          store.getEnvironments()
+            .filter((e) => e.provider === 'codespaces' && e.projectId)
+            .map((e) => e.projectId),
+        )];
+
+        if (knownRepos.length > 0) {
+          interface RepoPickItem extends vscode.QuickPickItem {
+            repo?: string;
+            manual?: boolean;
+          }
+          const items: RepoPickItem[] = knownRepos.map((r) => ({
+            label: r,
+            repo: r,
+          }));
+          items.push({ label: '$(edit) Enter repo manually...', manual: true });
+
+          const picked = await vscode.window.showQuickPick(items, {
+            placeHolder: 'Select repository (owner/repo)',
+          });
+          if (!picked) return;
+
+          if (picked.manual) {
+            projectId = await vscode.window.showInputBox({
+              prompt: 'Enter repository (owner/repo)',
+              placeHolder: 'octocat/Hello-World',
+            });
+          } else {
+            projectId = picked.repo;
+          }
+        } else {
+          projectId = await vscode.window.showInputBox({
+            prompt: 'Enter repository (owner/repo)',
+            placeHolder: 'octocat/Hello-World',
+          });
+        }
         if (!projectId) return;
 
         branch = await vscode.window.showInputBox({
           prompt: 'Branch (leave empty for default)',
           placeHolder: 'main',
         });
+
+        // Machine class picker (required for Codespaces — gh prompts interactively without -m)
+        try {
+          const classes = await client.listMachineClasses(providerId!, projectId) as MachineClass[];
+          if (classes.length > 0) {
+            interface ClassPickItem extends vscode.QuickPickItem {
+              classId?: string;
+            }
+            const items: ClassPickItem[] = classes.map((c) => ({
+              label: c.name,
+              description: c.description || `${c.cpus} CPUs, ${c.memoryGb}GB RAM`,
+              classId: c.id,
+            }));
+
+            const picked = await vscode.window.showQuickPick(items, {
+              placeHolder: 'Select machine type',
+            });
+            if (!picked) return;
+            machineClassId = picked.classId;
+          }
+        } catch {
+          // Skip — provider will default to basicLinux32gb
+        }
       } else {
-        projectId = await vscode.window.showInputBox({
-          prompt: 'Enter project ID',
-          placeHolder: 'project-xxxx-yyyy',
-        });
+        // Ona: QuickPick from project list, with manual fallback
+        try {
+          const projects = await client.listProjects(providerId!) as Project[];
+          if (projects.length > 0) {
+            interface ProjectPickItem extends vscode.QuickPickItem {
+              projectId?: string;
+              manual?: boolean;
+            }
+            const items: ProjectPickItem[] = projects.map((p) => ({
+              label: p.name,
+              description: p.repositoryUrl,
+              projectId: p.id,
+            }));
+            items.push({
+              label: '$(edit) Enter ID manually...',
+              manual: true,
+            });
+
+            const picked = await vscode.window.showQuickPick(items, {
+              placeHolder: 'Select project',
+            });
+            if (!picked) return;
+
+            if (picked.manual) {
+              projectId = await vscode.window.showInputBox({
+                prompt: 'Enter project ID',
+                placeHolder: 'project-xxxx-yyyy',
+              });
+            } else {
+              projectId = picked.projectId;
+            }
+          } else {
+            projectId = await vscode.window.showInputBox({
+              prompt: 'Enter project ID',
+              placeHolder: 'project-xxxx-yyyy',
+            });
+          }
+        } catch {
+          // Fall back to text input if listing fails
+          projectId = await vscode.window.showInputBox({
+            prompt: 'Enter project ID',
+            placeHolder: 'project-xxxx-yyyy',
+          });
+        }
+        if (!projectId) return;
+
+        // Machine class picker (optional)
+        try {
+          const classes = await client.listMachineClasses(providerId!) as MachineClass[];
+          if (classes.length > 0) {
+            interface ClassPickItem extends vscode.QuickPickItem {
+              classId?: string;
+            }
+            const items: ClassPickItem[] = classes.map((c) => ({
+              label: c.name,
+              description: c.description || `${c.cpus} CPUs, ${c.memoryGb}GB RAM`,
+              classId: c.id,
+            }));
+
+            const picked = await vscode.window.showQuickPick(items, {
+              placeHolder: 'Select machine class and region',
+            });
+            if (!picked) return;
+            machineClassId = picked.classId;
+          }
+        } catch {
+          // Skip machine class selection if listing fails
+        }
       }
       if (!projectId) return;
 
@@ -139,6 +261,7 @@ export function registerCommands(
         () => client.createEnvironment(projectId!, {
           providerId,
           branch: branch || undefined,
+          machineClassId,
         }),
       );
 
@@ -282,22 +405,16 @@ export function registerCommands(
         const env = store.getEnvironment(envId);
         if (!env) return;
 
-        // Use provider-specific open commands
-        if (env.provider === 'codespaces') {
-          // Use VS Code remote URI — reuses an existing window if already connected
-          const uri = vscode.Uri.parse(
-            `vscode-remote://codespaces+${env.id}${env.workspacePath}`,
-          );
-          await vscode.commands.executeCommand('vscode.openFolder', uri, {
-            forceNewWindow: true,
-          });
-        } else {
-          execFile('gitpod', ['environment', 'open', env.id, '--editor', 'vscode'], (err) => {
-            if (err) {
-              vscode.window.showErrorMessage(`Failed to open environment: ${err.message}`);
-            }
-          });
-        }
+        // Use VS Code remote URI — reuses an existing window if already connected
+        const remoteAuthority = env.provider === 'codespaces'
+          ? `codespaces+${env.id}`
+          : `ssh-remote+${env.sshHost}`;
+        const uri = vscode.Uri.parse(
+          `vscode-remote://${remoteAuthority}${env.workspacePath}`,
+        );
+        await vscode.commands.executeCommand('vscode.openFolder', uri, {
+          forceNewWindow: true,
+        });
       },
     ),
   );
@@ -366,10 +483,19 @@ export function registerCommands(
         }
 
         // Always available
+        if (env.webUrl) {
+          items.push({
+            label: '$(globe) Open in Dashboard',
+            description: env.provider === 'codespaces' ? 'GitHub' : 'Ona',
+            action: 'open-dashboard',
+          });
+        }
         items.push({
-          label: '$(copy) Copy SSH Host',
-          description: env.sshHost,
-          action: 'copy-ssh',
+          label: '$(terminal) Copy SSH Command',
+          description: env.provider === 'codespaces'
+            ? `gh codespace ssh -c ${env.id}`
+            : `ssh ${env.sshHost}`,
+          action: 'copy-ssh-cmd',
         });
         items.push({
           label: '$(copy) Copy Repository URL',
@@ -404,10 +530,19 @@ export function registerCommands(
           case 'delete':
             await vscode.commands.executeCommand('cloudev.deleteEnvironment', { env });
             break;
-          case 'copy-ssh':
-            await vscode.env.clipboard.writeText(env.sshHost);
-            vscode.window.showInformationMessage('SSH host copied to clipboard');
+          case 'open-dashboard':
+            if (env.webUrl) {
+              await vscode.env.openExternal(vscode.Uri.parse(env.webUrl));
+            }
             break;
+          case 'copy-ssh-cmd': {
+            const sshCmd = env.provider === 'codespaces'
+              ? `gh codespace ssh -c ${env.id}`
+              : `ssh ${env.sshHost}`;
+            await vscode.env.clipboard.writeText(sshCmd);
+            vscode.window.showInformationMessage('SSH command copied to clipboard');
+            break;
+          }
           case 'copy-repo':
             await vscode.env.clipboard.writeText(env.repositoryUrl);
             vscode.window.showInformationMessage('Repository URL copied to clipboard');
@@ -425,14 +560,20 @@ export function registerCommands(
         const env = node?.env;
         if (!env) return;
 
+        const sshCmd = env.provider === 'codespaces'
+          ? `gh codespace ssh -c ${env.id}`
+          : `ssh ${env.sshHost}`;
         const lines = [
           `Environment: ${env.name}`,
           `Provider: ${env.provider}`,
           `Branch: ${env.branch}`,
-          `SSH Host: ${env.sshHost}`,
+          `SSH: ${sshCmd}`,
           `Repository: ${env.repositoryUrl}`,
           `Status: ${env.status}`,
         ];
+        if (env.webUrl) {
+          lines.push(`Dashboard: ${env.webUrl}`);
+        }
 
         // Include forwarded ports + public URLs if this env is being forwarded
         const pf = store.getPortForwarding();
@@ -479,6 +620,69 @@ export function registerCommands(
         if (!port) return;
         await vscode.env.clipboard.writeText(`http://localhost:${port}`);
         vscode.window.showInformationMessage(`Copied http://localhost:${port}`);
+      },
+    ),
+  );
+
+  // --- Open in Dashboard ---
+  context.subscriptions.push(
+    vscode.commands.registerCommand(
+      'cloudev.openInDashboard',
+      async (node?: { env?: Environment }) => {
+        const envId = node?.env?.id ?? (await pickEnvironment(store));
+        if (!envId) return;
+        const env = store.getEnvironment(envId);
+        if (!env?.webUrl) {
+          vscode.window.showInformationMessage('No dashboard URL available for this environment.');
+          return;
+        }
+        await vscode.env.openExternal(vscode.Uri.parse(env.webUrl));
+      },
+    ),
+  );
+
+  // --- Copy SSH Command ---
+  context.subscriptions.push(
+    vscode.commands.registerCommand(
+      'cloudev.copySshCommand',
+      async (node?: { env?: Environment }) => {
+        const envId = node?.env?.id ?? (await pickEnvironment(store, 'running'));
+        if (!envId) return;
+        const env = store.getEnvironment(envId);
+        if (!env) return;
+        const cmd = env.provider === 'codespaces'
+          ? `gh codespace ssh -c ${env.id}`
+          : `ssh ${env.sshHost}`;
+        await vscode.env.clipboard.writeText(cmd);
+        vscode.window.showInformationMessage('SSH command copied to clipboard');
+      },
+    ),
+  );
+
+  // --- Add to Favorites ---
+  context.subscriptions.push(
+    vscode.commands.registerCommand(
+      'cloudev.addFavorite',
+      async (arg?: { env?: Environment; envId?: string; port?: number }) => {
+        if (arg?.port && arg?.envId) {
+          sidebarProvider.addFavorite(`port:${arg.envId}:${arg.port}`);
+        } else if (arg?.env) {
+          sidebarProvider.addFavorite(`env:${arg.env.id}`);
+        }
+      },
+    ),
+  );
+
+  // --- Remove from Favorites ---
+  context.subscriptions.push(
+    vscode.commands.registerCommand(
+      'cloudev.removeFavorite',
+      async (arg?: { env?: Environment; envId?: string; port?: number }) => {
+        if (arg?.port && arg?.envId) {
+          sidebarProvider.removeFavorite(`port:${arg.envId}:${arg.port}`);
+        } else if (arg?.env) {
+          sidebarProvider.removeFavorite(`env:${arg.env.id}`);
+        }
       },
     ),
   );

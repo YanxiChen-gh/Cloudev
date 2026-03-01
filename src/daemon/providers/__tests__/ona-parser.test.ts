@@ -129,6 +129,7 @@ describe('mapEnvironment', () => {
       checkoutLocation: '',
       sshHost: 'env-123.gitpod.environment',
       workspacePath: '/workspaces',
+      webUrl: '',
     });
   });
 
@@ -164,6 +165,7 @@ describe('mapEnvironment', () => {
       checkoutLocation: '',
       sshHost: 'env-minimal.gitpod.environment',
       workspacePath: '/workspaces',
+      webUrl: '',
     });
   });
 
@@ -216,10 +218,10 @@ describe('mapProject', () => {
 
 describe('parseDockerPorts', () => {
   it('parses real docker ps output', () => {
-    const output = `obsidian-nginx.internal-1\t0.0.0.0:8080->80/tcp, [::]:8080->80/tcp
-obsidian-mongo.internal-1\t0.0.0.0:27017->27017/tcp, [::]:27017->27017/tcp
-obsidian-redis.internal-1\t0.0.0.0:6379->6379/tcp, [::]:6379->6379/tcp
-obsidian-mysql.internal-1\t0.0.0.0:3306->3306/tcp, [::]:3306->3306/tcp, 33060/tcp`;
+    const output = `myapp-nginx.internal-1\t0.0.0.0:8080->80/tcp, [::]:8080->80/tcp
+myapp-mongo.internal-1\t0.0.0.0:27017->27017/tcp, [::]:27017->27017/tcp
+myapp-redis.internal-1\t0.0.0.0:6379->6379/tcp, [::]:6379->6379/tcp
+myapp-mysql.internal-1\t0.0.0.0:3306->3306/tcp, [::]:3306->3306/tcp, 33060/tcp`;
 
     const result = parseDockerPorts(output);
     expect(result.get(8080)).toBe('nginx');
@@ -229,20 +231,20 @@ obsidian-mysql.internal-1\t0.0.0.0:3306->3306/tcp, [::]:3306->3306/tcp, 33060/tc
   });
 
   it('handles containers with multiple port mappings', () => {
-    const output = `obsidian-minio-1\t0.0.0.0:9001->9001/tcp, [::]:9001->9001/tcp, 0.0.0.0:9002->9000/tcp`;
+    const output = `myapp-minio-1\t0.0.0.0:9001->9001/tcp, [::]:9001->9001/tcp, 0.0.0.0:9002->9000/tcp`;
     const result = parseDockerPorts(output);
     expect(result.get(9001)).toBe('minio');
     expect(result.get(9002)).toBe('minio');
   });
 
   it('handles containers with no port mappings', () => {
-    const output = `obsidian-mongo-index-sync.internal-1\t`;
+    const output = `myapp-mongo-index-sync.internal-1\t`;
     const result = parseDockerPorts(output);
     expect(result.size).toBe(0);
   });
 
   it('cleans container names', () => {
-    const output = `obsidian-web-client.internal-1\t0.0.0.0:9000->9000/tcp`;
+    const output = `myapp-web-client.internal-1\t0.0.0.0:9000->9000/tcp`;
     const result = parseDockerPorts(output);
     expect(result.get(9000)).toBe('web-client');
   });
