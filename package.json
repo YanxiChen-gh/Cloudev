@@ -140,8 +140,8 @@
           "group": "inline@1"
         },
         {
-          "command": "cloudev.stopEnvironment",
-          "when": "view == cloudev.environments && viewItem == environment-running",
+          "command": "cloudev.openInNewWindow",
+          "when": "view == cloudev.environments && viewItem =~ /^environment-running|environment-forwarding$/",
           "group": "inline@1"
         },
         {
@@ -153,11 +153,6 @@
           "command": "cloudev.stopPortForwarding",
           "when": "view == cloudev.environments && viewItem == environment-forwarding",
           "group": "inline@2"
-        },
-        {
-          "command": "cloudev.openInNewWindow",
-          "when": "view == cloudev.environments && viewItem =~ /^environment-running|environment-forwarding$/",
-          "group": "inline@3"
         },
         {
           "command": "cloudev.openPort",
