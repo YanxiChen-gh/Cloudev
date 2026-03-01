@@ -6,6 +6,7 @@ import * as crypto from 'crypto';
 import { spawn } from 'child_process';
 import { EventEmitter } from 'events';
 import { ClientMessage, DaemonMessage, DaemonState, DaemonEvent } from '../types';
+import { getExtensionVersion } from '../version';
 
 const DEFAULT_SOCKET_DIR = path.join(os.homedir(), '.cloudev');
 const DEFAULT_SOCKET_PATH = path.join(DEFAULT_SOCKET_DIR, 'daemon.sock');
@@ -90,8 +91,9 @@ export class DaemonClient extends EventEmitter {
   // Typed API methods
   // ---------------------------------------------------------------------------
 
-  async subscribe(): Promise<void> {
-    await this.sendRequest({ type: 'subscribe', requestId: '' });
+  async subscribe(): Promise<{ daemonVersion?: string }> {
+    const result = await this.sendRequest({ type: 'subscribe', requestId: '', version: getExtensionVersion() });
+    return (result as { daemonVersion?: string }) ?? {};
   }
 
   async startEnvironment(envId: string): Promise<void> {

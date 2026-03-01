@@ -13,6 +13,7 @@ import { PortForwardingService } from './services/port-forwarding';
 import { OnaProvider } from './providers/ona';
 import { CodespacesProvider } from './providers/codespaces';
 import { ClientMessage, DaemonState } from '../types';
+import { getExtensionVersion } from '../version';
 
 const SOCKET_DIR = path.join(os.homedir(), '.cloudev');
 const SOCKET_PATH = path.join(SOCKET_DIR, 'daemon.sock');
@@ -23,7 +24,12 @@ async function main(): Promise<void> {
   // 1. Ensure state directory exists
   fs.mkdirSync(SOCKET_DIR, { recursive: true });
 
-  // 2. Setup logging — redirect stdout/stderr to log file since daemon is detached
+  // 2. Rotate log — keep one previous session
+  try {
+    if (fs.statSync(LOG_PATH).size > 0) fs.renameSync(LOG_PATH, LOG_PATH + '.old');
+  } catch { /* doesn't exist yet */ }
+
+  // 3. Setup logging — redirect stdout/stderr to log file since daemon is detached
   const logStream = fs.createWriteStream(LOG_PATH, { flags: 'a' });
   const originalLog = console.log;
   const originalError = console.error;
@@ -85,6 +91,7 @@ async function main(): Promise<void> {
             type: 'response',
             requestId: msg.requestId,
             success: true,
+            data: { daemonVersion: getExtensionVersion() },
           });
           return;
         }

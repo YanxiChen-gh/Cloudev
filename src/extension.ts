@@ -1,9 +1,13 @@
 import * as vscode from 'vscode';
+import * as fs from 'fs';
+import * as path from 'path';
+import * as os from 'os';
 import { DaemonClient } from './client/daemon-client';
 import { StateStore } from './client/state';
 import { SidebarProvider } from './ui/sidebar-provider';
 import { StatusBarManager } from './ui/status-bar';
 import { registerCommands } from './ui/commands';
+import { getExtensionVersion } from './version';
 
 export async function activate(
   context: vscode.ExtensionContext,
@@ -23,10 +27,16 @@ export async function activate(
   // 3. Create state store
   const store = new StateStore(client);
 
-  // 4. Subscribe to state updates
+  // 4. Subscribe to state updates + check daemon version
   if (client.isConnected()) {
     try {
-      await client.subscribe();
+      const { daemonVersion } = await client.subscribe();
+      const extVersion = getExtensionVersion();
+      if (extVersion !== 'unknown' && (!daemonVersion || daemonVersion !== extVersion)) {
+        console.log(`Cloudev: daemon version mismatch (daemon=${daemonVersion ?? 'old'}, extension=${extVersion}), restarting`);
+        await restartDaemon(client);
+        await client.subscribe();
+      }
     } catch (err) {
       vscode.window.showWarningMessage(
         `Cloudev: Failed to subscribe: ${(err as Error).message}`,
@@ -34,8 +44,8 @@ export async function activate(
     }
   }
 
-  // 5. Create output channel for user-visible logs
-  const output = vscode.window.createOutputChannel('Cloudev');
+  // 5. Create log output channel — VS Code manages rotation and level filtering
+  const output = vscode.window.createOutputChannel('Cloudev', { log: true });
   context.subscriptions.push(output);
 
   // 6. Register sidebar tree view
@@ -76,11 +86,17 @@ export async function activate(
     }),
   );
 
-  // 9. Handle reconnection — re-subscribe to get fresh state
+  // 9. Handle reconnection — re-subscribe + version check
   client.on('reconnected', async () => {
     statusBar.setDaemonHealth('connected');
     try {
-      await client.subscribe();
+      const { daemonVersion } = await client.subscribe();
+      const extVersion = getExtensionVersion();
+      if (extVersion !== 'unknown' && (!daemonVersion || daemonVersion !== extVersion)) {
+        await restartDaemon(client);
+        await client.subscribe();
+        statusBar.setDaemonHealth('connected');
+      }
     } catch {
       // Will retry on next reconnect
     }
@@ -114,8 +130,7 @@ export async function activate(
     const pf = store.getPortForwarding();
     if (pf.status === 'error' && pf.error && pf.error !== lastPfError) {
       lastPfError = pf.error;
-      const ts = new Date().toLocaleTimeString();
-      output.appendLine(`[${ts}] Port forwarding error: ${pf.error}`);
+      output.error(`Port forwarding error: ${pf.error}`);
     } else if (pf.status !== 'error') {
       lastPfError = undefined;
     }
@@ -153,4 +168,26 @@ export async function activate(
 
 export function deactivate(): void {
   // Cleanup handled by context.subscriptions disposal
+}
+
+async function restartDaemon(client: DaemonClient): Promise<void> {
+  // Kill old daemon via PID file
+  const pidPath = path.join(os.homedir(), '.cloudev', 'daemon.pid');
+  try {
+    const pid = parseInt(fs.readFileSync(pidPath, 'utf-8').trim(), 10);
+    if (pid > 0) {
+      process.kill(pid, 'SIGTERM');
+      // Wait for daemon to exit (up to 5s)
+      for (let i = 0; i < 50; i++) {
+        try { process.kill(pid, 0); } catch { break; } // Process gone
+        await new Promise((r) => setTimeout(r, 100));
+      }
+    }
+  } catch {
+    // PID file missing or process already gone
+  }
+
+  // Reconnect — auto-spawns new daemon
+  await client.disconnect();
+  await client.connect();
 }
