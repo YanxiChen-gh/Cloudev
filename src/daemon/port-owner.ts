@@ -6,6 +6,7 @@
 import { execFile } from 'child_process';
 
 const EXEC_TIMEOUT = 2_000;
+const LSOF_BIN = '/usr/sbin/lsof';
 
 export interface PortOwnerInfo {
   command: string;
@@ -52,7 +53,8 @@ export async function getPortOwnerDescription(
   port: number,
   enrichers: PortOwnerEnricher[] = defaultEnrichers,
 ): Promise<string | null> {
-  const owner = await getPortOwner(port);
+  const owners = await getPortOwners(port);
+  const owner = owners[0];
   if (!owner) return null;
 
   for (const enricher of enrichers) {
@@ -77,27 +79,31 @@ export async function classifyPortOwner(
   ourPid: number | undefined,
   enrichers: PortOwnerEnricher[] = defaultEnrichers,
 ): Promise<{ status: 'ours' | 'stale' | 'other' | 'none'; description: string }> {
-  const owner = await getPortOwner(port);
-  if (!owner) {
+  const owners = await getPortOwners(port);
+  if (owners.length === 0) {
     return { status: 'none', description: 'Not bound' };
   }
 
-  // Check if our tunnel process owns it
-  if (ourPid && owner.pid === String(ourPid)) {
+  // Find the first owner that ISN'T our tunnel process.
+  // SSH may bind IPv6 (::1) when IPv4 (127.0.0.1) is taken by another process,
+  // so we need to look at all listeners, not just the first.
+  const conflict = owners.find((o) => !ourPid || o.pid !== String(ourPid));
+  if (!conflict) {
+    // All listeners are our tunnel — no conflict
     return { status: 'ours', description: '' };
   }
 
   // Enrich to get a human-readable description
-  let description = `${owner.command} (PID ${owner.pid})`;
+  let description = `${conflict.command} (PID ${conflict.pid})`;
   for (const enricher of enrichers) {
     try {
-      const enriched = await enricher(owner, port);
+      const enriched = await enricher(conflict, port);
       if (enriched) { description = enriched; break; }
     } catch { /* continue */ }
   }
 
   // SSH process connecting to a different host = stale tunnel from old env
-  if (owner.command.toLowerCase() === 'ssh') {
+  if (conflict.command.toLowerCase() === 'ssh') {
     return { status: 'stale', description };
   }
 
@@ -109,17 +115,56 @@ export async function classifyPortOwner(
 // Helpers
 // ---------------------------------------------------------------------------
 
-/** Get the command + PID of the process listening on a port via lsof. */
-function getPortOwner(port: number): Promise<PortOwnerInfo | null> {
+/**
+ * Snapshot of all TCP listeners on the machine.
+ * One lsof call instead of N per-port calls (avoids timeouts with many ports).
+ * Uses a pending promise to deduplicate concurrent calls.
+ */
+let listenerCache: { ts: number; map: Map<number, PortOwnerInfo[]> } = { ts: 0, map: new Map() };
+let pendingSnapshot: Promise<Map<number, PortOwnerInfo[]>> | null = null;
+const CACHE_TTL_MS = 2_000;
+
+async function getPortOwners(port: number): Promise<PortOwnerInfo[]> {
+  if (Date.now() - listenerCache.ts < CACHE_TTL_MS) {
+    return listenerCache.map.get(port) ?? [];
+  }
+  if (!pendingSnapshot) {
+    pendingSnapshot = snapshotAllListeners().then((map) => {
+      listenerCache = { ts: Date.now(), map };
+      pendingSnapshot = null;
+      return map;
+    });
+  }
+  const map = await pendingSnapshot;
+  return map.get(port) ?? [];
+}
+
+/** Run a single lsof call to get all TCP listeners, grouped by port. */
+function snapshotAllListeners(): Promise<Map<number, PortOwnerInfo[]>> {
   return new Promise((resolve) => {
-    execFile('lsof', ['-i', `:${port}`, '-sTCP:LISTEN', '-n', '-P'], { timeout: EXEC_TIMEOUT }, (err, stdout) => {
-      if (err || !stdout.trim()) { resolve(null); return; }
+    execFile(LSOF_BIN, ['-iTCP', '-sTCP:LISTEN', '-n', '-P'], { timeout: 5_000 }, (_err, stdout) => {
+      const map = new Map<number, PortOwnerInfo[]>();
+      if (!stdout || !stdout.trim()) { resolve(map); return; }
       const lines = stdout.trim().split('\n');
-      if (lines.length < 2) { resolve(null); return; }
-      const parts = lines[1].split(/\s+/);
-      const command = parts[0] ?? '';
-      const pid = parts[1] ?? '';
-      resolve(command && pid ? { command, pid } : null);
+      for (let i = 1; i < lines.length; i++) {
+        const parts = lines[i].split(/\s+/);
+        const command = parts[0] ?? '';
+        const pid = parts[1] ?? '';
+        // NAME is second-to-last (e.g. "127.0.0.1:8765"), last is "(LISTEN)"
+        // Format: "COMMAND PID USER FD TYPE DEVICE SIZE/OFF NODE NAME (STATE)"
+        const namePart = parts.length >= 10 ? parts[8] : (parts[parts.length - 2] ?? '');
+        const colonIdx = namePart.lastIndexOf(':');
+        const portStr = colonIdx >= 0 ? namePart.slice(colonIdx + 1) : '';
+        const portNum = parseInt(portStr, 10);
+        if (!command || !pid || isNaN(portNum)) continue;
+        if (!map.has(portNum)) map.set(portNum, []);
+        const owners = map.get(portNum)!;
+        // Deduplicate by PID within each port
+        if (!owners.some((o) => o.pid === pid)) {
+          owners.push({ command, pid });
+        }
+      }
+      resolve(map);
     });
   });
 }
