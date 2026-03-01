@@ -178,7 +178,7 @@ function friendlyProcessName(cmd: string): string {
   // Well-known process name mappings
   // Match by prefix — lsof truncates COMMAND to ~15 chars
   if (unescaped.startsWith('Code H') || unescaped.startsWith('Code\x20H')) {
-    return 'VS Code Remote';
+    return 'VS Code Remote SSH';
   }
   return unescaped;
 }
