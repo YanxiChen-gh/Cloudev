@@ -30,9 +30,9 @@
       "specs": [
         {
           "git": {
-            "checkoutLocation": "obsidian",
+            "checkoutLocation": "web-app",
             "cloneTarget": "main",
-            "remoteUri": "https://github.com/VantaInc/obsidian.git",
+            "remoteUri": "https://github.com/acme-org/web-app.git",
             "targetMode": "CLONE_TARGET_MODE_REMOTE_BRANCH"
           }
         }
@@ -45,7 +45,7 @@
         "principal": "PRINCIPAL_USER"
       },
       "name": "Obsidian",
-      "organizationId": "0198ce60-f77b-7637-81a9-4b8e409a0de8",
+      "organizationId": "00000000-0000-4000-a000-000000000001",
       "updatedAt": "2026-02-28T22:56:36.719513Z"
     },
     "prebuildConfiguration": {
@@ -124,7 +124,7 @@
           "git": {
             "checkoutLocation": "dbt",
             "cloneTarget": "main",
-            "remoteUri": "https://github.com/VantaInc/dbt.git",
+            "remoteUri": "https://github.com/acme-org/data-pipeline.git",
             "targetMode": "CLONE_TARGET_MODE_REMOTE_BRANCH"
           }
         }
@@ -137,7 +137,7 @@
         "principal": "PRINCIPAL_USER"
       },
       "name": "DBT",
-      "organizationId": "0198ce60-f77b-7637-81a9-4b8e409a0de8",
+      "organizationId": "00000000-0000-4000-a000-000000000001",
       "updatedAt": "2026-02-28T22:56:41.521077Z"
     },
     "prebuildConfiguration": {
@@ -211,7 +211,7 @@
           "git": {
             "checkoutLocation": "analytics-cluster",
             "cloneTarget": "main",
-            "remoteUri": "https://github.com/VantaInc/analytics-cluster.git",
+            "remoteUri": "https://github.com/acme-org/analytics.git",
             "targetMode": "CLONE_TARGET_MODE_REMOTE_BRANCH"
           }
         }
@@ -224,7 +224,7 @@
         "principal": "PRINCIPAL_USER"
       },
       "name": "Analytics Cluster",
-      "organizationId": "0198ce60-f77b-7637-81a9-4b8e409a0de8",
+      "organizationId": "00000000-0000-4000-a000-000000000001",
       "updatedAt": "2026-02-28T22:56:43.166766Z"
     },
     "prebuildConfiguration": {
@@ -278,7 +278,7 @@
           "git": {
             "checkoutLocation": "security",
             "cloneTarget": "main",
-            "remoteUri": "https://github.com/VantaInc/security.git",
+            "remoteUri": "https://github.com/acme-org/backend.git",
             "targetMode": "CLONE_TARGET_MODE_REMOTE_BRANCH"
           }
         }
@@ -291,7 +291,7 @@
         "principal": "PRINCIPAL_USER"
       },
       "name": "Security",
-      "organizationId": "0198ce60-f77b-7637-81a9-4b8e409a0de8",
+      "organizationId": "00000000-0000-4000-a000-000000000001",
       "updatedAt": "2026-02-28T22:56:44.659510Z"
     },
     "prebuildConfiguration": {},

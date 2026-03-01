@@ -54,7 +54,7 @@ const WELL_KNOWN_PORTS: Record<number, string> = {
  * Returns a map of host port → cleaned container name.
  *
  * Example input line:
- *   obsidian-nginx.internal-1\t0.0.0.0:8080->80/tcp, [::]:8080->80/tcp
+ *   myapp-nginx.internal-1\t0.0.0.0:8080->80/tcp, [::]:8080->80/tcp
  * → Map { 8080 => "nginx" }
  */
 export function parseDockerPorts(output: string): Map<number, string> {
@@ -71,8 +71,8 @@ export function parseDockerPorts(output: string): Map<number, string> {
     if (!portsStr) continue;
 
     // Clean container name: strip common prefixes/suffixes
-    // "obsidian-nginx.internal-1" → "nginx"
-    // "obsidian-web-client.internal-1" → "web-client"
+    // "myapp-nginx.internal-1" → "nginx"
+    // "myapp-web-client.internal-1" → "web-client"
     const name = cleanContainerName(rawName);
 
     // Parse port mappings: "0.0.0.0:8080->80/tcp, [::]:8080->80/tcp"
@@ -96,7 +96,7 @@ function cleanContainerName(raw: string): string {
   // Remove common suffixes: ".internal-1", "-1"
   name = name.replace(/\.internal-\d+$/, '').replace(/-\d+$/, '');
   // Remove project prefix (first segment before the first dash that's followed by a known service)
-  // e.g., "obsidian-nginx" → "nginx", "obsidian-web-client" → "web-client"
+  // e.g., "myapp-nginx" → "nginx", "myapp-web-client" → "web-client"
   const dashIdx = name.indexOf('-');
   if (dashIdx > 0 && dashIdx < name.length - 1) {
     name = name.slice(dashIdx + 1);

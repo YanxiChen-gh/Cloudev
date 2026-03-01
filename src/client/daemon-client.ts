@@ -7,7 +7,7 @@ import { spawn } from 'child_process';
 import { EventEmitter } from 'events';
 import { ClientMessage, DaemonMessage, DaemonState, DaemonEvent } from '../types';
 
-const DEFAULT_SOCKET_DIR = path.join(os.homedir(), '.vanta-dev');
+const DEFAULT_SOCKET_DIR = path.join(os.homedir(), '.cloudev');
 const DEFAULT_SOCKET_PATH = path.join(DEFAULT_SOCKET_DIR, 'daemon.sock');
 const REQUEST_TIMEOUT_MS = 30_000;
 const RECONNECT_DELAY_MS = 2_000;
