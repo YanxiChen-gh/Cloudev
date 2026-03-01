@@ -45,6 +45,7 @@ export interface PortForwardingState {
   ports: number[];
   portLabels: Record<number, string>; // port → label (container name or static guess)
   portUrls: Record<number, string>;   // port → public URL (gitpod URL or codespaces browseUrl)
+  portConflicts: Record<number, string>; // port → conflict reason (empty if all bound)
   status: 'idle' | 'connecting' | 'active' | 'error';
   error?: string;
 }

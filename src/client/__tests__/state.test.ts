@@ -31,7 +31,7 @@ function makeEnv(overrides: Partial<Environment> = {}): Environment {
 function makeState(overrides: Partial<DaemonState> = {}): DaemonState {
   return {
     environments: [makeEnv()],
-    portForwarding: { activeEnvId: null, activeEnvName: null, ports: [], portLabels: {}, portUrls: {}, status: 'idle' },
+    portForwarding: { activeEnvId: null, activeEnvName: null, ports: [], portLabels: {}, portUrls: {}, portConflicts: {}, status: 'idle' },
     providers: [{ id: 'ona', displayName: 'Ona', available: true }],
     ...overrides,
   };
@@ -104,7 +104,7 @@ describe('StateStore', () => {
     it('applies port-forwarding-changed', () => {
       const event: DaemonEvent = {
         kind: 'port-forwarding-changed',
-        portForwarding: { activeEnvId: 'env-1', activeEnvName: 'test-env', ports: [3000], portLabels: {}, portUrls: {}, status: 'active' },
+        portForwarding: { activeEnvId: 'env-1', activeEnvName: 'test-env', ports: [3000], portLabels: {}, portUrls: {}, portConflicts: {}, status: 'active' },
       };
       (client as unknown as EventEmitter).emit('event', event);
 
@@ -122,7 +122,7 @@ describe('StateStore', () => {
           activeEnvName: 'test-env',
           ports: [3000, 8080],
           portLabels: { 3000: 'turborepo', 8080: 'nginx' },
-          portUrls: {},
+          portUrls: {}, portConflicts: {},
           status: 'active',
         },
       };

@@ -624,6 +624,27 @@ export function registerCommands(
     ),
   );
 
+  // --- Copy Port Details ---
+  context.subscriptions.push(
+    vscode.commands.registerCommand(
+      'cloudev.copyPortInfo',
+      async (arg?: { port?: number }) => {
+        const port = arg?.port;
+        if (!port) return;
+        const pf = store.getPortForwarding();
+        const lines = [`Port: ${port}`, `URL: http://localhost:${port}`];
+        const label = pf.portLabels[port];
+        if (label) lines.push(`Label: ${label}`);
+        const url = pf.portUrls[port];
+        if (url) lines.push(`Public: ${url}`);
+        const conflict = pf.portConflicts[port];
+        if (conflict) lines.push(`Warning: ${conflict}`);
+        await vscode.env.clipboard.writeText(lines.join('\n'));
+        vscode.window.showInformationMessage('Port details copied to clipboard');
+      },
+    ),
+  );
+
   // --- Open in Dashboard ---
   context.subscriptions.push(
     vscode.commands.registerCommand(
