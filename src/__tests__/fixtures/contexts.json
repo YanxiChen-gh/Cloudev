@@ -1,0 +1,18 @@
+[
+  {
+    "active": true,
+    "name": "app.gitpod.io",
+    "host": "https://app.gitpod.io",
+    "organization": "00000000-0000-4000-a000-000000000001",
+    "user": "00000000-0000-4000-a000-000000000002",
+    "environment": ""
+  },
+  {
+    "active": false,
+    "name": "default",
+    "host": "https://app.gitpod.io",
+    "organization": "00000000-0000-4000-a000-000000000001",
+    "user": "00000000-0000-4000-a000-000000000002",
+    "environment": ""
+  }
+]
