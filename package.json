@@ -3,7 +3,7 @@
   "displayName": "Cloudev",
   "description": "Manage cloud development environments (Ona/Gitpod, Codespaces) from VS Code",
   "version": "0.1.0",
-  "publisher": "vanta",
+  "publisher": "cloudev",
   "engines": {
     "vscode": "^1.85.0"
   },

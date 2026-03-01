@@ -9,7 +9,7 @@ npm run compile    # must exit with 0 errors — always verify after changes
 
 ## Architecture
 
-Two processes: a **VS Code extension** (UI-only) and a **background daemon** (owns all state). They communicate via newline-delimited JSON over a Unix socket at `~/.vanta-dev/daemon.sock`.
+Two processes: a **VS Code extension** (UI-only) and a **background daemon** (owns all state). They communicate via newline-delimited JSON over a Unix socket at `~/.cloudev/daemon.sock`.
 
 ### Key constraint
 

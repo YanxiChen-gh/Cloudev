@@ -4,11 +4,11 @@
     "metadata": {
       "createdAt": "2026-02-25T17:16:15.245025Z",
       "creator": {
-        "id": "019c4f44-deec-71f6-b7f4-989f25e1185e",
+        "id": "00000000-0000-4000-a000-000000000002",
         "principal": "PRINCIPAL_USER"
       },
       "lastStartedAt": "2026-02-28T17:05:52.270651Z",
-      "organizationId": "0198ce60-f77b-7637-81a9-4b8e409a0de8",
+      "organizationId": "00000000-0000-4000-a000-000000000001",
       "prebuildId": "019c8ff3-2fb9-70e7-979a-1c22b20414d2",
       "projectId": "01992fca-c2a8-74d0-92dc-c356e45266ce",
       "role": "ENVIRONMENT_ROLE_DEFAULT",
@@ -23,9 +23,9 @@
           "specs": [
             {
               "git": {
-                "checkoutLocation": "obsidian",
+                "checkoutLocation": "web-app",
                 "cloneTarget": "main",
-                "remoteUri": "https://github.com/VantaInc/obsidian.git",
+                "remoteUri": "https://github.com/acme-org/web-app.git",
                 "targetMode": "CLONE_TARGET_MODE_REMOTE_BRANCH"
               }
             }
@@ -35,7 +35,7 @@
       "desiredPhase": "ENVIRONMENT_PHASE_RUNNING",
       "devcontainer": {
         "dotfiles": {
-          "repository": "https://github.com/YanxiChen-gh/Dotfiles"
+          "repository": "https://github.com/example-user/dotfiles"
         },
         "session": "019c95cd-2406-771d-9157-7c336b41f1f7"
       },
@@ -506,7 +506,7 @@
       "sshPublicKeys": [
         {
           "id": "7b22757269536368656d65223a22637572736f72222c22657874656e73696f6e4964223a22676974706f642e676974706f642d666c6578222c226d616368696e654964223a2232313736656336303130373235363535653332646439373866316539613134323037383437313161366438373430326635376663376434383230653537306363227d",
-          "value": "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIBYup8833sBpMxsINPBjbzHcqQEda904Wm4ntqKCVjZT yanxichen@YanxiC-J0396Y2QYC"
+          "value": "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIBYup8833sBpMxsINPBjbzHcqQEda904Wm4ntqKCVjZT user@example"
         },
         {
           "id": "cf8964a1-7c05-5457-8d7f-3e9077ad11cc",
@@ -529,20 +529,20 @@
         "session": "019c95cd-23c9-7c00-9ae5-136542d704f2"
       },
       "content": {
-        "contentLocationInMachine": "/workspaces/obsidian",
+        "contentLocationInMachine": "/workspaces/web-app",
         "git": {
           "branch": "main",
-          "cloneUrl": "https://github.com/VantaInc/obsidian.git",
+          "cloneUrl": "https://github.com/acme-org/web-app.git",
           "latestCommit": "45797d669fea46a28c3297176c397ddb0c8e2d44"
         },
         "phase": "CONTENT_PHASE_READY"
       },
       "environmentUrls": {
-        "logs": "https://019aebc6-eea0-7bfc-9c48-3046995ba7b0.ona-runner-us-west-2.ilmalabs.dev/logs/environments/019c95cd-240c-7f3e-a2a2-e04e1215bbbb",
+        "logs": "https://019aebc6-eea0-7bfc-9c48-3046995ba7b0.ona-runner-us-west-2.example-runner.dev/logs/environments/019c95cd-240c-7f3e-a2a2-e04e1215bbbb",
         "ssh": {
-          "url": "https://019c95cd-240c-7f3e-a2a2-e04e1215bbbb.ona-runner-us-west-2.ilmalabs.dev:443"
+          "url": "https://019c95cd-240c-7f3e-a2a2-e04e1215bbbb.ona-runner-us-west-2.example-runner.dev:443"
         },
-        "supportBundle": "https://019aebc6-eea0-7bfc-9c48-3046995ba7b0.ona-runner-us-west-2.ilmalabs.dev/support-bundle/environments/019c95cd-240c-7f3e-a2a2-e04e1215bbbb"
+        "supportBundle": "https://019aebc6-eea0-7bfc-9c48-3046995ba7b0.ona-runner-us-west-2.example-runner.dev/support-bundle/environments/019c95cd-240c-7f3e-a2a2-e04e1215bbbb"
       },
       "machine": {
         "phase": "PHASE_STOPPED",
@@ -562,11 +562,11 @@
     "metadata": {
       "createdAt": "2026-02-24T21:13:32.011333Z",
       "creator": {
-        "id": "019c4f44-deec-71f6-b7f4-989f25e1185e",
+        "id": "00000000-0000-4000-a000-000000000002",
         "principal": "PRINCIPAL_USER"
       },
       "lastStartedAt": "2026-02-28T17:05:53.526317Z",
-      "organizationId": "0198ce60-f77b-7637-81a9-4b8e409a0de8",
+      "organizationId": "00000000-0000-4000-a000-000000000001",
       "projectId": "019aa8de-f87a-7373-8ea7-040083a3a4c3",
       "role": "ENVIRONMENT_ROLE_DEFAULT",
       "runnerId": "019aebc6-eea0-7bfc-9c48-3046995ba7b0"
@@ -582,7 +582,7 @@
               "git": {
                 "checkoutLocation": "dbt",
                 "cloneTarget": "main",
-                "remoteUri": "https://github.com/VantaInc/dbt.git",
+                "remoteUri": "https://github.com/acme-org/data-pipeline.git",
                 "targetMode": "CLONE_TARGET_MODE_REMOTE_BRANCH"
               }
             }
@@ -592,7 +592,7 @@
       "desiredPhase": "ENVIRONMENT_PHASE_RUNNING",
       "devcontainer": {
         "dotfiles": {
-          "repository": "https://github.com/YanxiChen-gh/Dotfiles"
+          "repository": "https://github.com/example-user/dotfiles"
         },
         "session": "019c9180-0464-79ca-9e47-246bfe173594"
       },
@@ -775,7 +775,7 @@
       "sshPublicKeys": [
         {
           "id": "7b22757269536368656d65223a227673636f6465222c22657874656e73696f6e4964223a22676974706f642e676974706f642d666c6578222c226d616368696e654964223a2262393432393736396238663031633036353435643032633732363961323163306165376334346662613831643962666236313031613137353130323462633363227d",
-          "value": "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIBYup8833sBpMxsINPBjbzHcqQEda904Wm4ntqKCVjZT yanxichen@YanxiC-J0396Y2QYC"
+          "value": "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIBYup8833sBpMxsINPBjbzHcqQEda904Wm4ntqKCVjZT user@example"
         },
         {
           "id": "cf8964a1-7c05-5457-8d7f-3e9077ad11cc",
@@ -815,18 +815,18 @@
               "path": "health-ai.json"
             }
           ],
-          "cloneUrl": "https://github.com/VantaInc/dbt.git",
+          "cloneUrl": "https://github.com/acme-org/data-pipeline.git",
           "latestCommit": "b27db55f106b03e229ab6ae75076e20604b52068",
           "totalChangedFiles": 3
         },
         "phase": "CONTENT_PHASE_READY"
       },
       "environmentUrls": {
-        "logs": "https://019aebc6-eea0-7bfc-9c48-3046995ba7b0.ona-runner-us-west-2.ilmalabs.dev/logs/environments/019c9180-046b-744d-8b8c-26dadb262725",
+        "logs": "https://019aebc6-eea0-7bfc-9c48-3046995ba7b0.ona-runner-us-west-2.example-runner.dev/logs/environments/019c9180-046b-744d-8b8c-26dadb262725",
         "ssh": {
-          "url": "https://019c9180-046b-744d-8b8c-26dadb262725.ona-runner-us-west-2.ilmalabs.dev:443"
+          "url": "https://019c9180-046b-744d-8b8c-26dadb262725.ona-runner-us-west-2.example-runner.dev:443"
         },
-        "supportBundle": "https://019aebc6-eea0-7bfc-9c48-3046995ba7b0.ona-runner-us-west-2.ilmalabs.dev/support-bundle/environments/019c9180-046b-744d-8b8c-26dadb262725"
+        "supportBundle": "https://019aebc6-eea0-7bfc-9c48-3046995ba7b0.ona-runner-us-west-2.example-runner.dev/support-bundle/environments/019c9180-046b-744d-8b8c-26dadb262725"
       },
       "machine": {
         "phase": "PHASE_STOPPED",
@@ -846,11 +846,11 @@
     "metadata": {
       "createdAt": "2026-02-13T20:58:03.900789Z",
       "creator": {
-        "id": "019c4f44-deec-71f6-b7f4-989f25e1185e",
+        "id": "00000000-0000-4000-a000-000000000002",
         "principal": "PRINCIPAL_USER"
       },
       "lastStartedAt": "2026-02-28T17:05:54.803631Z",
-      "organizationId": "0198ce60-f77b-7637-81a9-4b8e409a0de8",
+      "organizationId": "00000000-0000-4000-a000-000000000001",
       "prebuildId": "019c574d-c013-7b10-b363-f1b63a77adb7",
       "projectId": "01992fca-c2a8-74d0-92dc-c356e45266ce",
       "role": "ENVIRONMENT_ROLE_DEFAULT",
@@ -865,9 +865,9 @@
           "specs": [
             {
               "git": {
-                "checkoutLocation": "obsidian",
+                "checkoutLocation": "web-app",
                 "cloneTarget": "main",
-                "remoteUri": "https://github.com/VantaInc/obsidian.git",
+                "remoteUri": "https://github.com/acme-org/web-app.git",
                 "targetMode": "CLONE_TARGET_MODE_REMOTE_BRANCH"
               }
             }
@@ -877,7 +877,7 @@
       "desiredPhase": "ENVIRONMENT_PHASE_RUNNING",
       "devcontainer": {
         "dotfiles": {
-          "repository": "https://github.com/YanxiChen-gh/Dotfiles"
+          "repository": "https://github.com/example-user/dotfiles"
         },
         "session": "019c58cb-e6f6-7237-881c-4dd5b9ea421f"
       },
@@ -1329,7 +1329,7 @@
       "sshPublicKeys": [
         {
           "id": "7b22757269536368656d65223a227673636f6465222c22657874656e73696f6e4964223a22676974706f642e676974706f642d666c6578222c226d616368696e654964223a2262393432393736396238663031633036353435643032633732363961323163306165376334346662613831643962666236313031613137353130323462633363227d",
-          "value": "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIBYup8833sBpMxsINPBjbzHcqQEda904Wm4ntqKCVjZT yanxichen@YanxiC-J0396Y2QYC"
+          "value": "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIBYup8833sBpMxsINPBjbzHcqQEda904Wm4ntqKCVjZT user@example"
         },
         {
           "id": "cf8964a1-7c05-5457-8d7f-3e9077ad11cc",
@@ -1337,7 +1337,7 @@
         },
         {
           "id": "7b22757269536368656d65223a22637572736f72222c22657874656e73696f6e4964223a22676974706f642e676974706f642d666c6578222c226d616368696e654964223a2232313736656336303130373235363535653332646439373866316539613134323037383437313161366438373430326635376663376434383230653537306363227d",
-          "value": "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIBYup8833sBpMxsINPBjbzHcqQEda904Wm4ntqKCVjZT yanxichen@YanxiC-J0396Y2QYC"
+          "value": "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIBYup8833sBpMxsINPBjbzHcqQEda904Wm4ntqKCVjZT user@example"
         }
       ],
       "timeout": {
@@ -1356,9 +1356,9 @@
         "session": "019c58cb-e6bc-77c2-9e6d-00ba79308327"
       },
       "content": {
-        "contentLocationInMachine": "/workspaces/obsidian",
+        "contentLocationInMachine": "/workspaces/web-app",
         "git": {
-          "branch": "yanxi/AIPLAT-188-shadow-mode-poc",
+          "branch": "user/feature-branch",
           "changedFiles": [
             {
               "changeType": "CHANGE_TYPE_MODIFIED",
@@ -1390,7 +1390,7 @@
             },
             {
               "changeType": "CHANGE_TYPE_UNTRACKED",
-              "path": "AIPLAT-3-model-upgrade-tracker.xlsx"
+              "path": "PROJ-3-tracker.xlsx"
             },
             {
               "changeType": "CHANGE_TYPE_UNTRACKED",
@@ -1493,7 +1493,7 @@
               "path": "vscode-ona-extension-plan.md"
             }
           ],
-          "cloneUrl": "https://github.com/VantaInc/obsidian.git",
+          "cloneUrl": "https://github.com/acme-org/web-app.git",
           "latestCommit": "afb4c49d938c389be56af70c3efd7fb3cd1e09aa",
           "totalChangedFiles": 33
         },
@@ -1502,28 +1502,28 @@
       "devcontainer": {
         "containerId": "18fcaa26176f1da7231ff7e7ffa1db6fa60544f1601f3c4a464f922d09cc2523",
         "containerName": "/festive_benz",
-        "devcontainerFilePath": "/workspaces/obsidian/.devcontainer/devcontainer.json",
+        "devcontainerFilePath": "/workspaces/web-app/.devcontainer/devcontainer.json",
         "devcontainerFilePresence": "PRESENCE_DISCOVERED",
         "devcontainerconfigInSync": true,
         "phase": "PHASE_RUNNING",
         "remoteUser": "vscode",
-        "remoteWorkspaceFolder": "/workspaces/obsidian",
+        "remoteWorkspaceFolder": "/workspaces/web-app",
         "secretsInSync": true,
         "session": "019c58cb-e6f6-7237-881c-4dd5b9ea421f"
       },
       "environmentUrls": {
-        "logs": "https://22999--019c58cb-e6fc-7b62-a461-3851802bba52.ona-runner-us-west-2.ilmalabs.dev/logs",
-        "ops": "https://22999--019c58cb-e6fc-7b62-a461-3851802bba52.ona-runner-us-west-2.ilmalabs.dev",
+        "logs": "https://22999--019c58cb-e6fc-7b62-a461-3851802bba52.ona-runner-us-west-2.example-runner.dev/logs",
+        "ops": "https://22999--019c58cb-e6fc-7b62-a461-3851802bba52.ona-runner-us-west-2.example-runner.dev",
         "ports": [
           {
             "port": 8080,
-            "url": "https://8080s--019c58cb-e6fc-7b62-a461-3851802bba52.ona-runner-us-west-2.ilmalabs.dev"
+            "url": "https://8080s--019c58cb-e6fc-7b62-a461-3851802bba52.ona-runner-us-west-2.example-runner.dev"
           }
         ],
         "ssh": {
-          "url": "https://019c58cb-e6fc-7b62-a461-3851802bba52.ona-runner-us-west-2.ilmalabs.dev:443"
+          "url": "https://019c58cb-e6fc-7b62-a461-3851802bba52.ona-runner-us-west-2.example-runner.dev:443"
         },
-        "supportBundle": "https://019aebc6-eea0-7bfc-9c48-3046995ba7b0.ona-runner-us-west-2.ilmalabs.dev/support-bundle/environments/019c58cb-e6fc-7b62-a461-3851802bba52"
+        "supportBundle": "https://019aebc6-eea0-7bfc-9c48-3046995ba7b0.ona-runner-us-west-2.example-runner.dev/support-bundle/environments/019c58cb-e6fc-7b62-a461-3851802bba52"
       },
       "machine": {
         "phase": "PHASE_RUNNING",
@@ -1798,11 +1798,11 @@
     "metadata": {
       "createdAt": "2026-02-12T22:15:41.058392Z",
       "creator": {
-        "id": "019c4f44-deec-71f6-b7f4-989f25e1185e",
+        "id": "00000000-0000-4000-a000-000000000002",
         "principal": "PRINCIPAL_USER"
       },
       "lastStartedAt": "2026-02-28T17:05:56.090780Z",
-      "organizationId": "0198ce60-f77b-7637-81a9-4b8e409a0de8",
+      "organizationId": "00000000-0000-4000-a000-000000000001",
       "prebuildId": "019c5227-4fe9-7d70-99d7-cad45bdc3c86",
       "projectId": "01992fca-c2a8-74d0-92dc-c356e45266ce",
       "role": "ENVIRONMENT_ROLE_DEFAULT",
@@ -1817,9 +1817,9 @@
           "specs": [
             {
               "git": {
-                "checkoutLocation": "obsidian",
+                "checkoutLocation": "web-app",
                 "cloneTarget": "main",
-                "remoteUri": "https://github.com/VantaInc/obsidian.git",
+                "remoteUri": "https://github.com/acme-org/web-app.git",
                 "targetMode": "CLONE_TARGET_MODE_REMOTE_BRANCH"
               }
             }
@@ -1829,7 +1829,7 @@
       "desiredPhase": "ENVIRONMENT_PHASE_RUNNING",
       "devcontainer": {
         "dotfiles": {
-          "repository": "https://github.com/YanxiChen-gh/Dotfiles"
+          "repository": "https://github.com/example-user/dotfiles"
         },
         "session": "019c53ec-9afc-7c01-a8ca-7c50950aa40a"
       },
@@ -2272,7 +2272,7 @@
       "sshPublicKeys": [
         {
           "id": "7b22757269536368656d65223a227673636f6465222c22657874656e73696f6e4964223a22676974706f642e676974706f642d666c6578222c226d616368696e654964223a2262393432393736396238663031633036353435643032633732363961323163306165376334346662613831643962666236313031613137353130323462633363227d",
-          "value": "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIBYup8833sBpMxsINPBjbzHcqQEda904Wm4ntqKCVjZT yanxichen@YanxiC-J0396Y2QYC"
+          "value": "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIBYup8833sBpMxsINPBjbzHcqQEda904Wm4ntqKCVjZT user@example"
         },
         {
           "id": "cf8964a1-7c05-5457-8d7f-3e9077ad11cc",
@@ -2280,7 +2280,7 @@
         },
         {
           "id": "7b22757269536368656d65223a22637572736f72222c22657874656e73696f6e4964223a22676974706f642e676974706f642d666c6578222c226d616368696e654964223a2232313736656336303130373235363535653332646439373866316539613134323037383437313161366438373430326635376663376434383230653537306363227d",
-          "value": "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIBYup8833sBpMxsINPBjbzHcqQEda904Wm4ntqKCVjZT yanxichen@YanxiC-J0396Y2QYC"
+          "value": "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIBYup8833sBpMxsINPBjbzHcqQEda904Wm4ntqKCVjZT user@example"
         }
       ],
       "timeout": {
@@ -2299,25 +2299,25 @@
         "session": "019c53ec-9acb-70c7-a1d9-ee4eb75a5bfd"
       },
       "content": {
-        "contentLocationInMachine": "/workspaces/obsidian",
+        "contentLocationInMachine": "/workspaces/web-app",
         "git": {
-          "branch": "AIPLAT-106",
+          "branch": "PROJ-106",
           "changedFiles": [
             {
               "changeType": "CHANGE_TYPE_UNTRACKED",
-              "path": ".claude/worktrees/AIPLAT-106/"
+              "path": ".claude/worktrees/PROJ-106/"
             },
             {
               "changeType": "CHANGE_TYPE_UNTRACKED",
               "path": ".cursor/rules/format-urls-as-markdown-links.mdc"
             }
           ],
-          "cloneUrl": "https://github.com/VantaInc/obsidian.git",
+          "cloneUrl": "https://github.com/acme-org/web-app.git",
           "latestCommit": "62a0547fe706b817e47ce0391d2bbbd2beb27fba",
           "totalChangedFiles": 2,
           "totalUnpushedCommits": 1,
           "unpushedCommits": [
-            "67f079f587a: [AIPLAT-106] Add LangSmith URL import for dataset-from-traces flow"
+            "67f079f587a: [PROJ-106] Add LangSmith URL import for dataset-from-traces flow"
           ]
         },
         "phase": "CONTENT_PHASE_READY"
@@ -2325,28 +2325,28 @@
       "devcontainer": {
         "containerId": "bce366db170f19a2c9b281046bbd9d4ef22d7b9a0ec3e3297b9bf52366931950",
         "containerName": "/adoring_swirles",
-        "devcontainerFilePath": "/workspaces/obsidian/.devcontainer/devcontainer.json",
+        "devcontainerFilePath": "/workspaces/web-app/.devcontainer/devcontainer.json",
         "devcontainerFilePresence": "PRESENCE_DISCOVERED",
         "devcontainerconfigInSync": true,
         "phase": "PHASE_RUNNING",
         "remoteUser": "vscode",
-        "remoteWorkspaceFolder": "/workspaces/obsidian",
+        "remoteWorkspaceFolder": "/workspaces/web-app",
         "secretsInSync": true,
         "session": "019c53ec-9afc-7c01-a8ca-7c50950aa40a"
       },
       "environmentUrls": {
-        "logs": "https://22999--019c53ec-9b02-75ba-b3cf-aa1b4d6ee2a9.ona-runner-us-west-2.ilmalabs.dev/logs",
-        "ops": "https://22999--019c53ec-9b02-75ba-b3cf-aa1b4d6ee2a9.ona-runner-us-west-2.ilmalabs.dev",
+        "logs": "https://22999--019c53ec-9b02-75ba-b3cf-aa1b4d6ee2a9.ona-runner-us-west-2.example-runner.dev/logs",
+        "ops": "https://22999--019c53ec-9b02-75ba-b3cf-aa1b4d6ee2a9.ona-runner-us-west-2.example-runner.dev",
         "ports": [
           {
             "port": 8080,
-            "url": "https://8080s--019c53ec-9b02-75ba-b3cf-aa1b4d6ee2a9.ona-runner-us-west-2.ilmalabs.dev"
+            "url": "https://8080s--019c53ec-9b02-75ba-b3cf-aa1b4d6ee2a9.ona-runner-us-west-2.example-runner.dev"
           }
         ],
         "ssh": {
-          "url": "https://019c53ec-9b02-75ba-b3cf-aa1b4d6ee2a9.ona-runner-us-west-2.ilmalabs.dev:443"
+          "url": "https://019c53ec-9b02-75ba-b3cf-aa1b4d6ee2a9.ona-runner-us-west-2.example-runner.dev:443"
         },
-        "supportBundle": "https://019aebc6-eea0-7bfc-9c48-3046995ba7b0.ona-runner-us-west-2.ilmalabs.dev/support-bundle/environments/019c53ec-9b02-75ba-b3cf-aa1b4d6ee2a9"
+        "supportBundle": "https://019aebc6-eea0-7bfc-9c48-3046995ba7b0.ona-runner-us-west-2.example-runner.dev/support-bundle/environments/019c53ec-9b02-75ba-b3cf-aa1b4d6ee2a9"
       },
       "machine": {
         "phase": "PHASE_RUNNING",

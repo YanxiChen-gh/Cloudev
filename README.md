@@ -61,7 +61,7 @@ npm run watch     # incremental rebuild
 
 Press **F5** in VS Code to launch the extension in a development host.
 
-The daemon runs as a separate process at `~/.vanta-dev/daemon.sock`. Logs are at `~/.vanta-dev/daemon.log`. PID file at `~/.vanta-dev/daemon.pid`.
+The daemon runs as a separate process at `~/.cloudev/daemon.sock`. Logs are at `~/.cloudev/daemon.log`. PID file at `~/.cloudev/daemon.pid`.
 
 ## Project structure
 
