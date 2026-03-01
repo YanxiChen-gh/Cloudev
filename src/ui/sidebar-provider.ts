@@ -121,6 +121,7 @@ export class PortNode extends vscode.TreeItem {
     public readonly label_text: string,
     public readonly publicUrl?: string,
     isFavorite?: boolean,
+    conflictReason?: string,
   ) {
     super(`localhost:${port}`, vscode.TreeItemCollapsibleState.None);
     this.envId = envId;
@@ -129,18 +130,27 @@ export class PortNode extends vscode.TreeItem {
     const base = publicUrl ? 'port-with-url' : 'port';
     this.contextValue = isFavorite ? `${base}.fav` : base;
 
-    // Favorite ports get a star icon
-    this.iconPath = isFavorite
-      ? new vscode.ThemeIcon('star-full', new vscode.ThemeColor('terminal.ansiYellow'))
-      : new vscode.ThemeIcon('globe');
+    // Icon priority: conflict > favorite > default
+    if (conflictReason) {
+      this.iconPath = new vscode.ThemeIcon('warning', new vscode.ThemeColor('list.warningForeground'));
+    } else if (isFavorite) {
+      this.iconPath = new vscode.ThemeIcon('star-full', new vscode.ThemeColor('terminal.ansiYellow'));
+    } else {
+      this.iconPath = new vscode.ThemeIcon('globe');
+    }
 
-    this.description = label_text || '';
+    this.description = conflictReason
+      ? `⚠ ${conflictReason}`
+      : label_text || '';
 
     const lines = [
       label_text ? `${label_text} — http://localhost:${port}` : `http://localhost:${port}`,
     ];
     if (publicUrl) {
       lines.push(`Public: ${publicUrl}`);
+    }
+    if (conflictReason) {
+      lines.push(`⚠ ${conflictReason}`);
     }
     this.tooltip = lines.join('\n');
   }
@@ -243,6 +253,7 @@ export class SidebarProvider implements vscode.TreeDataProvider<TreeNode> {
           pf.portLabels[port] ?? '',
           pf.portUrls[port],
           this.isPortFavorite(envId, port),
+          pf.portConflicts[port],
         ),
       );
       // Sort favorites first, then by port number

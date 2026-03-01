@@ -130,6 +130,11 @@ async function main(): Promise<void> {
 
   // 9. Graceful shutdown
   ipcServer.on('all-clients-gone', () => {
+    const pf = portForwardingService.getState().portForwarding;
+    if (pf?.activeEnvId) {
+      console.log('All clients disconnected but forwarding active — staying alive');
+      return;
+    }
     console.log('All clients disconnected — shutting down');
     shutdown();
   });
@@ -165,7 +170,7 @@ async function main(): Promise<void> {
   function buildState(): DaemonState {
     const merged: DaemonState = {
       environments: [],
-      portForwarding: { activeEnvId: null, activeEnvName: null, ports: [], portLabels: {}, portUrls: {}, status: 'idle' },
+      portForwarding: { activeEnvId: null, activeEnvName: null, ports: [], portLabels: {}, portUrls: {}, portConflicts: {}, status: 'idle' },
       providers: [],
     };
     for (const svc of services) {

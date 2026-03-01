@@ -147,6 +147,11 @@
         "category": "Cloudev",
         "title": "Remove from Favorites",
         "icon": "$(star-full)"
+      },
+      {
+        "command": "cloudev.copyPortInfo",
+        "category": "Cloudev",
+        "title": "Copy Details"
       }
     ],
     "menus": {
@@ -289,9 +294,14 @@
           "group": "1_port@2"
         },
         {
+          "command": "cloudev.copyPortInfo",
+          "when": "view == cloudev.environments && viewItem =~ /^port/",
+          "group": "1_port@3"
+        },
+        {
           "command": "cloudev.copyPublicUrl",
           "when": "view == cloudev.environments && viewItem =~ /^port-with-url/",
-          "group": "1_port@3"
+          "group": "1_port@4"
         }
       ]
     }

@@ -29,7 +29,7 @@ function makeState(): DaemonState {
         webUrl: 'https://app.ona.io/environments/env-1',
       },
     ],
-    portForwarding: { activeEnvId: null, activeEnvName: null, ports: [], portLabels: {}, portUrls: {}, status: 'idle' },
+    portForwarding: { activeEnvId: null, activeEnvName: null, ports: [], portLabels: {}, portUrls: {}, portConflicts: {}, status: 'idle' },
     providers: [{ id: 'ona', displayName: 'Ona', available: true }],
   };
 }

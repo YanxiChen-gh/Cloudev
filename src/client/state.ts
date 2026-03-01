@@ -11,6 +11,7 @@ export class StateStore extends EventEmitter {
       ports: [],
       portLabels: {},
       portUrls: {},
+      portConflicts: {},
       status: 'idle',
     },
     providers: [],
