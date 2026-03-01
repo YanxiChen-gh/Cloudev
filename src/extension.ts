@@ -34,7 +34,11 @@ export async function activate(
     }
   }
 
-  // 5. Register sidebar tree view
+  // 5. Create output channel for user-visible logs
+  const output = vscode.window.createOutputChannel('Cloudev');
+  context.subscriptions.push(output);
+
+  // 6. Register sidebar tree view
   const sidebarProvider = new SidebarProvider(store, context);
   const treeView = vscode.window.createTreeView('cloudev.environments', {
     treeDataProvider: sidebarProvider,
@@ -103,7 +107,20 @@ export async function activate(
     );
   });
 
-  // 10. Clean up on deactivation
+  // 11. Log forwarding errors to output channel
+  let lastPfError: string | undefined;
+  store.on('changed', () => {
+    const pf = store.getPortForwarding();
+    if (pf.status === 'error' && pf.error && pf.error !== lastPfError) {
+      lastPfError = pf.error;
+      const ts = new Date().toLocaleTimeString();
+      output.appendLine(`[${ts}] Port forwarding error: ${pf.error}`);
+    } else if (pf.status !== 'error') {
+      lastPfError = undefined;
+    }
+  });
+
+  // 12. Clean up on deactivation
   context.subscriptions.push({
     dispose: () => {
       client.disconnect();

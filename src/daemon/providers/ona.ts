@@ -168,6 +168,27 @@ export class OnaProvider implements EnvironmentProvider {
         this.execWithContext(['environment', 'ssh-config'], ctx.name),
       ),
     );
+    // Workaround: gitpod CLI sometimes writes truncated "Only yes" instead of
+    // "IdentitiesOnly yes" in SSH configs, breaking all SSH connections.
+    await this.fixSshConfigs();
+  }
+
+  private async fixSshConfigs(): Promise<void> {
+    for (const ctx of this.contexts) {
+      const host = ctx.host.replace(/^https?:\/\//, '');
+      if (!host) continue;
+      const configPath = `${process.env.HOME}/.ssh/gitpod/${host}/config`;
+      try {
+        const content = await fs.readFile(configPath, 'utf-8');
+        if (content.includes('\nOnly ')) {
+          const fixed = content.replace(/\nOnly /g, '\nIdentitiesOnly ');
+          await fs.writeFile(configPath, fixed);
+          console.log(`[ona] Fixed truncated IdentitiesOnly in ${configPath}`);
+        }
+      } catch {
+        // Config file doesn't exist — skip
+      }
+    }
   }
 
   async listProjects(): Promise<Project[]> {

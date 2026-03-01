@@ -94,7 +94,7 @@ export async function classifyPortOwner(
   }
 
   // Enrich to get a human-readable description
-  let description = `${conflict.command} (PID ${conflict.pid})`;
+  let description = `${friendlyProcessName(conflict.command)} (PID ${conflict.pid})`;
   for (const enricher of enrichers) {
     try {
       const enriched = await enricher(conflict, port);
@@ -167,6 +167,20 @@ function snapshotAllListeners(): Promise<Map<number, PortOwnerInfo[]>> {
       resolve(map);
     });
   });
+}
+
+/** Clean up lsof COMMAND names — unescape hex sequences and map well-known names. */
+function friendlyProcessName(cmd: string): string {
+  // Unescape lsof hex sequences like \x20 → space
+  const unescaped = cmd.replace(/\\x([0-9a-fA-F]{2})/g, (_, hex) =>
+    String.fromCharCode(parseInt(hex, 16)),
+  );
+  // Well-known process name mappings
+  // Match by prefix — lsof truncates COMMAND to ~15 chars
+  if (unescaped.startsWith('Code H') || unescaped.startsWith('Code\x20H')) {
+    return 'VS Code Remote';
+  }
+  return unescaped;
 }
 
 /** Run a command and return trimmed first line of stdout, or null on failure. */
