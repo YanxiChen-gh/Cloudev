@@ -22,7 +22,7 @@ export interface EnvironmentProvider {
   delete(envId: string): Promise<void>;
 
   // Port forwarding support
-  discoverPorts(envId: string): Promise<number[]>;
+  discoverPorts(envId: string): Promise<{ ports: number[]; labels: Record<number, string> }>;
   spawnTunnel(envId: string, ports: number[]): ChildProcess;
 
   // SSH

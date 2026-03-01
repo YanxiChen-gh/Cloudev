@@ -56,14 +56,14 @@ export class StatusBarManager implements vscode.Disposable {
 
     // Port forwarding item
     if (pf.status === 'active' && pf.activeEnvName) {
-      const portsStr =
-        pf.ports.length > 0 ? pf.ports.join(', ') : 'discovering...';
-      this.portItem.text = `$(plug) Ports: ${pf.activeEnvName} (${portsStr})`;
+      const countStr =
+        pf.ports.length > 0 ? `${pf.ports.length} ports` : 'discovering...';
+      this.portItem.text = `$(plug) ${pf.activeEnvName} (${countStr})`;
       this.portItem.backgroundColor = undefined;
       this.portItem.color = new vscode.ThemeColor(
         'statusBarItem.prominentForeground',
       );
-      this.portItem.tooltip = `Forwarding ports for ${pf.activeEnvName}. Click to switch.`;
+      this.portItem.tooltip = `Forwarding ${pf.ports.length} ports for ${pf.activeEnvName}. Click to switch.`;
     } else if (pf.status === 'connecting') {
       this.portItem.text = '$(loading~spin) Ports: connecting...';
       this.portItem.backgroundColor = undefined;

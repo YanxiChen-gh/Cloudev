@@ -84,8 +84,8 @@ export class MockProvider implements EnvironmentProvider {
     this.calls.push({ method: 'delete', args: [envId] });
   }
 
-  async discoverPorts(_envId: string): Promise<number[]> {
-    return this.ports;
+  async discoverPorts(_envId: string): Promise<{ ports: number[]; labels: Record<number, string> }> {
+    return { ports: this.ports, labels: {} };
   }
 
   spawnTunnel(_envId: string, _ports: number[]): ChildProcess {

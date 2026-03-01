@@ -9,6 +9,7 @@ export class StateStore extends EventEmitter {
       activeEnvId: null,
       activeEnvName: null,
       ports: [],
+      portLabels: {},
       status: 'idle',
     },
     providers: [],

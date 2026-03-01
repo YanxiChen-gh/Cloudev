@@ -165,7 +165,7 @@ async function main(): Promise<void> {
   function buildState(): DaemonState {
     const merged: DaemonState = {
       environments: [],
-      portForwarding: { activeEnvId: null, activeEnvName: null, ports: [], status: 'idle' },
+      portForwarding: { activeEnvId: null, activeEnvName: null, ports: [], portLabels: {}, status: 'idle' },
       providers: [],
     };
     for (const svc of services) {

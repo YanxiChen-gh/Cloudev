@@ -6,9 +6,9 @@ import { Environment } from '../types';
 // Tree node types
 // ---------------------------------------------------------------------------
 
-type TreeNode = ProjectNode | EnvironmentNode;
+export type TreeNode = ProjectNode | EnvironmentNode | PortNode;
 
-class ProjectNode extends vscode.TreeItem {
+export class ProjectNode extends vscode.TreeItem {
   readonly kind = 'project' as const;
 
   constructor(
@@ -23,16 +23,28 @@ class ProjectNode extends vscode.TreeItem {
   }
 }
 
-class EnvironmentNode extends vscode.TreeItem {
+export class EnvironmentNode extends vscode.TreeItem {
   readonly kind = 'environment' as const;
 
   constructor(
     public readonly env: Environment,
     public readonly isForwarding: boolean,
+    public readonly forwardedPorts: number[],
   ) {
-    super(env.name || env.id, vscode.TreeItemCollapsibleState.None);
+    super(
+      env.name || env.id,
+      isForwarding && forwardedPorts.length > 0
+        ? vscode.TreeItemCollapsibleState.Collapsed
+        : vscode.TreeItemCollapsibleState.None,
+    );
 
-    this.description = env.branch || '';
+    // Show branch + port count when forwarding
+    const branchText = env.branch || '';
+    if (isForwarding && forwardedPorts.length > 0) {
+      this.description = `${branchText} (${forwardedPorts.length} ports)`;
+    } else {
+      this.description = branchText;
+    }
 
     // Status-based icon
     switch (env.status) {
@@ -67,25 +79,43 @@ class EnvironmentNode extends vscode.TreeItem {
       this.contextValue = `environment-${env.status}`;
     }
 
-    // Single-click on a running env opens/jumps to its remote window.
-    // VS Code deduplicates vscode-remote:// URIs, so if a window is already
-    // connected it will focus that window instead of opening a new one.
-    if (env.status === 'running') {
-      this.command = {
-        command: 'cloudev.openInNewWindow',
-        title: 'Open Environment',
-        arguments: [{ env }],
-      };
-    }
+    // No TreeItem.command — single-click just selects.
+    // Actions via inline icons (hover) and right-click context menu.
 
     this.tooltip = new vscode.MarkdownString(
       `**${env.name}**\n\n` +
         `Status: ${env.status}\n\n` +
         `Branch: ${env.branch}\n\n` +
         `Provider: ${env.provider}\n\n` +
-        (this.isForwarding ? '**Port forwarding active**\n\n' : '') +
+        (this.isForwarding
+          ? `**Port forwarding active** (${forwardedPorts.length} ports)\n\n`
+          : '') +
         `Repository: ${env.repositoryUrl}`,
     );
+  }
+}
+
+export class PortNode extends vscode.TreeItem {
+  readonly kind = 'port' as const;
+
+  constructor(
+    public readonly port: number,
+    public readonly label_text: string,
+  ) {
+    super(`localhost:${port}`, vscode.TreeItemCollapsibleState.None);
+    this.contextValue = 'port';
+    this.iconPath = new vscode.ThemeIcon('globe');
+    this.description = label_text || '';
+    this.tooltip = label_text
+      ? `${label_text} — Click to open http://localhost:${port}`
+      : `Click to open http://localhost:${port}`;
+
+    // Single-click opens in browser
+    this.command = {
+      command: 'cloudev.openPort',
+      title: 'Open in Browser',
+      arguments: [port],
+    };
   }
 }
 
@@ -123,7 +153,21 @@ export class SidebarProvider implements vscode.TreeDataProvider<TreeNode> {
       const pf = this.store.getPortForwarding();
       return element.environments
         .sort((a, b) => a.name.localeCompare(b.name))
-        .map((env) => new EnvironmentNode(env, pf.activeEnvId === env.id));
+        .map(
+          (env) =>
+            new EnvironmentNode(
+              env,
+              pf.activeEnvId === env.id,
+              pf.activeEnvId === env.id ? pf.ports : [],
+            ),
+        );
+    }
+
+    if (element instanceof EnvironmentNode && element.isForwarding) {
+      const pf = this.store.getPortForwarding();
+      return element.forwardedPorts.map(
+        (port) => new PortNode(port, pf.portLabels[port] ?? ''),
+      );
     }
 
     return [];
