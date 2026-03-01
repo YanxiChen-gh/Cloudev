@@ -30,7 +30,7 @@
       "specs": [
         {
           "git": {
-            "checkoutLocation": "obsidian",
+            "checkoutLocation": "web-app",
             "cloneTarget": "main",
             "remoteUri": "https://github.com/acme-org/web-app.git",
             "targetMode": "CLONE_TARGET_MODE_REMOTE_BRANCH"

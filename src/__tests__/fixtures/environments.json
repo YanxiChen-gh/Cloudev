@@ -23,7 +23,7 @@
           "specs": [
             {
               "git": {
-                "checkoutLocation": "obsidian",
+                "checkoutLocation": "web-app",
                 "cloneTarget": "main",
                 "remoteUri": "https://github.com/acme-org/web-app.git",
                 "targetMode": "CLONE_TARGET_MODE_REMOTE_BRANCH"
@@ -529,7 +529,7 @@
         "session": "019c95cd-23c9-7c00-9ae5-136542d704f2"
       },
       "content": {
-        "contentLocationInMachine": "/workspaces/obsidian",
+        "contentLocationInMachine": "/workspaces/web-app",
         "git": {
           "branch": "main",
           "cloneUrl": "https://github.com/acme-org/web-app.git",
@@ -865,7 +865,7 @@
           "specs": [
             {
               "git": {
-                "checkoutLocation": "obsidian",
+                "checkoutLocation": "web-app",
                 "cloneTarget": "main",
                 "remoteUri": "https://github.com/acme-org/web-app.git",
                 "targetMode": "CLONE_TARGET_MODE_REMOTE_BRANCH"
@@ -1356,7 +1356,7 @@
         "session": "019c58cb-e6bc-77c2-9e6d-00ba79308327"
       },
       "content": {
-        "contentLocationInMachine": "/workspaces/obsidian",
+        "contentLocationInMachine": "/workspaces/web-app",
         "git": {
           "branch": "user/feature-branch",
           "changedFiles": [
@@ -1502,12 +1502,12 @@
       "devcontainer": {
         "containerId": "18fcaa26176f1da7231ff7e7ffa1db6fa60544f1601f3c4a464f922d09cc2523",
         "containerName": "/festive_benz",
-        "devcontainerFilePath": "/workspaces/obsidian/.devcontainer/devcontainer.json",
+        "devcontainerFilePath": "/workspaces/web-app/.devcontainer/devcontainer.json",
         "devcontainerFilePresence": "PRESENCE_DISCOVERED",
         "devcontainerconfigInSync": true,
         "phase": "PHASE_RUNNING",
         "remoteUser": "vscode",
-        "remoteWorkspaceFolder": "/workspaces/obsidian",
+        "remoteWorkspaceFolder": "/workspaces/web-app",
         "secretsInSync": true,
         "session": "019c58cb-e6f6-7237-881c-4dd5b9ea421f"
       },
@@ -1817,7 +1817,7 @@
           "specs": [
             {
               "git": {
-                "checkoutLocation": "obsidian",
+                "checkoutLocation": "web-app",
                 "cloneTarget": "main",
                 "remoteUri": "https://github.com/acme-org/web-app.git",
                 "targetMode": "CLONE_TARGET_MODE_REMOTE_BRANCH"
@@ -2299,7 +2299,7 @@
         "session": "019c53ec-9acb-70c7-a1d9-ee4eb75a5bfd"
       },
       "content": {
-        "contentLocationInMachine": "/workspaces/obsidian",
+        "contentLocationInMachine": "/workspaces/web-app",
         "git": {
           "branch": "PROJ-106",
           "changedFiles": [
@@ -2325,12 +2325,12 @@
       "devcontainer": {
         "containerId": "bce366db170f19a2c9b281046bbd9d4ef22d7b9a0ec3e3297b9bf52366931950",
         "containerName": "/adoring_swirles",
-        "devcontainerFilePath": "/workspaces/obsidian/.devcontainer/devcontainer.json",
+        "devcontainerFilePath": "/workspaces/web-app/.devcontainer/devcontainer.json",
         "devcontainerFilePresence": "PRESENCE_DISCOVERED",
         "devcontainerconfigInSync": true,
         "phase": "PHASE_RUNNING",
         "remoteUser": "vscode",
-        "remoteWorkspaceFolder": "/workspaces/obsidian",
+        "remoteWorkspaceFolder": "/workspaces/web-app",
         "secretsInSync": true,
         "session": "019c53ec-9afc-7c01-a8ca-7c50950aa40a"
       },
