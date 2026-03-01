@@ -118,6 +118,11 @@
         "command": "cloudev.copyPortUrl",
         "category": "Cloudev",
         "title": "Copy URL"
+      },
+      {
+        "command": "cloudev.copyPublicUrl",
+        "category": "Cloudev",
+        "title": "Copy Public URL"
       }
     ],
     "menus": {
@@ -156,7 +161,7 @@
         },
         {
           "command": "cloudev.openPort",
-          "when": "view == cloudev.environments && viewItem == port",
+          "when": "view == cloudev.environments && viewItem =~ /^port/",
           "group": "inline@1"
         },
         {
@@ -201,13 +206,18 @@
         },
         {
           "command": "cloudev.openPort",
-          "when": "view == cloudev.environments && viewItem == port",
+          "when": "view == cloudev.environments && viewItem =~ /^port/",
           "group": "1_port@1"
         },
         {
           "command": "cloudev.copyPortUrl",
-          "when": "view == cloudev.environments && viewItem == port",
+          "when": "view == cloudev.environments && viewItem =~ /^port/",
           "group": "1_port@2"
+        },
+        {
+          "command": "cloudev.copyPublicUrl",
+          "when": "view == cloudev.environments && viewItem == port-with-url",
+          "group": "1_port@3"
         }
       ]
     }

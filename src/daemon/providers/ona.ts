@@ -2,7 +2,7 @@ import { ChildProcess, execFile, spawn } from 'child_process';
 import * as fs from 'fs/promises';
 import { Environment, Project, MachineClass } from '../../types';
 import { EnvironmentProvider, CreateOpts } from './types';
-import { parseSsOutput, parseDockerPorts, getPortLabel, mapEnvironment, mapProject } from './ona-parser';
+import { parseSsOutput, parseDockerPorts, getPortLabel, parseGitpodPorts, mapEnvironment, mapProject } from './ona-parser';
 
 const GITPOD_BIN = '/usr/local/bin/gitpod';
 const CLI_TIMEOUT_MS = 30_000;
@@ -114,17 +114,19 @@ export class OnaProvider implements EnvironmentProvider {
     await this.execAnyContext(['environment', 'delete', envId]);
   }
 
-  async discoverPorts(envId: string): Promise<{ ports: number[]; labels: Record<number, string> }> {
+  async discoverPorts(envId: string): Promise<{ ports: number[]; labels: Record<number, string>; urls?: Record<number, string> }> {
     const host = this.sshHost(envId);
 
-    // Run ss and docker ps in parallel
-    const [ssOutput, dockerOutput] = await Promise.all([
+    // Run ss, docker ps, and gitpod port list in parallel
+    const [ssOutput, dockerOutput, portListOutput] = await Promise.all([
       this.execSsh(host, 'ss -tln'),
       this.execSsh(host, "docker ps --format '{{.Names}}\t{{.Ports}}'").catch(() => ''),
+      this.execAnyContext(['environment', 'port', 'list', envId, '-o', 'json']).catch(() => '[]'),
     ]);
 
     const ports = parseSsOutput(ssOutput);
     const dockerLabels = parseDockerPorts(dockerOutput);
+    const urls = parseGitpodPorts(portListOutput);
 
     const labels: Record<number, string> = {};
     for (const port of ports) {
@@ -132,7 +134,7 @@ export class OnaProvider implements EnvironmentProvider {
       if (label) labels[port] = label;
     }
 
-    return { ports, labels };
+    return { ports, labels, urls: Object.keys(urls).length > 0 ? urls : undefined };
   }
 
   spawnTunnel(envId: string, ports: number[]): ChildProcess {

@@ -127,6 +127,8 @@ describe('mapEnvironment', () => {
       status: 'running',
       repositoryUrl: 'https://github.com/org/repo.git',
       checkoutLocation: '',
+      sshHost: 'env-123.gitpod.environment',
+      workspacePath: '/workspaces',
     });
   });
 
@@ -160,6 +162,8 @@ describe('mapEnvironment', () => {
       status: 'unknown',
       repositoryUrl: '',
       checkoutLocation: '',
+      sshHost: 'env-minimal.gitpod.environment',
+      workspacePath: '/workspaces',
     });
   });
 

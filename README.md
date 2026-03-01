@@ -29,9 +29,11 @@ VS Code Window 2 ──┘                         ├── SSH tunnels
 ## Requirements
 
 - VS Code 1.85+
-- **Ona provider**: `gitpod` CLI installed at `/usr/local/bin/gitpod` and logged in (`gitpod login`)
-- System SSH client (for tunnels and port discovery)
-- Remote - SSH extension (for "Open in New Window")
+- **Ona provider**: `gitpod` CLI installed at `/usr/local/bin/gitpod` and logged in (`gitpod login`). System SSH client (for tunnels and port discovery).
+- **Codespaces provider**: GitHub CLI (`gh`) installed and logged in (`gh auth login`). Requires the `codespace` OAuth scope — if you get a 403 error, run:
+  ```
+  gh auth refresh -h github.com -s codespace
+  ```
 
 ## Commands
 

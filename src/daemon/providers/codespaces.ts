@@ -1,60 +1,167 @@
-import { ChildProcess } from 'child_process';
+import { ChildProcess, execFile, spawn } from 'child_process';
 import { Environment, Project, MachineClass } from '../../types';
 import { EnvironmentProvider, CreateOpts } from './types';
+import { mapCodespace, parseCodespacePorts } from './codespaces-parser';
+
+const GH_BIN = 'gh';
+const CLI_TIMEOUT_MS = 30_000;
+const CODESPACE_FIELDS = 'name,state,repository,gitStatus,machineName';
+
+export type GhExecFn = (args: string[]) => Promise<string>;
+
+function defaultGhExec(args: string[]): Promise<string> {
+  return new Promise((resolve, reject) => {
+    execFile(GH_BIN, args, {
+      timeout: CLI_TIMEOUT_MS,
+      maxBuffer: 10 * 1024 * 1024,
+    }, (err, stdout, stderr) => {
+      if (err) {
+        reject(new Error(`gh ${args[0]} failed: ${stderr || err.message}`));
+      } else {
+        resolve(stdout);
+      }
+    });
+  });
+}
 
 export class CodespacesProvider implements EnvironmentProvider {
   readonly id = 'codespaces';
   readonly displayName = 'GitHub Codespaces';
 
+  private readonly execFn: GhExecFn;
+
+  constructor(execFn?: GhExecFn) {
+    this.execFn = execFn ?? defaultGhExec;
+  }
+
   async checkAvailability(): Promise<{ available: boolean; error?: string }> {
-    return { available: false, error: 'Codespaces provider not yet implemented' };
+    try {
+      await this.execFn(['auth', 'status']);
+    } catch {
+      return { available: false, error: 'GitHub CLI not installed or not logged in. Run `gh auth login`.' };
+    }
+
+    try {
+      await this.execFn(['codespace', 'list', '--limit', '1', '--json', 'name']);
+      return { available: true };
+    } catch (err) {
+      const msg = (err as Error).message;
+      if (msg.includes('codespace') && msg.includes('scope')) {
+        return { available: false, error: 'Missing "codespace" scope. Run: gh auth refresh -h github.com -s codespace' };
+      }
+      return { available: false, error: `Codespaces not available: ${msg}` };
+    }
   }
 
   async listEnvironments(): Promise<Environment[]> {
-    throw new Error('Codespaces provider not yet implemented');
+    const raw = await this.execFn([
+      'codespace', 'list', '--json', CODESPACE_FIELDS,
+    ]);
+    const parsed = JSON.parse(raw);
+    if (!Array.isArray(parsed)) return [];
+
+    const envs: Environment[] = [];
+    for (const entry of parsed) {
+      const env = mapCodespace(entry, this.id);
+      if (env) envs.push(env);
+    }
+    return envs;
   }
 
-  async start(_envId: string): Promise<void> {
-    throw new Error('Codespaces provider not yet implemented');
+  async start(envId: string): Promise<void> {
+    // gh codespace has no explicit start command — codespaces auto-start on connect.
+    // Trigger start by initiating an SSH connection that exits immediately.
+    await this.execFn(['codespace', 'ssh', '-c', envId, '--', 'echo', 'started']);
   }
 
-  async stop(_envId: string): Promise<void> {
-    throw new Error('Codespaces provider not yet implemented');
+  async stop(envId: string): Promise<void> {
+    await this.execFn(['codespace', 'stop', '-c', envId]);
   }
 
-  async restart(_envId: string): Promise<void> {
-    throw new Error('Codespaces provider not yet implemented');
+  async restart(envId: string): Promise<void> {
+    await this.stop(envId);
+    await this.waitForState(envId, 'shutdown', 120_000);
+    await this.start(envId);
   }
 
-  async create(_opts: CreateOpts): Promise<string> {
-    throw new Error('Codespaces provider not yet implemented');
+  async create(opts: CreateOpts): Promise<string> {
+    const args = ['codespace', 'create', '-R', opts.projectId];
+    if (opts.branch) {
+      args.push('-b', opts.branch);
+    }
+    if (opts.machineClassId) {
+      args.push('-m', opts.machineClassId);
+    }
+    // `gh codespace create` doesn't support --json — it prints the codespace name to stdout
+    const result = await this.execFn(args);
+    return result.trim();
   }
 
-  async delete(_envId: string): Promise<void> {
-    throw new Error('Codespaces provider not yet implemented');
+  async delete(envId: string): Promise<void> {
+    await this.execFn(['codespace', 'delete', '-c', envId, '--force']);
   }
 
-  async discoverPorts(_envId: string): Promise<{ ports: number[]; labels: Record<number, string> }> {
-    throw new Error('Codespaces provider not yet implemented');
+  async discoverPorts(envId: string): Promise<{ ports: number[]; labels: Record<number, string>; urls?: Record<number, string> }> {
+    try {
+      const output = await this.execFn([
+        'codespace', 'ports', '-c', envId, '--json', 'sourcePort,label,browseUrl',
+      ]);
+      const result = parseCodespacePorts(output);
+      return {
+        ports: result.ports,
+        labels: result.labels,
+        urls: Object.keys(result.urls).length > 0 ? result.urls : undefined,
+      };
+    } catch {
+      return { ports: [], labels: {} };
+    }
   }
 
-  spawnTunnel(_envId: string, _ports: number[]): ChildProcess {
-    throw new Error('Codespaces provider not yet implemented');
+  spawnTunnel(envId: string, ports: number[]): ChildProcess {
+    const portArgs = ports.map((p) => `${p}:${p}`);
+    return spawn(GH_BIN, ['codespace', 'ports', 'forward', ...portArgs, '-c', envId], {
+      stdio: 'pipe',
+    });
   }
 
-  sshHost(_envId: string): string {
-    throw new Error('Codespaces provider not yet implemented');
+  sshHost(envId: string): string {
+    return envId;
   }
 
   async syncSshConfig(): Promise<void> {
-    // No-op for stub
+    // No-op — using `gh codespace code` for connections, not SSH Remote
   }
 
   async listProjects(): Promise<Project[]> {
-    throw new Error('Codespaces provider not yet implemented');
+    // Codespaces doesn't have a "projects" concept.
+    // Environments are grouped by repository (via projectId = owner/repo).
+    return [];
   }
 
   async listMachineClasses(): Promise<MachineClass[]> {
-    throw new Error('Codespaces provider not yet implemented');
+    // Machine types require a repo context to query; return empty for now.
+    return [];
+  }
+
+  // ---------------------------------------------------------------------------
+  // Private
+  // ---------------------------------------------------------------------------
+
+  private async waitForState(envId: string, targetState: string, timeoutMs: number): Promise<void> {
+    const start = Date.now();
+    const pollMs = 2_000;
+    while (Date.now() - start < timeoutMs) {
+      try {
+        const output = await this.execFn(['codespace', 'list', '--json', 'name,state']);
+        const parsed = JSON.parse(output);
+        const cs = Array.isArray(parsed)
+          ? parsed.find((c: Record<string, unknown>) => c.name === envId)
+          : null;
+        if (cs && String(cs.state).toLowerCase() === targetState.toLowerCase()) return;
+      } catch {
+        // Ignore poll errors
+      }
+      await new Promise((r) => setTimeout(r, pollMs));
+    }
   }
 }

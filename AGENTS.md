@@ -22,6 +22,7 @@ The extension never calls SSH or CLI commands directly. All mutations go through
 | All shared types + IPC protocol | `src/types.ts` |
 | Provider interface (what each cloud backend must implement) | `src/daemon/providers/types.ts` |
 | Ona/Gitpod provider (multi-context CLI wrapper) | `src/daemon/providers/ona.ts` |
+| Codespaces provider (gh CLI wrapper) | `src/daemon/providers/codespaces.ts` |
 | Daemon service plugin interface | `src/daemon/service.ts` |
 | Daemon entry point + message routing | `src/daemon/index.ts` |
 | IPC socket server (framing, client mgmt, grace period) | `src/daemon/ipc-server.ts` |
@@ -51,13 +52,17 @@ The daemon uses a **service plugin pattern**. Each feature is a `DaemonService` 
 
 No changes needed to IPC server, message routing, or existing services.
 
-### Steps to add a new environment provider (e.g. Codespaces):
+### Steps to add a new environment provider:
 
-1. **Implement `EnvironmentProvider`** from `src/daemon/providers/types.ts`
-2. **Add to provider list** in `src/daemon/index.ts`
-3. **Verify build**: `npm run compile`
+1. **Create parser** at `src/daemon/providers/{name}-parser.ts` (status mapping, env mapping, port parsing)
+2. **Implement `EnvironmentProvider`** from `src/daemon/providers/types.ts`, with injectable exec function for testability
+3. **Add to provider list** in `src/daemon/index.ts`
+4. **Add provider-specific open command branch** in `src/ui/commands.ts` (`openInNewWindow` command)
+5. **Verify build**: `npm run compile`
 
-The `EnvironmentProvider` interface requires: `checkAvailability`, `listEnvironments`, `start`, `stop`, `restart`, `create`, `delete`, `discoverPorts`, `spawnTunnel`, `sshHost`, `syncSshConfig`, `listProjects`. Optional: `listMachineClasses`.
+The `EnvironmentProvider` interface requires: `checkAvailability`, `listEnvironments`, `start`, `stop`, `restart`, `create`, `delete`, `discoverPorts` (returns `{ports, labels, urls?}`), `spawnTunnel`, `sshHost`, `syncSshConfig`, `listProjects`. Optional: `listMachineClasses`.
+
+Existing providers: **Ona** (`ona.ts`, gitpod CLI) and **Codespaces** (`codespaces.ts`, gh CLI). Both use injectable exec functions for testing.
 
 ## Patterns to follow
 
@@ -66,9 +71,13 @@ The `EnvironmentProvider` interface requires: `checkAvailability`, `listEnvironm
 - **IPC framing**: newline-delimited JSON. `JSON.stringify(msg) + '\n'`. Buffer incoming data and split on `'\n'`, keeping the last incomplete segment. Never pretty-print JSON on the wire.
 - **Request/response correlation**: client sets a UUID `requestId`, daemon echoes it back in `response` messages.
 - **Commands**: support dual invocation — tree view node argument OR command palette quick-pick fallback. Pattern: `node?.env?.id ?? await pickEnvironment(store, 'running')`.
-- **package.json menus**: `contextValue` on tree items must exactly match the `when` clauses. Values: `environment-running`, `environment-stopped`, `environment-forwarding`, `environment-starting`, `port`.
+- **package.json menus**: `contextValue` on tree items must exactly match the `when` clauses. Values: `environment-running`, `environment-stopped`, `environment-forwarding`, `environment-starting`, `port`, `port-with-url`.
 - **Command naming**: use `category: "Cloudev"` + short `title` (e.g. `"Stop"`). Context menus show the title; command palette shows `Cloudev: Stop`.
 - **Port labels**: `docker ps` output parsed for container names, with well-known port fallback. See `ona-parser.ts`: `parseDockerPorts()`, `getPortLabel()`.
+- **Port public URLs**: Ona uses `gitpod env port list` for public URLs, Codespaces uses `browseUrl` from `gh codespace ports`. Shown in port tooltip + "Copy Public URL" context menu.
+- **Open in New Window**: Both providers use CLI commands — Ona: `gitpod environment open {id} --editor vscode`, Codespaces: `gh codespace code -c {name}`. No SSH Remote URI construction in UI.
+- **Create flow**: Provider-aware — asks user to pick provider when multiple available, then shows provider-specific prompts (Ona: project ID, Codespaces: owner/repo + optional branch).
+- **Environment model**: `sshHost` and `workspacePath` are provider-computed fields on `Environment`. UI reads from model, never constructs provider-specific strings.
 
 ## UX interaction model
 
@@ -89,7 +98,40 @@ The `EnvironmentProvider` interface requires: `checkAvailability`, `listEnvironm
 - **Port forwarding switch**: `killTunnel()` waits for process exit before spawning new tunnel (avoids "Address already in use").
 - **`isDiscovering` mutex**: prevents overlapping port discovery when SSH is slow.
 - **Docker port labels**: `docker ps` runs in parallel with `ss -tln` over SSH. Falls back gracefully if docker is not available.
+- **Codespaces OAuth scope**: `gh` requires the `codespace` scope which isn't granted by default. `checkAvailability()` detects this and shows a helpful error. Fix: `gh auth refresh -h github.com -s codespace`.
 
-## Codespaces stub
+## Provider implementations
 
-`src/daemon/providers/codespaces.ts` implements the full interface but all methods throw "not yet implemented". `checkAvailability()` returns `available: false`, so the provider is effectively disabled. Fill in the methods to enable it.
+**Ona** (`ona.ts`): Uses `gitpod` CLI with multi-context support. Port discovery via SSH (`ss -tln` + `docker ps`) + `gitpod env port list` for public URLs. Tunneling via `ssh -N -L`. Open via `gitpod environment open --editor vscode`.
+
+**Codespaces** (`codespaces.ts`): Uses `gh` CLI. Port discovery via `gh codespace ports --json` (API-based, no SSH). Tunneling via `gh codespace ports forward`. Open via `gh codespace code -c NAME`. No multi-context (single GitHub account). Note: `gh codespace` has no explicit `start` command — codespaces auto-start on connect (SSH/code). Also `gh codespace create` doesn't support `--json` output, just prints the name. Port list can return many duplicate entries — parser deduplicates.
+
+## Testing CLI integration
+
+You can test parsers against real CLI output without running the extension:
+
+```sh
+# Verify Ona parser against real gitpod CLI output:
+npm run compile
+node -e "
+const { mapEnvironment } = require('./out/daemon/providers/ona-parser');
+const data = $(gitpod environment list -o json 2>/dev/null);
+data.forEach(e => console.log(JSON.stringify(mapEnvironment(e, 'ona'), null, 2)));
+"
+
+# Verify Codespaces parser against real gh CLI output:
+node -e "
+const { mapCodespace } = require('./out/daemon/providers/codespaces-parser');
+const data = $(gh codespace list --json name,state,repository,gitStatus,machineName 2>/dev/null);
+data.forEach(cs => console.log(JSON.stringify(mapCodespace(cs, 'codespaces'), null, 2)));
+"
+
+# Verify codespace port dedup:
+node -e "
+const { parseCodespacePorts } = require('./out/daemon/providers/codespaces-parser');
+const data = $(gh codespace ports -c CODESPACE_NAME --json sourcePort,label,browseUrl 2>/dev/null);
+console.log(parseCodespacePorts(JSON.stringify(data)));
+"
+```
+
+**Codespaces setup**: `gh auth login`, then `gh auth refresh -h github.com -s codespace` to grant the required OAuth scope.

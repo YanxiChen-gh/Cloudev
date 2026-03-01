@@ -17,9 +17,13 @@ export class ProjectNode extends vscode.TreeItem {
   ) {
     super(projectName, vscode.TreeItemCollapsibleState.Expanded);
     this.contextValue = 'project';
-    this.iconPath = new vscode.ThemeIcon('repo');
+
+    // Provider-aware icon and description
+    const provider = environments[0]?.provider;
+    this.iconPath = new vscode.ThemeIcon(provider === 'codespaces' ? 'github' : 'repo');
     const running = environments.filter((e) => e.status === 'running').length;
-    this.description = `${running}/${environments.length} running`;
+    const providerLabel = provider === 'codespaces' ? 'Codespaces' : 'Ona';
+    this.description = `${providerLabel} · ${running}/${environments.length} running`;
   }
 }
 
@@ -100,14 +104,20 @@ export class PortNode extends vscode.TreeItem {
   constructor(
     public readonly port: number,
     public readonly label_text: string,
+    public readonly publicUrl?: string,
   ) {
     super(`localhost:${port}`, vscode.TreeItemCollapsibleState.None);
-    this.contextValue = 'port';
+    this.contextValue = publicUrl ? 'port-with-url' : 'port';
     this.iconPath = new vscode.ThemeIcon('globe');
     this.description = label_text || '';
-    this.tooltip = label_text
-      ? `${label_text} — http://localhost:${port}`
-      : `http://localhost:${port}`;
+
+    const lines = [
+      label_text ? `${label_text} — http://localhost:${port}` : `http://localhost:${port}`,
+    ];
+    if (publicUrl) {
+      lines.push(`Public: ${publicUrl}`);
+    }
+    this.tooltip = lines.join('\n');
 
     // No click action — use inline icon or right-click to open in browser.
     // Consistent with env nodes (click just selects).
@@ -161,7 +171,7 @@ export class SidebarProvider implements vscode.TreeDataProvider<TreeNode> {
     if (element instanceof EnvironmentNode && element.isForwarding) {
       const pf = this.store.getPortForwarding();
       return element.forwardedPorts.map(
-        (port) => new PortNode(port, pf.portLabels[port] ?? ''),
+        (port) => new PortNode(port, pf.portLabels[port] ?? '', pf.portUrls[port]),
       );
     }
 

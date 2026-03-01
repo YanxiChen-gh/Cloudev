@@ -13,6 +13,9 @@ const MOCK_ENVS: Environment[] = [
     branch: 'main',
     status: 'running',
     repositoryUrl: 'https://github.com/test/my-app.git',
+    checkoutLocation: 'my-app',
+    sshHost: 'env-1.mock.environment',
+    workspacePath: '/workspaces/my-app',
   },
   {
     id: 'env-2',
@@ -23,6 +26,9 @@ const MOCK_ENVS: Environment[] = [
     branch: 'feature-x',
     status: 'stopped',
     repositoryUrl: 'https://github.com/test/my-api.git',
+    checkoutLocation: 'my-api',
+    sshHost: 'env-2.mock.environment',
+    workspacePath: '/workspaces/my-api',
   },
   {
     id: 'env-3',
@@ -33,6 +39,9 @@ const MOCK_ENVS: Environment[] = [
     branch: 'main',
     status: 'running',
     repositoryUrl: 'https://github.com/test/other.git',
+    checkoutLocation: 'other-service',
+    sshHost: 'env-3.mock.environment',
+    workspacePath: '/workspaces/other-service',
   },
 ];
 
