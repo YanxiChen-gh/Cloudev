@@ -10,6 +10,20 @@
   "categories": [
     "Other"
   ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/YanxiChen-gh/Cloudev"
+  },
+  "license": "MIT",
+  "keywords": [
+    "cloud",
+    "development",
+    "environment",
+    "gitpod",
+    "codespaces",
+    "port-forwarding",
+    "remote"
+  ],
   "activationEvents": [
     "onStartupFinished"
   ],
@@ -96,6 +110,11 @@
         "command": "cloudev.startDaemon",
         "category": "Cloudev",
         "title": "Start Daemon"
+      },
+      {
+        "command": "cloudev.viewDaemonLog",
+        "category": "Cloudev",
+        "title": "View Daemon Log"
       },
       {
         "command": "cloudev.envActions",

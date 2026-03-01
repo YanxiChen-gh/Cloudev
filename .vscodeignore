@@ -1,0 +1,24 @@
+# Source files — compiled JS is in out/
+src/**
+tsconfig.json
+
+# Tests in compiled output
+out/**/__tests__/**
+out/**/*.test.js
+out/**/*.test.d.ts
+
+# Dev files
+.vscode/**
+.claude/**
+.git/**
+.github/**
+.gitignore
+AGENTS.md
+CLAUDE.md
+
+# Build artifacts
+*.vsix
+Screenshot*
+
+# Config
+vitest.config.*

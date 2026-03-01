@@ -32,16 +32,20 @@ export class OnaProvider implements EnvironmentProvider {
 
   private contexts: { name: string; host: string }[] = [];
   private readonly execFn: ExecFn;
+  private readonly skipBinaryCheck: boolean;
 
   constructor(execFn?: ExecFn) {
     this.execFn = execFn ?? defaultExec;
+    this.skipBinaryCheck = !!execFn; // Skip fs.access check when using injected exec (tests)
   }
 
   async checkAvailability(): Promise<{ available: boolean; error?: string }> {
-    try {
-      await fs.access(GITPOD_BIN, fs.constants.X_OK);
-    } catch {
-      return { available: false, error: `CLI not found at ${GITPOD_BIN}` };
+    if (!this.skipBinaryCheck) {
+      try {
+        await fs.access(GITPOD_BIN, fs.constants.X_OK);
+      } catch {
+        return { available: false, error: `CLI not found at ${GITPOD_BIN}` };
+      }
     }
 
     try {

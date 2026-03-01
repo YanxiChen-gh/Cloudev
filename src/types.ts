@@ -73,7 +73,7 @@ export interface DaemonState {
 
 export type ClientMessage =
   // Core
-  | { type: 'subscribe'; requestId: string }
+  | { type: 'subscribe'; requestId: string; version?: string }
   | { type: 'ping'; requestId: string }
   // Environments service
   | { type: 'environments.list'; requestId: string }

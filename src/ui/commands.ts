@@ -726,6 +726,24 @@ export function registerCommands(
       },
     ),
   );
+
+  // --- View Daemon Log ---
+  context.subscriptions.push(
+    vscode.commands.registerCommand(
+      'cloudev.viewDaemonLog',
+      async () => {
+        const logPath = vscode.Uri.file(
+          require('path').join(require('os').homedir(), '.cloudev', 'daemon.log'),
+        );
+        try {
+          const doc = await vscode.workspace.openTextDocument(logPath);
+          await vscode.window.showTextDocument(doc);
+        } catch {
+          vscode.window.showInformationMessage('No daemon log found at ~/.cloudev/daemon.log');
+        }
+      },
+    ),
+  );
 }
 
 // ---------------------------------------------------------------------------
