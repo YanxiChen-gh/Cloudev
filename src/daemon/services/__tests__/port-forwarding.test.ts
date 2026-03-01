@@ -110,6 +110,9 @@ describe('PortForwardingService', () => {
     };
     service.onStateChanged!(fakeState);
 
+    // stopForwarding is async — wait for it to complete
+    await new Promise((r) => setTimeout(r, 50));
+
     const state = service.getState();
     expect(state.portForwarding?.status).toBe('idle');
     expect(state.portForwarding?.activeEnvId).toBeNull();
@@ -128,6 +131,8 @@ describe('PortForwardingService', () => {
       providers: [],
     };
     service.onStateChanged!(fakeState);
+
+    await new Promise((r) => setTimeout(r, 50));
 
     expect(service.getState().portForwarding?.status).toBe('idle');
   });

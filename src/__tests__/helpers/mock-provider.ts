@@ -89,9 +89,12 @@ export class MockProvider implements EnvironmentProvider {
   }
 
   spawnTunnel(_envId: string, _ports: number[]): ChildProcess {
-    // Return a fake ChildProcess-like EventEmitter
+    // Return a fake ChildProcess-like EventEmitter that emits 'exit' on kill
     const fake = new EventEmitter() as ChildProcess;
-    fake.kill = () => true;
+    fake.kill = () => {
+      process.nextTick(() => fake.emit('exit', 0, null));
+      return true;
+    };
     fake.pid = 99999;
     return fake;
   }

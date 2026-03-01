@@ -85,8 +85,6 @@ export class PortForwardingService implements DaemonService {
     // If already forwarding a different env, stop first
     if (this.activeEnvId && this.activeEnvId !== envId) {
       await this.stopForwarding();
-      // Brief delay to let ports release (TIME_WAIT)
-      await this.delay(TUNNEL_KILL_DELAY_MS);
     }
     if (this.activeEnvId === envId) return;
 
@@ -108,7 +106,7 @@ export class PortForwardingService implements DaemonService {
       clearInterval(this.discoveryTimer);
       this.discoveryTimer = null;
     }
-    this.killTunnel();
+    await this.killTunnel();
     this.activeEnvId = null;
     this.currentPorts = [];
     this.isDiscovering = false;
@@ -133,7 +131,7 @@ export class PortForwardingService implements DaemonService {
 
       // Only respawn tunnel if ports changed
       if (!this.portsEqual(newPorts, this.currentPorts)) {
-        this.killTunnel();
+        await this.killTunnel();
         this.currentPorts = newPorts;
 
         if (newPorts.length > 0) {
@@ -147,7 +145,9 @@ export class PortForwardingService implements DaemonService {
         this.setStatus('active');
       }
     } catch (err) {
-      this.setStatus('error', (err as Error).message);
+      const msg = (err as Error).message;
+      console.error(`[port-forwarding] Error for ${this.activeEnvId}: ${msg}`);
+      this.setStatus('error', msg);
     } finally {
       this.isDiscovering = false;
     }
@@ -161,6 +161,7 @@ export class PortForwardingService implements DaemonService {
       // The next discovery cycle will respawn it.
       if (this.activeEnvId && this.tunnelProcess) {
         this.tunnelProcess = null;
+        console.error(`[port-forwarding] Tunnel for ${this.activeEnvId} exited (code=${code}, signal=${signal})`);
         this.setStatus('error', `Tunnel exited (code=${code}, signal=${signal})`);
       }
     });
@@ -168,32 +169,45 @@ export class PortForwardingService implements DaemonService {
     this.tunnelProcess.stderr?.on('data', (data: Buffer) => {
       const msg = data.toString().trim();
       if (msg && this.activeEnvId) {
-        // Log SSH errors (e.g., "Address already in use") — set as error state
+        console.error(`[port-forwarding] SSH stderr: ${msg}`);
         this.error = msg;
       }
     });
   }
 
-  private killTunnel(): void {
-    if (!this.tunnelProcess) return;
+  /** Kill tunnel and wait for the process to actually exit */
+  private killTunnel(): Promise<void> {
+    if (!this.tunnelProcess) return Promise.resolve();
 
     const proc = this.tunnelProcess;
     this.tunnelProcess = null;
 
-    try {
-      proc.kill('SIGTERM');
-    } catch {
-      // Already dead
-    }
+    return new Promise<void>((resolve) => {
+      let resolved = false;
+      const done = () => {
+        if (!resolved) {
+          resolved = true;
+          resolve();
+        }
+      };
 
-    // Escalate to SIGKILL after delay
-    setTimeout(() => {
+      proc.on('exit', done);
+
       try {
-        proc.kill('SIGKILL');
+        proc.kill('SIGTERM');
       } catch {
-        // Already dead
+        done();
+        return;
       }
-    }, SIGKILL_DELAY_MS);
+
+      // Escalate to SIGKILL if SIGTERM doesn't work
+      setTimeout(() => {
+        try { proc.kill('SIGKILL'); } catch { /* already dead */ }
+      }, SIGKILL_DELAY_MS);
+
+      // Safety: resolve after max wait even if exit event never fires
+      setTimeout(done, SIGKILL_DELAY_MS + 1_000);
+    });
   }
 
   private portsEqual(a: number[], b: number[]): boolean {
