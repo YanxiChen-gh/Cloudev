@@ -107,15 +107,11 @@ export class PortNode extends vscode.TreeItem {
     this.iconPath = new vscode.ThemeIcon('globe');
     this.description = label_text || '';
     this.tooltip = label_text
-      ? `${label_text} — Click to open http://localhost:${port}`
-      : `Click to open http://localhost:${port}`;
+      ? `${label_text} — http://localhost:${port}`
+      : `http://localhost:${port}`;
 
-    // Single-click opens in browser
-    this.command = {
-      command: 'cloudev.openPort',
-      title: 'Open in Browser',
-      arguments: [port],
-    };
+    // No click action — use inline icon or right-click to open in browser.
+    // Consistent with env nodes (click just selects).
   }
 }
 
