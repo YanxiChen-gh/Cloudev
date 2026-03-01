@@ -95,6 +95,46 @@ describe('PortForwardingService', () => {
     await svc.stop();
   });
 
+  it('passes port labels through state', async () => {
+    provider.discoverPorts = async () => ({
+      ports: [3000, 8080],
+      labels: { 3000: 'turborepo', 8080: 'nginx' },
+    });
+
+    await service.handleMessage({
+      type: 'port-forwarding.start',
+      requestId: '1',
+      envId: 'env-1',
+    });
+
+    const state = service.getState();
+    expect(state.portForwarding?.portLabels).toEqual({
+      3000: 'turborepo',
+      8080: 'nginx',
+    });
+  });
+
+  it('clears port labels on stop', async () => {
+    provider.discoverPorts = async () => ({
+      ports: [3000],
+      labels: { 3000: 'web' },
+    });
+
+    await service.handleMessage({
+      type: 'port-forwarding.start',
+      requestId: '1',
+      envId: 'env-1',
+    });
+
+    await service.handleMessage({
+      type: 'port-forwarding.stop',
+      requestId: '2',
+    });
+
+    const state = service.getState();
+    expect(state.portForwarding?.portLabels).toEqual({});
+  });
+
   it('onStateChanged stops forwarding if env disappears', async () => {
     await service.handleMessage({
       type: 'port-forwarding.start',

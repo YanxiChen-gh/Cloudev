@@ -35,56 +35,89 @@
     "commands": [
       {
         "command": "cloudev.createEnvironment",
-        "title": "Cloudev: Create Environment",
+        "category": "Cloudev",
+        "title": "Create Environment",
         "icon": "$(add)"
       },
       {
         "command": "cloudev.startEnvironment",
-        "title": "Cloudev: Start Environment",
+        "category": "Cloudev",
+        "title": "Start",
         "icon": "$(play)"
       },
       {
         "command": "cloudev.stopEnvironment",
-        "title": "Cloudev: Stop Environment",
+        "category": "Cloudev",
+        "title": "Stop",
         "icon": "$(debug-stop)"
       },
       {
         "command": "cloudev.restartEnvironment",
-        "title": "Cloudev: Restart Environment",
+        "category": "Cloudev",
+        "title": "Restart",
         "icon": "$(debug-restart)"
       },
       {
         "command": "cloudev.deleteEnvironment",
-        "title": "Cloudev: Delete Environment",
+        "category": "Cloudev",
+        "title": "Delete",
         "icon": "$(trash)"
       },
       {
         "command": "cloudev.startPortForwarding",
-        "title": "Cloudev: Forward Ports",
-        "icon": "$(plug)"
+        "category": "Cloudev",
+        "title": "Forward Ports",
+        "icon": "$(arrow-swap)"
       },
       {
         "command": "cloudev.stopPortForwarding",
-        "title": "Cloudev: Stop Port Forwarding",
+        "category": "Cloudev",
+        "title": "Stop Forwarding",
         "icon": "$(debug-disconnect)"
       },
       {
         "command": "cloudev.openInNewWindow",
-        "title": "Cloudev: Open in New Window",
-        "icon": "$(link-external)"
+        "category": "Cloudev",
+        "title": "Open in New Window",
+        "icon": "$(remote-explorer)"
       },
       {
         "command": "cloudev.refreshEnvironments",
-        "title": "Cloudev: Refresh Environments",
+        "category": "Cloudev",
+        "title": "Refresh",
         "icon": "$(refresh)"
       },
       {
         "command": "cloudev.switchPortForwarding",
-        "title": "Cloudev: Switch Port Forwarding Target"
+        "category": "Cloudev",
+        "title": "Switch Port Forwarding Target"
       },
       {
         "command": "cloudev.startDaemon",
-        "title": "Cloudev: Start Daemon"
+        "category": "Cloudev",
+        "title": "Start Daemon"
+      },
+      {
+        "command": "cloudev.envActions",
+        "category": "Cloudev",
+        "title": "Environment Actions"
+      },
+      {
+        "command": "cloudev.copyEnvInfo",
+        "category": "Cloudev",
+        "title": "Copy Details",
+        "icon": "$(copy)"
+      },
+      {
+        "command": "cloudev.openPort",
+        "category": "Cloudev",
+        "title": "Open in Browser",
+        "icon": "$(link-external)"
+      },
+      {
+        "command": "cloudev.copyPortUrl",
+        "category": "Cloudev",
+        "title": "Copy URL"
       }
     ],
     "menus": {
@@ -107,8 +140,8 @@
           "group": "inline@1"
         },
         {
-          "command": "cloudev.stopEnvironment",
-          "when": "view == cloudev.environments && viewItem == environment-running",
+          "command": "cloudev.openInNewWindow",
+          "when": "view == cloudev.environments && viewItem =~ /^environment-running|environment-forwarding$/",
           "group": "inline@1"
         },
         {
@@ -122,12 +155,59 @@
           "group": "inline@2"
         },
         {
+          "command": "cloudev.openPort",
+          "when": "view == cloudev.environments && viewItem == port",
+          "group": "inline@1"
+        },
+        {
+          "command": "cloudev.startEnvironment",
+          "when": "view == cloudev.environments && viewItem == environment-stopped",
+          "group": "1_lifecycle@1"
+        },
+        {
+          "command": "cloudev.stopEnvironment",
+          "when": "view == cloudev.environments && viewItem =~ /^environment-running|environment-forwarding$/",
+          "group": "1_lifecycle@2"
+        },
+        {
           "command": "cloudev.restartEnvironment",
-          "when": "view == cloudev.environments && viewItem =~ /^environment-running|environment-forwarding$/"
+          "when": "view == cloudev.environments && viewItem =~ /^environment-running|environment-forwarding$/",
+          "group": "1_lifecycle@3"
+        },
+        {
+          "command": "cloudev.startPortForwarding",
+          "when": "view == cloudev.environments && viewItem == environment-running",
+          "group": "2_ports@1"
+        },
+        {
+          "command": "cloudev.stopPortForwarding",
+          "when": "view == cloudev.environments && viewItem == environment-forwarding",
+          "group": "2_ports@1"
+        },
+        {
+          "command": "cloudev.openInNewWindow",
+          "when": "view == cloudev.environments && viewItem =~ /^environment-running|environment-forwarding$/",
+          "group": "3_connect@1"
+        },
+        {
+          "command": "cloudev.copyEnvInfo",
+          "when": "view == cloudev.environments && viewItem =~ /^environment-/",
+          "group": "4_copy@1"
         },
         {
           "command": "cloudev.deleteEnvironment",
-          "when": "view == cloudev.environments && viewItem == environment-stopped"
+          "when": "view == cloudev.environments && viewItem == environment-stopped",
+          "group": "5_danger@1"
+        },
+        {
+          "command": "cloudev.openPort",
+          "when": "view == cloudev.environments && viewItem == port",
+          "group": "1_port@1"
+        },
+        {
+          "command": "cloudev.copyPortUrl",
+          "when": "view == cloudev.environments && viewItem == port",
+          "group": "1_port@2"
         }
       ]
     }

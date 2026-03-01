@@ -34,7 +34,7 @@ export class CodespacesProvider implements EnvironmentProvider {
     throw new Error('Codespaces provider not yet implemented');
   }
 
-  async discoverPorts(_envId: string): Promise<number[]> {
+  async discoverPorts(_envId: string): Promise<{ ports: number[]; labels: Record<number, string> }> {
     throw new Error('Codespaces provider not yet implemented');
   }
 

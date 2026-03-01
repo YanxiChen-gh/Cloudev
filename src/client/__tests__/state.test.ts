@@ -109,6 +109,23 @@ describe('StateStore', () => {
       expect(pf.ports).toEqual([3000]);
       expect(pf.status).toBe('active');
     });
+
+    it('applies port-forwarding-changed with labels', () => {
+      const event: DaemonEvent = {
+        kind: 'port-forwarding-changed',
+        portForwarding: {
+          activeEnvId: 'env-1',
+          activeEnvName: 'test-env',
+          ports: [3000, 8080],
+          portLabels: { 3000: 'turborepo', 8080: 'nginx' },
+          status: 'active',
+        },
+      };
+      (client as unknown as EventEmitter).emit('event', event);
+
+      const pf = store.getPortForwarding();
+      expect(pf.portLabels).toEqual({ 3000: 'turborepo', 8080: 'nginx' });
+    });
   });
 
   describe('derived queries', () => {

@@ -13,6 +13,7 @@ export class PortForwardingService implements DaemonService {
   private tunnelProcess: ChildProcess | null = null;
   private discoveryTimer: NodeJS.Timeout | null = null;
   private currentPorts: number[] = [];
+  private currentLabels: Record<number, string> = {};
   private status: PortForwardingState['status'] = 'idle';
   private error: string | undefined;
   private isDiscovering = false;
@@ -76,6 +77,7 @@ export class PortForwardingService implements DaemonService {
       activeEnvId: this.activeEnvId,
       activeEnvName: envName,
       ports: this.currentPorts,
+      portLabels: this.currentLabels,
       status: this.status,
       error: this.error,
     };
@@ -109,6 +111,7 @@ export class PortForwardingService implements DaemonService {
     await this.killTunnel();
     this.activeEnvId = null;
     this.currentPorts = [];
+    this.currentLabels = {};
     this.isDiscovering = false;
     this.setStatus('idle');
   }
@@ -126,8 +129,12 @@ export class PortForwardingService implements DaemonService {
         return;
       }
 
-      const newPorts = await provider.discoverPorts(this.activeEnvId);
+      const result = await provider.discoverPorts(this.activeEnvId);
+      const newPorts = result.ports;
       newPorts.sort((a, b) => a - b);
+
+      // Always update labels (docker containers may have changed names)
+      this.currentLabels = result.labels;
 
       // Only respawn tunnel if ports changed
       if (!this.portsEqual(newPorts, this.currentPorts)) {

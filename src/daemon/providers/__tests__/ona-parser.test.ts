@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { parseSsOutput, mapStatus, mapEnvironment, mapProject } from '../ona-parser';
+import { parseSsOutput, parseDockerPorts, getPortLabel, mapStatus, mapEnvironment, mapProject } from '../ona-parser';
 import * as fs from 'fs';
 import * as path from 'path';
 
@@ -207,5 +207,66 @@ describe('mapProject', () => {
       expect(proj.id).toBeTruthy();
       expect(proj.name).toBeTruthy();
     }
+  });
+});
+
+describe('parseDockerPorts', () => {
+  it('parses real docker ps output', () => {
+    const output = `obsidian-nginx.internal-1\t0.0.0.0:8080->80/tcp, [::]:8080->80/tcp
+obsidian-mongo.internal-1\t0.0.0.0:27017->27017/tcp, [::]:27017->27017/tcp
+obsidian-redis.internal-1\t0.0.0.0:6379->6379/tcp, [::]:6379->6379/tcp
+obsidian-mysql.internal-1\t0.0.0.0:3306->3306/tcp, [::]:3306->3306/tcp, 33060/tcp`;
+
+    const result = parseDockerPorts(output);
+    expect(result.get(8080)).toBe('nginx');
+    expect(result.get(27017)).toBe('mongo');
+    expect(result.get(6379)).toBe('redis');
+    expect(result.get(3306)).toBe('mysql');
+  });
+
+  it('handles containers with multiple port mappings', () => {
+    const output = `obsidian-minio-1\t0.0.0.0:9001->9001/tcp, [::]:9001->9001/tcp, 0.0.0.0:9002->9000/tcp`;
+    const result = parseDockerPorts(output);
+    expect(result.get(9001)).toBe('minio');
+    expect(result.get(9002)).toBe('minio');
+  });
+
+  it('handles containers with no port mappings', () => {
+    const output = `obsidian-mongo-index-sync.internal-1\t`;
+    const result = parseDockerPorts(output);
+    expect(result.size).toBe(0);
+  });
+
+  it('cleans container names', () => {
+    const output = `obsidian-web-client.internal-1\t0.0.0.0:9000->9000/tcp`;
+    const result = parseDockerPorts(output);
+    expect(result.get(9000)).toBe('web-client');
+  });
+
+  it('handles empty output', () => {
+    expect(parseDockerPorts('').size).toBe(0);
+  });
+});
+
+describe('getPortLabel', () => {
+  it('returns docker label when available', () => {
+    const docker = new Map([[8080, 'nginx']]);
+    expect(getPortLabel(8080, docker)).toBe('nginx');
+  });
+
+  it('falls back to well-known port', () => {
+    const docker = new Map<number, string>();
+    expect(getPortLabel(5432, docker)).toBe('postgres');
+    expect(getPortLabel(6379, docker)).toBe('redis');
+    expect(getPortLabel(3000, docker)).toBe('http');
+  });
+
+  it('returns empty string for unknown port', () => {
+    expect(getPortLabel(54321, new Map())).toBe('');
+  });
+
+  it('docker label takes precedence over well-known', () => {
+    const docker = new Map([[3000, 'turborepo-remote-cache']]);
+    expect(getPortLabel(3000, docker)).toBe('turborepo-remote-cache');
   });
 });

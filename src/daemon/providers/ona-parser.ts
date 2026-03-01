@@ -34,6 +34,83 @@ export function parseSsOutput(output: string): number[] {
   return [...new Set(ports)].sort((a, b) => a - b);
 }
 
+// ---------------------------------------------------------------------------
+// Port labels: docker ps parsing + well-known port fallback
+// ---------------------------------------------------------------------------
+
+const WELL_KNOWN_PORTS: Record<number, string> = {
+  80: 'http', 443: 'https',
+  3000: 'http', 3001: 'http', 4200: 'http', 5173: 'http',
+  8000: 'http', 8080: 'http', 8888: 'http',
+  5432: 'postgres', 3306: 'mysql',
+  6379: 'redis', 6380: 'redis',
+  27017: 'mongodb', 27018: 'mongodb',
+  9229: 'debugger',
+  4566: 'localstack',
+};
+
+/**
+ * Parse `docker ps --format '{{.Names}}\t{{.Ports}}'` output.
+ * Returns a map of host port → cleaned container name.
+ *
+ * Example input line:
+ *   obsidian-nginx.internal-1\t0.0.0.0:8080->80/tcp, [::]:8080->80/tcp
+ * → Map { 8080 => "nginx" }
+ */
+export function parseDockerPorts(output: string): Map<number, string> {
+  const result = new Map<number, string>();
+
+  for (const line of output.split('\n')) {
+    if (!line.trim()) continue;
+
+    const tabIdx = line.indexOf('\t');
+    if (tabIdx === -1) continue;
+
+    const rawName = line.slice(0, tabIdx).trim();
+    const portsStr = line.slice(tabIdx + 1).trim();
+    if (!portsStr) continue;
+
+    // Clean container name: strip common prefixes/suffixes
+    // "obsidian-nginx.internal-1" → "nginx"
+    // "obsidian-web-client.internal-1" → "web-client"
+    const name = cleanContainerName(rawName);
+
+    // Parse port mappings: "0.0.0.0:8080->80/tcp, [::]:8080->80/tcp"
+    for (const mapping of portsStr.split(',')) {
+      const match = mapping.trim().match(/(?:\d+\.\d+\.\d+\.\d+|\[::\]|\*):(\d+)->/);
+      if (match) {
+        const hostPort = parseInt(match[1], 10);
+        if (!isNaN(hostPort) && !result.has(hostPort)) {
+          result.set(hostPort, name);
+        }
+      }
+    }
+  }
+
+  return result;
+}
+
+/** Clean a docker container name into a short readable label */
+function cleanContainerName(raw: string): string {
+  let name = raw;
+  // Remove common suffixes: ".internal-1", "-1"
+  name = name.replace(/\.internal-\d+$/, '').replace(/-\d+$/, '');
+  // Remove project prefix (first segment before the first dash that's followed by a known service)
+  // e.g., "obsidian-nginx" → "nginx", "obsidian-web-client" → "web-client"
+  const dashIdx = name.indexOf('-');
+  if (dashIdx > 0 && dashIdx < name.length - 1) {
+    name = name.slice(dashIdx + 1);
+  }
+  return name;
+}
+
+/**
+ * Get a label for a port: docker container name if available, otherwise well-known port guess.
+ */
+export function getPortLabel(port: number, dockerLabels: Map<number, string>): string {
+  return dockerLabels.get(port) ?? WELL_KNOWN_PORTS[port] ?? '';
+}
+
 /** Map gitpod CLI phase string to our EnvironmentStatus */
 export function mapStatus(raw: string): EnvironmentStatus {
   const lower = raw.toLowerCase();

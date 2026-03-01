@@ -40,6 +40,7 @@ export interface PortForwardingState {
   activeEnvId: string | null;
   activeEnvName: string | null;
   ports: number[];
+  portLabels: Record<number, string>; // port → label (container name or static guess)
   status: 'idle' | 'connecting' | 'active' | 'error';
   error?: string;
 }
