@@ -1,0 +1,2613 @@
+[
+  {
+    "id": "019c95cd-240c-7f3e-a2a2-e04e1215bbbb",
+    "metadata": {
+      "createdAt": "2026-02-25T17:16:15.245025Z",
+      "creator": {
+        "id": "019c4f44-deec-71f6-b7f4-989f25e1185e",
+        "principal": "PRINCIPAL_USER"
+      },
+      "lastStartedAt": "2026-02-28T17:05:52.270651Z",
+      "organizationId": "0198ce60-f77b-7637-81a9-4b8e409a0de8",
+      "prebuildId": "019c8ff3-2fb9-70e7-979a-1c22b20414d2",
+      "projectId": "01992fca-c2a8-74d0-92dc-c356e45266ce",
+      "role": "ENVIRONMENT_ROLE_DEFAULT",
+      "runnerId": "019aebc6-eea0-7bfc-9c48-3046995ba7b0"
+    },
+    "spec": {
+      "automationsFile": {
+        "session": "019c95cd-23c9-7c00-9ae5-136542d704f2"
+      },
+      "content": {
+        "initializer": {
+          "specs": [
+            {
+              "git": {
+                "checkoutLocation": "obsidian",
+                "cloneTarget": "main",
+                "remoteUri": "https://github.com/VantaInc/obsidian.git",
+                "targetMode": "CLONE_TARGET_MODE_REMOTE_BRANCH"
+              }
+            }
+          ]
+        }
+      },
+      "desiredPhase": "ENVIRONMENT_PHASE_RUNNING",
+      "devcontainer": {
+        "dotfiles": {
+          "repository": "https://github.com/YanxiChen-gh/Dotfiles"
+        },
+        "session": "019c95cd-2406-771d-9157-7c336b41f1f7"
+      },
+      "machine": {
+        "class": "019b3484-f550-77bc-8c28-86627185b6a3",
+        "session": "019ca536-b688-7015-a80a-122aae39129b"
+      },
+      "secrets": [
+        {
+          "environmentVariable": "NPM_TASKFORCESH_TOKEN",
+          "id": "01993ac3-ca8a-75bc-a700-c08eb214a42c",
+          "name": "NPM_TASKFORCESH_TOKEN",
+          "scope": "SCOPE_ORGANIZATION",
+          "session": "019ca536-b68e-7823-bb60-08750b15fc26",
+          "source": "managementplane",
+          "sourceRef": "01993ac3-ca8a-75bc-a700-c08eb214a42c"
+        },
+        {
+          "environmentVariable": "AWS_SNAPSHOT_READER_ACCESS_KEY_ID_2",
+          "id": "01993ac4-1e5d-755b-af98-d1e23b661755",
+          "name": "AWS_SNAPSHOT_READER_ACCESS_KEY_ID_2",
+          "scope": "SCOPE_ORGANIZATION",
+          "session": "019ca536-b68e-782a-b58c-b33bfa55e25a",
+          "source": "managementplane",
+          "sourceRef": "01993ac4-1e5d-755b-af98-d1e23b661755"
+        },
+        {
+          "environmentVariable": "AWS_SNAPSHOT_READER_SECRET_ACCESS_KEY_2",
+          "id": "01993ac4-6e1a-768e-ba73-af08d5237114",
+          "name": "AWS_SNAPSHOT_READER_SECRET_ACCESS_KEY_2",
+          "scope": "SCOPE_ORGANIZATION",
+          "session": "019ca536-b68e-782f-a118-80f2251f1e17",
+          "source": "managementplane",
+          "sourceRef": "01993ac4-6e1a-768e-ba73-af08d5237114"
+        },
+        {
+          "environmentVariable": "TURBOREPO_REMOTE_CACHE_ACCESS_KEY_ID",
+          "id": "01993ac5-4dab-749a-8cc0-9b21b9e563f0",
+          "name": "TURBOREPO_REMOTE_CACHE_ACCESS_KEY_ID",
+          "scope": "SCOPE_ORGANIZATION",
+          "session": "019ca536-b68e-7835-8025-9cb92e023b3c",
+          "source": "managementplane",
+          "sourceRef": "01993ac5-4dab-749a-8cc0-9b21b9e563f0"
+        },
+        {
+          "environmentVariable": "TURBOREPO_REMOTE_CACHE_ACCESS_KEY",
+          "id": "01993ac5-8f00-7378-a5e0-4f5665ef0001",
+          "name": "TURBOREPO_REMOTE_CACHE_ACCESS_KEY",
+          "scope": "SCOPE_ORGANIZATION",
+          "session": "019ca536-b68e-783a-9eba-f83f1663cce2",
+          "source": "managementplane",
+          "sourceRef": "01993ac5-8f00-7378-a5e0-4f5665ef0001"
+        },
+        {
+          "environmentVariable": "AWS_DEV_ACCOUNT_ACCESS_KEY_ID",
+          "id": "01993e6c-47c3-7d9d-b6bf-887a0d94efb6",
+          "name": "AWS_DEV_ACCOUNT_ACCESS_KEY_ID",
+          "scope": "SCOPE_ORGANIZATION",
+          "session": "019ca536-b68e-7840-871c-0eefa20cb666",
+          "source": "managementplane",
+          "sourceRef": "01993e6c-47c3-7d9d-b6bf-887a0d94efb6"
+        },
+        {
+          "environmentVariable": "AWS_DEV_ACCOUNT_SECRET_ACCESS_KEY",
+          "id": "01993e6c-9eaa-77af-b9ea-567f6895cafc",
+          "name": "AWS_DEV_ACCOUNT_SECRET_ACCESS_KEY",
+          "scope": "SCOPE_ORGANIZATION",
+          "session": "019ca536-b68e-7845-bd11-e445fb8401ef",
+          "source": "managementplane",
+          "sourceRef": "01993e6c-9eaa-77af-b9ea-567f6895cafc"
+        },
+        {
+          "environmentVariable": "IS_ON_ONA",
+          "id": "019a1298-46ca-7b1e-86dc-55eb38ecab9d",
+          "name": "IS_ON_ONA",
+          "scope": "SCOPE_ORGANIZATION",
+          "session": "019ca536-b68e-7849-8da8-2d425912d0a8",
+          "source": "managementplane",
+          "sourceRef": "019a1298-46ca-7b1e-86dc-55eb38ecab9d"
+        },
+        {
+          "environmentVariable": "UV_INDEX_CLOUDSMITH_USERNAME",
+          "id": "019c7673-7e57-7b15-9f21-a5c8bb62a26e",
+          "name": "UV_INDEX_CLOUDSMITH_USERNAME",
+          "scope": "SCOPE_PROJECT",
+          "session": "019ca536-b68e-784d-80b7-946f73f28c3e",
+          "source": "managementplane",
+          "sourceRef": "019c7673-7e57-7b15-9f21-a5c8bb62a26e"
+        },
+        {
+          "environmentVariable": "UV_INDEX_CLOUDSMITH_PASSWORD",
+          "id": "019c7673-b903-7307-ab1d-a4f3fe861e26",
+          "name": "UV_INDEX_CLOUDSMITH_PASSWORD",
+          "scope": "SCOPE_PROJECT",
+          "session": "019ca536-b68e-7854-833e-2033fe700d65",
+          "source": "managementplane",
+          "sourceRef": "019c7673-b903-7307-ab1d-a4f3fe861e26"
+        },
+        {
+          "environmentVariable": "GOOGLE_AI_API_KEY",
+          "id": "019a1328-5972-7acc-806f-2363a86ae495",
+          "name": "GOOGLE_AI_API_KEY",
+          "scope": "SCOPE_PROJECT",
+          "session": "019ca536-b68e-7858-960b-4a766b609df6",
+          "source": "managementplane",
+          "sourceRef": "019a1328-5972-7acc-806f-2363a86ae495"
+        },
+        {
+          "environmentVariable": "NPM_TASKFORCESH_TOKEN",
+          "id": "01993030-7f6a-793e-ab44-0c1d2ae09379",
+          "name": "NPM_TASKFORCESH_TOKEN",
+          "scope": "SCOPE_PROJECT",
+          "session": "019ca536-b68e-785d-a230-027b584c059a",
+          "source": "managementplane",
+          "sourceRef": "01993030-7f6a-793e-ab44-0c1d2ae09379"
+        },
+        {
+          "environmentVariable": "AWS_SNAPSHOT_READER_ACCESS_KEY_ID_2",
+          "id": "0199303c-ada5-7b6d-b484-7e3ca2c49a0c",
+          "name": "AWS_SNAPSHOT_READER_ACCESS_KEY_ID_2",
+          "scope": "SCOPE_PROJECT",
+          "session": "019ca536-b68e-7861-a2cb-da9361e7e545",
+          "source": "managementplane",
+          "sourceRef": "0199303c-ada5-7b6d-b484-7e3ca2c49a0c"
+        },
+        {
+          "environmentVariable": "AWS_SNAPSHOT_READER_SECRET_ACCESS_KEY_2",
+          "id": "0199303d-1367-7efb-8876-fb2305a934a3",
+          "name": "AWS_SNAPSHOT_READER_SECRET_ACCESS_KEY_2",
+          "scope": "SCOPE_PROJECT",
+          "session": "019ca536-b68e-7865-83f1-426d10d01cee",
+          "source": "managementplane",
+          "sourceRef": "0199303d-1367-7efb-8876-fb2305a934a3"
+        },
+        {
+          "environmentVariable": "TURBOREPO_REMOTE_CACHE_ACCESS_KEY",
+          "id": "019930cd-74e3-7b2b-b6a9-b1f571c15c15",
+          "name": "TURBOREPO_REMOTE_CACHE_ACCESS_KEY",
+          "scope": "SCOPE_PROJECT",
+          "session": "019ca536-b68e-786a-9a81-29bd3979761c",
+          "source": "managementplane",
+          "sourceRef": "019930cd-74e3-7b2b-b6a9-b1f571c15c15"
+        },
+        {
+          "environmentVariable": "TURBOREPO_REMOTE_CACHE_ACCESS_KEY_ID",
+          "id": "019930cd-b4b0-7d32-b3c7-154f40528109",
+          "name": "TURBOREPO_REMOTE_CACHE_ACCESS_KEY_ID",
+          "scope": "SCOPE_PROJECT",
+          "session": "019ca536-b68e-786e-adc8-cce1059e8fb4",
+          "source": "managementplane",
+          "sourceRef": "019930cd-b4b0-7d32-b3c7-154f40528109"
+        },
+        {
+          "environmentVariable": "BROWSERBASE_API_KEY",
+          "id": "019a1328-5664-7841-8bb2-ee830b9dc37c",
+          "name": "BROWSERBASE_API_KEY",
+          "scope": "SCOPE_PROJECT",
+          "session": "019ca536-b68e-7872-82f4-a3d2954b5246",
+          "source": "managementplane",
+          "sourceRef": "019a1328-5664-7841-8bb2-ee830b9dc37c"
+        },
+        {
+          "environmentVariable": "PINECONE_API_KEY",
+          "id": "019a1328-640b-79d8-9c09-d42da55a095a",
+          "name": "PINECONE_API_KEY",
+          "scope": "SCOPE_PROJECT",
+          "session": "019ca536-b68e-7876-af21-a933ced4e18c",
+          "source": "managementplane",
+          "sourceRef": "019a1328-640b-79d8-9c09-d42da55a095a"
+        },
+        {
+          "environmentVariable": "BROWSERBASE_PROJECT_ID",
+          "id": "019a1328-5767-7a7f-8417-61bd2258f2c5",
+          "name": "BROWSERBASE_PROJECT_ID",
+          "scope": "SCOPE_PROJECT",
+          "session": "019ca536-b68e-787b-8130-92dc86dee804",
+          "source": "managementplane",
+          "sourceRef": "019a1328-5767-7a7f-8417-61bd2258f2c5"
+        },
+        {
+          "environmentVariable": "SEMGREP_APP_TOKEN",
+          "id": "019a1328-64fc-71c7-8ca2-0c9026043110",
+          "name": "SEMGREP_APP_TOKEN",
+          "scope": "SCOPE_PROJECT",
+          "session": "019ca536-b68e-7882-9912-98070aa977cb",
+          "source": "managementplane",
+          "sourceRef": "019a1328-64fc-71c7-8ca2-0c9026043110"
+        },
+        {
+          "environmentVariable": "DATADOG_LOCAL_DEVELOPMENT_KEY_2",
+          "id": "019a1328-5867-7103-82b5-c0944b4aef8b",
+          "name": "DATADOG_LOCAL_DEVELOPMENT_KEY_2",
+          "scope": "SCOPE_PROJECT",
+          "session": "019ca536-b68e-7886-bb2a-e6e42be21618",
+          "source": "managementplane",
+          "sourceRef": "019a1328-5867-7103-82b5-c0944b4aef8b"
+        },
+        {
+          "environmentVariable": "INCIDENT_IO_API_KEY",
+          "id": "019a1328-5e3f-7bf4-97d4-fa6673a5b258",
+          "name": "INCIDENT_IO_API_KEY",
+          "scope": "SCOPE_PROJECT",
+          "session": "019ca536-b68e-788a-98bb-f8600a16df4c",
+          "source": "managementplane",
+          "sourceRef": "019a1328-5e3f-7bf4-97d4-fa6673a5b258"
+        },
+        {
+          "environmentVariable": "OPENAI_API_KEY",
+          "id": "019a1328-630f-7574-b0ef-2aed99003676",
+          "name": "OPENAI_API_KEY",
+          "scope": "SCOPE_PROJECT",
+          "session": "019ca536-b68e-788e-92a7-885f7b7b9802",
+          "source": "managementplane",
+          "sourceRef": "019a1328-630f-7574-b0ef-2aed99003676"
+        },
+        {
+          "environmentVariable": "TASKFORCE_DOCKER_USER",
+          "id": "019a1328-66fa-7187-bec5-0262e63f032f",
+          "name": "TASKFORCE_DOCKER_USER",
+          "scope": "SCOPE_PROJECT",
+          "session": "019ca536-b68e-7892-8ec3-05c94791dcda",
+          "source": "managementplane",
+          "sourceRef": "019a1328-66fa-7187-bec5-0262e63f032f"
+        },
+        {
+          "environmentVariable": "GOOGLE_CUA_SVC_ACC_CRED",
+          "id": "019a1328-5a7a-70d1-8cfd-3d0f68db5b76",
+          "name": "GOOGLE_CUA_SVC_ACC_CRED",
+          "scope": "SCOPE_PROJECT",
+          "session": "019ca536-b68e-7897-a9cc-cf07a7dc2099",
+          "source": "managementplane",
+          "sourceRef": "019a1328-5a7a-70d1-8cfd-3d0f68db5b76"
+        },
+        {
+          "environmentVariable": "AI_EVAL_AWS_SECRET_KEY",
+          "id": "019a1328-4ef3-7d4a-b483-6576ef02e3fa",
+          "name": "AI_EVAL_AWS_SECRET_KEY",
+          "scope": "SCOPE_PROJECT",
+          "session": "019ca536-b68e-789b-84e6-f8e6e7e70de5",
+          "source": "managementplane",
+          "sourceRef": "019a1328-4ef3-7d4a-b483-6576ef02e3fa"
+        },
+        {
+          "environmentVariable": "GURU_EMAIL",
+          "id": "019a1328-5b6b-7a4f-8876-57159d03eb11",
+          "name": "GURU_EMAIL",
+          "scope": "SCOPE_PROJECT",
+          "session": "019ca536-b68e-789f-9f26-90e3948bc817",
+          "source": "managementplane",
+          "sourceRef": "019a1328-5b6b-7a4f-8876-57159d03eb11"
+        },
+        {
+          "environmentVariable": "GURU_TOKEN",
+          "id": "019a1328-5c58-72bf-819d-3d53c6ffa087",
+          "name": "GURU_TOKEN",
+          "scope": "SCOPE_PROJECT",
+          "session": "019ca536-b68e-78a3-8628-1d6395bfc9be",
+          "source": "managementplane",
+          "sourceRef": "019a1328-5c58-72bf-819d-3d53c6ffa087"
+        },
+        {
+          "environmentVariable": "ANTHROPIC_API_KEY",
+          "id": "019a1328-5054-7d53-a741-c12cc151aaff",
+          "name": "ANTHROPIC_API_KEY",
+          "scope": "SCOPE_PROJECT",
+          "session": "019ca536-b68e-78a7-b458-c98568bd2614",
+          "source": "managementplane",
+          "sourceRef": "019a1328-5054-7d53-a741-c12cc151aaff"
+        },
+        {
+          "environmentVariable": "NGROK_AUTHTOKEN",
+          "id": "019a1328-6123-7eb8-814b-0a465193b7fe",
+          "name": "NGROK_AUTHTOKEN",
+          "scope": "SCOPE_PROJECT",
+          "session": "019ca536-b68e-78ab-a209-0cd0cb9d3e64",
+          "source": "managementplane",
+          "sourceRef": "019a1328-6123-7eb8-814b-0a465193b7fe"
+        },
+        {
+          "environmentVariable": "AWS_DEV_ACCOUNT_ACCESS_KEY_ID",
+          "id": "019a1328-5182-755a-903f-1072b7698782",
+          "name": "AWS_DEV_ACCOUNT_ACCESS_KEY_ID",
+          "scope": "SCOPE_PROJECT",
+          "session": "019ca536-b68e-78b0-9731-c2aae7443d7b",
+          "source": "managementplane",
+          "sourceRef": "019a1328-5182-755a-903f-1072b7698782"
+        },
+        {
+          "environmentVariable": "JINA_API_KEY",
+          "id": "019a1328-5f42-7254-a924-d8762269ed8c",
+          "name": "JINA_API_KEY",
+          "scope": "SCOPE_PROJECT",
+          "session": "019ca536-b68e-78b4-8664-9dabdd1ed4ba",
+          "source": "managementplane",
+          "sourceRef": "019a1328-5f42-7254-a924-d8762269ed8c"
+        },
+        {
+          "environmentVariable": "AWS_DEV_ACCOUNT_SECRET_ACCESS_KEY",
+          "id": "019a1328-528f-7522-a4c5-fb323217903a",
+          "name": "AWS_DEV_ACCOUNT_SECRET_ACCESS_KEY",
+          "scope": "SCOPE_PROJECT",
+          "session": "019ca536-b68e-78b8-969e-78d7bebe390e",
+          "source": "managementplane",
+          "sourceRef": "019a1328-528f-7522-a4c5-fb323217903a"
+        },
+        {
+          "environmentVariable": "AZURE_AI_API_KEY",
+          "id": "019a1328-5574-7646-8053-1ba3d47bfa22",
+          "name": "AZURE_AI_API_KEY",
+          "scope": "SCOPE_PROJECT",
+          "session": "019ca536-b68e-78bc-8413-862f8f813d85",
+          "source": "managementplane",
+          "sourceRef": "019a1328-5574-7646-8053-1ba3d47bfa22"
+        },
+        {
+          "environmentVariable": "HUMANLOOP_API_KEY",
+          "id": "019a1328-5d4f-776f-996b-26edd9d351eb",
+          "name": "HUMANLOOP_API_KEY",
+          "scope": "SCOPE_PROJECT",
+          "session": "019ca536-b68e-78c0-901c-7b4bfa6a3526",
+          "source": "managementplane",
+          "sourceRef": "019a1328-5d4f-776f-996b-26edd9d351eb"
+        },
+        {
+          "environmentVariable": "LANGSMITH_API_KEY",
+          "id": "019a1328-6036-78fc-8c43-58d9d93b0dbf",
+          "name": "LANGSMITH_API_KEY",
+          "scope": "SCOPE_PROJECT",
+          "session": "019ca536-b68e-78c4-b911-a8d154dbe0b2",
+          "source": "managementplane",
+          "sourceRef": "019a1328-6036-78fc-8c43-58d9d93b0dbf"
+        },
+        {
+          "environmentVariable": "TASKFORCE_DOCKER_LICENSE_KEY",
+          "id": "019a1328-65ff-717a-91fc-c51b846db53e",
+          "name": "TASKFORCE_DOCKER_LICENSE_KEY",
+          "scope": "SCOPE_PROJECT",
+          "session": "019ca536-b68e-78c8-ac64-3a55dff6efd7",
+          "source": "managementplane",
+          "sourceRef": "019a1328-65ff-717a-91fc-c51b846db53e"
+        },
+        {
+          "environmentVariable": "SKIP_PREPARE_DEV_SERVICES",
+          "id": "019b389f-1356-7bc8-b1e5-8a88deed2d8c",
+          "name": "SKIP_PREPARE_DEV_SERVICES",
+          "scope": "SCOPE_PROJECT",
+          "session": "019ca536-b68e-78e0-bf1c-e270a288433c",
+          "source": "managementplane",
+          "sourceRef": "019b389f-1356-7bc8-b1e5-8a88deed2d8c"
+        },
+        {
+          "environmentVariable": "LANG",
+          "id": "019b9a9f-ffc9-7e9a-a139-463841cc0c11",
+          "name": "LANG",
+          "scope": "SCOPE_PROJECT",
+          "session": "019ca536-b68e-78e6-a717-8401acf9f240",
+          "source": "managementplane",
+          "sourceRef": "019b9a9f-ffc9-7e9a-a139-463841cc0c11"
+        },
+        {
+          "environmentVariable": "CLOUDSMITH_NPM_TOKEN",
+          "id": "019bb829-d4c0-72ba-b233-2bb3697fdfe0",
+          "name": "CLOUDSMITH_NPM_TOKEN",
+          "scope": "SCOPE_PROJECT",
+          "session": "019ca536-b68e-78ec-be4f-7fb85f474edc",
+          "source": "managementplane",
+          "sourceRef": "019bb829-d4c0-72ba-b233-2bb3697fdfe0"
+        },
+        {
+          "environmentVariable": "GITHUB_USER",
+          "id": "019c4f4b-fcc9-75a5-bc0d-1ef33b27db07",
+          "name": "GITHUB_USER",
+          "scope": "SCOPE_USER",
+          "session": "019ca536-b68e-78f3-96cf-b98a0d100144",
+          "source": "managementplane",
+          "sourceRef": "019c4f4b-fcc9-75a5-bc0d-1ef33b27db07"
+        },
+        {
+          "environmentVariable": "EMAIL",
+          "id": "019c4f4c-587b-7076-aafb-ac4ae4e7869b",
+          "name": "EMAIL",
+          "scope": "SCOPE_USER",
+          "session": "019ca536-b68e-78f9-b0bc-10c9cccd54f4",
+          "source": "managementplane",
+          "sourceRef": "019c4f4c-587b-7076-aafb-ac4ae4e7869b"
+        },
+        {
+          "environmentVariable": "DATADOG_APP_KEY",
+          "id": "019c53e9-5abb-723a-95fc-63b2b55baea6",
+          "name": "DATADOG_APP_KEY",
+          "scope": "SCOPE_USER",
+          "session": "019ca536-b68e-78ff-a6a0-47a455365075",
+          "source": "managementplane",
+          "sourceRef": "019c53e9-5abb-723a-95fc-63b2b55baea6"
+        },
+        {
+          "environmentVariable": "ENABLE_GURU_MCP_SERVER",
+          "id": "019c53e9-a6e5-7303-b9bd-e120b1e89c3b",
+          "name": "ENABLE_GURU_MCP_SERVER",
+          "scope": "SCOPE_USER",
+          "session": "019ca536-b68e-7905-ac9c-324c0279c37e",
+          "source": "managementplane",
+          "sourceRef": "019c53e9-a6e5-7303-b9bd-e120b1e89c3b"
+        },
+        {
+          "environmentVariable": "JIRA_API_TOKEN",
+          "id": "019c53eb-7484-722b-8877-c9a407f694e3",
+          "name": "JIRA_API_TOKEN",
+          "scope": "SCOPE_USER",
+          "session": "019ca536-b68e-790b-af36-9cce09aaf4b1",
+          "source": "managementplane",
+          "sourceRef": "019c53eb-7484-722b-8877-c9a407f694e3"
+        },
+        {
+          "environmentVariable": "JIRA_EMAIL",
+          "id": "019c53eb-bda4-713a-8929-3bb43fac9e53",
+          "name": "JIRA_EMAIL",
+          "scope": "SCOPE_USER",
+          "session": "019ca536-b68e-7911-81e4-fd08d163ef8f",
+          "source": "managementplane",
+          "sourceRef": "019c53eb-bda4-713a-8929-3bb43fac9e53"
+        },
+        {
+          "environmentVariable": "LANGSMITH_API_KEY",
+          "id": "019c53ec-6eba-7016-afed-59eff1c16188",
+          "name": "LANGSMITH_API_KEY",
+          "scope": "SCOPE_USER",
+          "session": "019ca536-b68e-7918-a0fb-4788015b3fa0",
+          "source": "managementplane",
+          "sourceRef": "019c53ec-6eba-7016-afed-59eff1c16188"
+        },
+        {
+          "environmentVariable": "NON_LOCAL_IMPERSONATION_ENABLED",
+          "id": "019c5454-73fc-7705-8cf5-10d757113c9a",
+          "name": "NON_LOCAL_IMPERSONATION_ENABLED",
+          "scope": "SCOPE_USER",
+          "session": "019ca536-b68e-791e-9234-f98879cf3c7d",
+          "source": "managementplane",
+          "sourceRef": "019c5454-73fc-7705-8cf5-10d757113c9a"
+        },
+        {
+          "environmentVariable": "WORK_MACHINE",
+          "id": "019c939f-3532-7405-bb09-2a2ca9ec8d3d",
+          "name": "WORK_MACHINE",
+          "scope": "SCOPE_USER",
+          "session": "019ca536-b68e-7924-a6ac-2c6254a8b1a8",
+          "source": "managementplane",
+          "sourceRef": "019c939f-3532-7405-bb09-2a2ca9ec8d3d"
+        },
+        {
+          "filePath": "/usr/local/gitpod/secrets/token",
+          "id": "019c95cd-2406-7719-8d03-985af548c741",
+          "name": "ENVIRONMENT_TOKEN",
+          "scope": "SCOPE_RUNNER",
+          "session": "019ca536-b68e-792a-8108-e609519e5aa1",
+          "source": "verbatim"
+        },
+        {
+          "gitCredentialHost": "github.com",
+          "id": "019c95cd-240c-7829-a75a-ddca2ac59323",
+          "name": "SCM_TOKEN",
+          "scope": "SCOPE_RUNNER",
+          "session": "019ca536-b68e-7930-b898-0a37dbcb23e9",
+          "source": "verbatim"
+        }
+      ],
+      "specVersion": "8",
+      "sshPublicKeys": [
+        {
+          "id": "7b22757269536368656d65223a22637572736f72222c22657874656e73696f6e4964223a22676974706f642e676974706f642d666c6578222c226d616368696e654964223a2232313736656336303130373235363535653332646439373866316539613134323037383437313161366438373430326635376663376434383230653537306363227d",
+          "value": "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIBYup8833sBpMxsINPBjbzHcqQEda904Wm4ntqKCVjZT yanxichen@YanxiC-J0396Y2QYC"
+        },
+        {
+          "id": "cf8964a1-7c05-5457-8d7f-3e9077ad11cc",
+          "value": "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIKGHsZhF74Y9LNrH3/pRhuybxg6BXKU2IDZxpX9qE1Zw"
+        }
+      ],
+      "timeout": {
+        "disconnected": "1800s"
+      }
+    },
+    "status": {
+      "activitySignal": {
+        "source": "Starting",
+        "timestamp": "2026-02-28T17:05:00Z"
+      },
+      "automationsFile": {
+        "automationsFilePath": ".ona/automations.yaml",
+        "automationsFilePresence": "PRESENCE_DISCOVERED",
+        "phase": "CONTENT_PHASE_READY",
+        "session": "019c95cd-23c9-7c00-9ae5-136542d704f2"
+      },
+      "content": {
+        "contentLocationInMachine": "/workspaces/obsidian",
+        "git": {
+          "branch": "main",
+          "cloneUrl": "https://github.com/VantaInc/obsidian.git",
+          "latestCommit": "45797d669fea46a28c3297176c397ddb0c8e2d44"
+        },
+        "phase": "CONTENT_PHASE_READY"
+      },
+      "environmentUrls": {
+        "logs": "https://019aebc6-eea0-7bfc-9c48-3046995ba7b0.ona-runner-us-west-2.ilmalabs.dev/logs/environments/019c95cd-240c-7f3e-a2a2-e04e1215bbbb",
+        "ssh": {
+          "url": "https://019c95cd-240c-7f3e-a2a2-e04e1215bbbb.ona-runner-us-west-2.ilmalabs.dev:443"
+        },
+        "supportBundle": "https://019aebc6-eea0-7bfc-9c48-3046995ba7b0.ona-runner-us-west-2.ilmalabs.dev/support-bundle/environments/019c95cd-240c-7f3e-a2a2-e04e1215bbbb"
+      },
+      "machine": {
+        "phase": "PHASE_STOPPED",
+        "session": "019ca536-b688-7015-a80a-122aae39129b",
+        "timeout": "Timed out due to no activity detected for 30 minutes",
+        "versions": {
+          "supervisorCommit": "39300adc9730c4acc928447329cc688d7bd798a8",
+          "supervisorVersion": "39300ad"
+        }
+      },
+      "phase": "ENVIRONMENT_PHASE_STOPPED",
+      "statusVersion": "62"
+    }
+  },
+  {
+    "id": "019c9180-046b-744d-8b8c-26dadb262725",
+    "metadata": {
+      "createdAt": "2026-02-24T21:13:32.011333Z",
+      "creator": {
+        "id": "019c4f44-deec-71f6-b7f4-989f25e1185e",
+        "principal": "PRINCIPAL_USER"
+      },
+      "lastStartedAt": "2026-02-28T17:05:53.526317Z",
+      "organizationId": "0198ce60-f77b-7637-81a9-4b8e409a0de8",
+      "projectId": "019aa8de-f87a-7373-8ea7-040083a3a4c3",
+      "role": "ENVIRONMENT_ROLE_DEFAULT",
+      "runnerId": "019aebc6-eea0-7bfc-9c48-3046995ba7b0"
+    },
+    "spec": {
+      "automationsFile": {
+        "session": "019c9180-041c-701b-a45a-14313ca433bd"
+      },
+      "content": {
+        "initializer": {
+          "specs": [
+            {
+              "git": {
+                "checkoutLocation": "dbt",
+                "cloneTarget": "main",
+                "remoteUri": "https://github.com/VantaInc/dbt.git",
+                "targetMode": "CLONE_TARGET_MODE_REMOTE_BRANCH"
+              }
+            }
+          ]
+        }
+      },
+      "desiredPhase": "ENVIRONMENT_PHASE_RUNNING",
+      "devcontainer": {
+        "dotfiles": {
+          "repository": "https://github.com/YanxiChen-gh/Dotfiles"
+        },
+        "session": "019c9180-0464-79ca-9e47-246bfe173594"
+      },
+      "machine": {
+        "class": "019b346f-b18a-7b65-a4a2-0b70721ed203",
+        "session": "019ca536-bb6e-7cad-9c8f-6e89315b2ac1"
+      },
+      "secrets": [
+        {
+          "environmentVariable": "NPM_TASKFORCESH_TOKEN",
+          "id": "01993ac3-ca8a-75bc-a700-c08eb214a42c",
+          "name": "NPM_TASKFORCESH_TOKEN",
+          "scope": "SCOPE_ORGANIZATION",
+          "session": "019ca536-bb76-7390-b915-b9d432918217",
+          "source": "managementplane",
+          "sourceRef": "01993ac3-ca8a-75bc-a700-c08eb214a42c"
+        },
+        {
+          "environmentVariable": "AWS_SNAPSHOT_READER_ACCESS_KEY_ID_2",
+          "id": "01993ac4-1e5d-755b-af98-d1e23b661755",
+          "name": "AWS_SNAPSHOT_READER_ACCESS_KEY_ID_2",
+          "scope": "SCOPE_ORGANIZATION",
+          "session": "019ca536-bb76-7398-b30b-170825ade067",
+          "source": "managementplane",
+          "sourceRef": "01993ac4-1e5d-755b-af98-d1e23b661755"
+        },
+        {
+          "environmentVariable": "AWS_SNAPSHOT_READER_SECRET_ACCESS_KEY_2",
+          "id": "01993ac4-6e1a-768e-ba73-af08d5237114",
+          "name": "AWS_SNAPSHOT_READER_SECRET_ACCESS_KEY_2",
+          "scope": "SCOPE_ORGANIZATION",
+          "session": "019ca536-bb76-739e-baad-964e421b53f1",
+          "source": "managementplane",
+          "sourceRef": "01993ac4-6e1a-768e-ba73-af08d5237114"
+        },
+        {
+          "environmentVariable": "TURBOREPO_REMOTE_CACHE_ACCESS_KEY_ID",
+          "id": "01993ac5-4dab-749a-8cc0-9b21b9e563f0",
+          "name": "TURBOREPO_REMOTE_CACHE_ACCESS_KEY_ID",
+          "scope": "SCOPE_ORGANIZATION",
+          "session": "019ca536-bb76-73a4-ac7f-0874cd9c2ead",
+          "source": "managementplane",
+          "sourceRef": "01993ac5-4dab-749a-8cc0-9b21b9e563f0"
+        },
+        {
+          "environmentVariable": "TURBOREPO_REMOTE_CACHE_ACCESS_KEY",
+          "id": "01993ac5-8f00-7378-a5e0-4f5665ef0001",
+          "name": "TURBOREPO_REMOTE_CACHE_ACCESS_KEY",
+          "scope": "SCOPE_ORGANIZATION",
+          "session": "019ca536-bb76-73a9-8824-d5bafc229218",
+          "source": "managementplane",
+          "sourceRef": "01993ac5-8f00-7378-a5e0-4f5665ef0001"
+        },
+        {
+          "environmentVariable": "AWS_DEV_ACCOUNT_ACCESS_KEY_ID",
+          "id": "01993e6c-47c3-7d9d-b6bf-887a0d94efb6",
+          "name": "AWS_DEV_ACCOUNT_ACCESS_KEY_ID",
+          "scope": "SCOPE_ORGANIZATION",
+          "session": "019ca536-bb76-73fe-b3af-9ca2cf785db0",
+          "source": "managementplane",
+          "sourceRef": "01993e6c-47c3-7d9d-b6bf-887a0d94efb6"
+        },
+        {
+          "environmentVariable": "AWS_DEV_ACCOUNT_SECRET_ACCESS_KEY",
+          "id": "01993e6c-9eaa-77af-b9ea-567f6895cafc",
+          "name": "AWS_DEV_ACCOUNT_SECRET_ACCESS_KEY",
+          "scope": "SCOPE_ORGANIZATION",
+          "session": "019ca536-bb76-7403-b46f-a6abc9c74778",
+          "source": "managementplane",
+          "sourceRef": "01993e6c-9eaa-77af-b9ea-567f6895cafc"
+        },
+        {
+          "environmentVariable": "IS_ON_ONA",
+          "id": "019a1298-46ca-7b1e-86dc-55eb38ecab9d",
+          "name": "IS_ON_ONA",
+          "scope": "SCOPE_ORGANIZATION",
+          "session": "019ca536-bb76-7407-af4f-1b9b2149bab1",
+          "source": "managementplane",
+          "sourceRef": "019a1298-46ca-7b1e-86dc-55eb38ecab9d"
+        },
+        {
+          "environmentVariable": "SECODA_API_KEY",
+          "id": "019c016b-43bc-7441-ae2e-3bb61d675269",
+          "name": "SECODA_API_KEY",
+          "scope": "SCOPE_PROJECT",
+          "session": "019ca536-bb76-740c-805b-7917d60f8a79",
+          "source": "managementplane",
+          "sourceRef": "019c016b-43bc-7441-ae2e-3bb61d675269"
+        },
+        {
+          "environmentVariable": "GITHUB_USER",
+          "id": "019c4f4b-fcc9-75a5-bc0d-1ef33b27db07",
+          "name": "GITHUB_USER",
+          "scope": "SCOPE_USER",
+          "session": "019ca536-bb76-741c-9431-f76397c9c341",
+          "source": "managementplane",
+          "sourceRef": "019c4f4b-fcc9-75a5-bc0d-1ef33b27db07"
+        },
+        {
+          "environmentVariable": "EMAIL",
+          "id": "019c4f4c-587b-7076-aafb-ac4ae4e7869b",
+          "name": "EMAIL",
+          "scope": "SCOPE_USER",
+          "session": "019ca536-bb76-7422-995e-84ccc69d6e40",
+          "source": "managementplane",
+          "sourceRef": "019c4f4c-587b-7076-aafb-ac4ae4e7869b"
+        },
+        {
+          "environmentVariable": "DATADOG_APP_KEY",
+          "id": "019c53e9-5abb-723a-95fc-63b2b55baea6",
+          "name": "DATADOG_APP_KEY",
+          "scope": "SCOPE_USER",
+          "session": "019ca536-bb76-7428-82a5-ed10e091c678",
+          "source": "managementplane",
+          "sourceRef": "019c53e9-5abb-723a-95fc-63b2b55baea6"
+        },
+        {
+          "environmentVariable": "ENABLE_GURU_MCP_SERVER",
+          "id": "019c53e9-a6e5-7303-b9bd-e120b1e89c3b",
+          "name": "ENABLE_GURU_MCP_SERVER",
+          "scope": "SCOPE_USER",
+          "session": "019ca536-bb76-742e-aa97-5d4b2c7556d7",
+          "source": "managementplane",
+          "sourceRef": "019c53e9-a6e5-7303-b9bd-e120b1e89c3b"
+        },
+        {
+          "environmentVariable": "JIRA_API_TOKEN",
+          "id": "019c53eb-7484-722b-8877-c9a407f694e3",
+          "name": "JIRA_API_TOKEN",
+          "scope": "SCOPE_USER",
+          "session": "019ca536-bb76-7434-8093-efc0384c553a",
+          "source": "managementplane",
+          "sourceRef": "019c53eb-7484-722b-8877-c9a407f694e3"
+        },
+        {
+          "environmentVariable": "JIRA_EMAIL",
+          "id": "019c53eb-bda4-713a-8929-3bb43fac9e53",
+          "name": "JIRA_EMAIL",
+          "scope": "SCOPE_USER",
+          "session": "019ca536-bb76-743a-bc12-dbb3e3290acc",
+          "source": "managementplane",
+          "sourceRef": "019c53eb-bda4-713a-8929-3bb43fac9e53"
+        },
+        {
+          "environmentVariable": "LANGSMITH_API_KEY",
+          "id": "019c53ec-6eba-7016-afed-59eff1c16188",
+          "name": "LANGSMITH_API_KEY",
+          "scope": "SCOPE_USER",
+          "session": "019ca536-bb76-7440-9d8a-7eb40c4e1a43",
+          "source": "managementplane",
+          "sourceRef": "019c53ec-6eba-7016-afed-59eff1c16188"
+        },
+        {
+          "environmentVariable": "NON_LOCAL_IMPERSONATION_ENABLED",
+          "id": "019c5454-73fc-7705-8cf5-10d757113c9a",
+          "name": "NON_LOCAL_IMPERSONATION_ENABLED",
+          "scope": "SCOPE_USER",
+          "session": "019ca536-bb76-7445-afa2-fe27485496a3",
+          "source": "managementplane",
+          "sourceRef": "019c5454-73fc-7705-8cf5-10d757113c9a"
+        },
+        {
+          "filePath": "/usr/local/gitpod/secrets/token",
+          "id": "019c9180-0464-79c1-8823-7adf27ae0f86",
+          "name": "ENVIRONMENT_TOKEN",
+          "scope": "SCOPE_RUNNER",
+          "session": "019ca536-bb76-744b-a5b5-ca991d29c995",
+          "source": "verbatim"
+        },
+        {
+          "gitCredentialHost": "github.com",
+          "id": "019c9180-046a-7db2-b348-d84e8889e72b",
+          "name": "SCM_TOKEN",
+          "scope": "SCOPE_RUNNER",
+          "session": "019ca536-bb76-7452-8b78-cf1c53018215",
+          "source": "verbatim"
+        }
+      ],
+      "specVersion": "119",
+      "sshPublicKeys": [
+        {
+          "id": "7b22757269536368656d65223a227673636f6465222c22657874656e73696f6e4964223a22676974706f642e676974706f642d666c6578222c226d616368696e654964223a2262393432393736396238663031633036353435643032633732363961323163306165376334346662613831643962666236313031613137353130323462633363227d",
+          "value": "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIBYup8833sBpMxsINPBjbzHcqQEda904Wm4ntqKCVjZT yanxichen@YanxiC-J0396Y2QYC"
+        },
+        {
+          "id": "cf8964a1-7c05-5457-8d7f-3e9077ad11cc",
+          "value": "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIKGHsZhF74Y9LNrH3/pRhuybxg6BXKU2IDZxpX9qE1Zw"
+        }
+      ],
+      "timeout": {
+        "disconnected": "28800s"
+      }
+    },
+    "status": {
+      "activitySignal": {
+        "source": "Starting",
+        "timestamp": "2026-02-28T17:05:00Z"
+      },
+      "automationsFile": {
+        "automationsFilePath": ".ona/automations.yaml",
+        "automationsFilePresence": "PRESENCE_DISCOVERED",
+        "phase": "CONTENT_PHASE_READY",
+        "session": "019c9180-041c-701b-a45a-14313ca433bd"
+      },
+      "content": {
+        "contentLocationInMachine": "/workspaces/dbt",
+        "git": {
+          "branch": "add-ai-platform-health-metrics",
+          "changedFiles": [
+            {
+              "changeType": "CHANGE_TYPE_MODIFIED",
+              "path": "orchestrator/orchestrator/assets/datadog/datadog_custom_metrics.py"
+            },
+            {
+              "changeType": "CHANGE_TYPE_UNTRACKED",
+              "path": ".claude/settings.local.json"
+            },
+            {
+              "changeType": "CHANGE_TYPE_UNTRACKED",
+              "path": "health-ai.json"
+            }
+          ],
+          "cloneUrl": "https://github.com/VantaInc/dbt.git",
+          "latestCommit": "b27db55f106b03e229ab6ae75076e20604b52068",
+          "totalChangedFiles": 3
+        },
+        "phase": "CONTENT_PHASE_READY"
+      },
+      "environmentUrls": {
+        "logs": "https://019aebc6-eea0-7bfc-9c48-3046995ba7b0.ona-runner-us-west-2.ilmalabs.dev/logs/environments/019c9180-046b-744d-8b8c-26dadb262725",
+        "ssh": {
+          "url": "https://019c9180-046b-744d-8b8c-26dadb262725.ona-runner-us-west-2.ilmalabs.dev:443"
+        },
+        "supportBundle": "https://019aebc6-eea0-7bfc-9c48-3046995ba7b0.ona-runner-us-west-2.ilmalabs.dev/support-bundle/environments/019c9180-046b-744d-8b8c-26dadb262725"
+      },
+      "machine": {
+        "phase": "PHASE_STOPPED",
+        "session": "019ca536-bb6e-7cad-9c8f-6e89315b2ac1",
+        "timeout": "Timed out due to no activity detected for 8 hours 0 minutes",
+        "versions": {
+          "supervisorCommit": "39300adc9730c4acc928447329cc688d7bd798a8",
+          "supervisorVersion": "39300ad"
+        }
+      },
+      "phase": "ENVIRONMENT_PHASE_STOPPED",
+      "statusVersion": "191"
+    }
+  },
+  {
+    "id": "019c58cb-e6fc-7b62-a461-3851802bba52",
+    "metadata": {
+      "createdAt": "2026-02-13T20:58:03.900789Z",
+      "creator": {
+        "id": "019c4f44-deec-71f6-b7f4-989f25e1185e",
+        "principal": "PRINCIPAL_USER"
+      },
+      "lastStartedAt": "2026-02-28T17:05:54.803631Z",
+      "organizationId": "0198ce60-f77b-7637-81a9-4b8e409a0de8",
+      "prebuildId": "019c574d-c013-7b10-b363-f1b63a77adb7",
+      "projectId": "01992fca-c2a8-74d0-92dc-c356e45266ce",
+      "role": "ENVIRONMENT_ROLE_DEFAULT",
+      "runnerId": "019aebc6-eea0-7bfc-9c48-3046995ba7b0"
+    },
+    "spec": {
+      "automationsFile": {
+        "session": "019c58cb-e6bc-77c2-9e6d-00ba79308327"
+      },
+      "content": {
+        "initializer": {
+          "specs": [
+            {
+              "git": {
+                "checkoutLocation": "obsidian",
+                "cloneTarget": "main",
+                "remoteUri": "https://github.com/VantaInc/obsidian.git",
+                "targetMode": "CLONE_TARGET_MODE_REMOTE_BRANCH"
+              }
+            }
+          ]
+        }
+      },
+      "desiredPhase": "ENVIRONMENT_PHASE_RUNNING",
+      "devcontainer": {
+        "dotfiles": {
+          "repository": "https://github.com/YanxiChen-gh/Dotfiles"
+        },
+        "session": "019c58cb-e6f6-7237-881c-4dd5b9ea421f"
+      },
+      "machine": {
+        "class": "019b3484-f550-77bc-8c28-86627185b6a3",
+        "session": "019ca536-c06c-7d12-9d49-cdfc7bc942d0"
+      },
+      "ports": [
+        {
+          "admission": "ADMISSION_LEVEL_EVERYONE",
+          "name": "web",
+          "port": 8080,
+          "protocol": "PROTOCOL_HTTPS"
+        }
+      ],
+      "secrets": [
+        {
+          "environmentVariable": "NPM_TASKFORCESH_TOKEN",
+          "id": "01993ac3-ca8a-75bc-a700-c08eb214a42c",
+          "name": "NPM_TASKFORCESH_TOKEN",
+          "scope": "SCOPE_ORGANIZATION",
+          "session": "019ca536-c073-774e-8786-0030ba68f268",
+          "source": "managementplane",
+          "sourceRef": "01993ac3-ca8a-75bc-a700-c08eb214a42c"
+        },
+        {
+          "environmentVariable": "AWS_SNAPSHOT_READER_ACCESS_KEY_ID_2",
+          "id": "01993ac4-1e5d-755b-af98-d1e23b661755",
+          "name": "AWS_SNAPSHOT_READER_ACCESS_KEY_ID_2",
+          "scope": "SCOPE_ORGANIZATION",
+          "session": "019ca536-c073-7759-9381-1fdc89c41bed",
+          "source": "managementplane",
+          "sourceRef": "01993ac4-1e5d-755b-af98-d1e23b661755"
+        },
+        {
+          "environmentVariable": "AWS_SNAPSHOT_READER_SECRET_ACCESS_KEY_2",
+          "id": "01993ac4-6e1a-768e-ba73-af08d5237114",
+          "name": "AWS_SNAPSHOT_READER_SECRET_ACCESS_KEY_2",
+          "scope": "SCOPE_ORGANIZATION",
+          "session": "019ca536-c073-7761-b594-6f39eeec2418",
+          "source": "managementplane",
+          "sourceRef": "01993ac4-6e1a-768e-ba73-af08d5237114"
+        },
+        {
+          "environmentVariable": "TURBOREPO_REMOTE_CACHE_ACCESS_KEY_ID",
+          "id": "01993ac5-4dab-749a-8cc0-9b21b9e563f0",
+          "name": "TURBOREPO_REMOTE_CACHE_ACCESS_KEY_ID",
+          "scope": "SCOPE_ORGANIZATION",
+          "session": "019ca536-c073-776b-a733-7c5f937ad3c5",
+          "source": "managementplane",
+          "sourceRef": "01993ac5-4dab-749a-8cc0-9b21b9e563f0"
+        },
+        {
+          "environmentVariable": "TURBOREPO_REMOTE_CACHE_ACCESS_KEY",
+          "id": "01993ac5-8f00-7378-a5e0-4f5665ef0001",
+          "name": "TURBOREPO_REMOTE_CACHE_ACCESS_KEY",
+          "scope": "SCOPE_ORGANIZATION",
+          "session": "019ca536-c073-7772-bdee-4c5deef579fc",
+          "source": "managementplane",
+          "sourceRef": "01993ac5-8f00-7378-a5e0-4f5665ef0001"
+        },
+        {
+          "environmentVariable": "AWS_DEV_ACCOUNT_ACCESS_KEY_ID",
+          "id": "01993e6c-47c3-7d9d-b6bf-887a0d94efb6",
+          "name": "AWS_DEV_ACCOUNT_ACCESS_KEY_ID",
+          "scope": "SCOPE_ORGANIZATION",
+          "session": "019ca536-c073-777e-8980-098151eb188f",
+          "source": "managementplane",
+          "sourceRef": "01993e6c-47c3-7d9d-b6bf-887a0d94efb6"
+        },
+        {
+          "environmentVariable": "AWS_DEV_ACCOUNT_SECRET_ACCESS_KEY",
+          "id": "01993e6c-9eaa-77af-b9ea-567f6895cafc",
+          "name": "AWS_DEV_ACCOUNT_SECRET_ACCESS_KEY",
+          "scope": "SCOPE_ORGANIZATION",
+          "session": "019ca536-c073-7785-8f7b-5b471e11050a",
+          "source": "managementplane",
+          "sourceRef": "01993e6c-9eaa-77af-b9ea-567f6895cafc"
+        },
+        {
+          "environmentVariable": "IS_ON_ONA",
+          "id": "019a1298-46ca-7b1e-86dc-55eb38ecab9d",
+          "name": "IS_ON_ONA",
+          "scope": "SCOPE_ORGANIZATION",
+          "session": "019ca536-c073-778b-9c46-ead590c57f07",
+          "source": "managementplane",
+          "sourceRef": "019a1298-46ca-7b1e-86dc-55eb38ecab9d"
+        },
+        {
+          "environmentVariable": "AI_EVAL_AWS_SECRET_KEY",
+          "id": "019a1328-4ef3-7d4a-b483-6576ef02e3fa",
+          "name": "AI_EVAL_AWS_SECRET_KEY",
+          "scope": "SCOPE_PROJECT",
+          "session": "019ca536-c073-77b8-9cf9-82349f877615",
+          "source": "managementplane",
+          "sourceRef": "019a1328-4ef3-7d4a-b483-6576ef02e3fa"
+        },
+        {
+          "environmentVariable": "ANTHROPIC_API_KEY",
+          "id": "019a1328-5054-7d53-a741-c12cc151aaff",
+          "name": "ANTHROPIC_API_KEY",
+          "scope": "SCOPE_PROJECT",
+          "session": "019ca536-c073-77c5-aabe-9406e3376c67",
+          "source": "managementplane",
+          "sourceRef": "019a1328-5054-7d53-a741-c12cc151aaff"
+        },
+        {
+          "environmentVariable": "AWS_DEV_ACCOUNT_ACCESS_KEY_ID",
+          "id": "019a1328-5182-755a-903f-1072b7698782",
+          "name": "AWS_DEV_ACCOUNT_ACCESS_KEY_ID",
+          "scope": "SCOPE_PROJECT",
+          "session": "019ca536-c073-77cc-a2e0-4e7f08d534ff",
+          "source": "managementplane",
+          "sourceRef": "019a1328-5182-755a-903f-1072b7698782"
+        },
+        {
+          "environmentVariable": "AWS_DEV_ACCOUNT_SECRET_ACCESS_KEY",
+          "id": "019a1328-528f-7522-a4c5-fb323217903a",
+          "name": "AWS_DEV_ACCOUNT_SECRET_ACCESS_KEY",
+          "scope": "SCOPE_PROJECT",
+          "session": "019ca536-c073-77d1-9313-ca9bb77d17df",
+          "source": "managementplane",
+          "sourceRef": "019a1328-528f-7522-a4c5-fb323217903a"
+        },
+        {
+          "environmentVariable": "AWS_SNAPSHOT_READER_ACCESS_KEY_ID_2",
+          "id": "0199303c-ada5-7b6d-b484-7e3ca2c49a0c",
+          "name": "AWS_SNAPSHOT_READER_ACCESS_KEY_ID_2",
+          "scope": "SCOPE_PROJECT",
+          "session": "019ca536-c073-77d7-aa05-c1899d262837",
+          "source": "managementplane",
+          "sourceRef": "0199303c-ada5-7b6d-b484-7e3ca2c49a0c"
+        },
+        {
+          "environmentVariable": "AWS_SNAPSHOT_READER_SECRET_ACCESS_KEY_2",
+          "id": "0199303d-1367-7efb-8876-fb2305a934a3",
+          "name": "AWS_SNAPSHOT_READER_SECRET_ACCESS_KEY_2",
+          "scope": "SCOPE_PROJECT",
+          "session": "019ca536-c073-77de-ac2b-a7074f50c22f",
+          "source": "managementplane",
+          "sourceRef": "0199303d-1367-7efb-8876-fb2305a934a3"
+        },
+        {
+          "environmentVariable": "AZURE_AI_API_KEY",
+          "id": "019a1328-5574-7646-8053-1ba3d47bfa22",
+          "name": "AZURE_AI_API_KEY",
+          "scope": "SCOPE_PROJECT",
+          "session": "019ca536-c073-77e4-add7-5670bd4c1054",
+          "source": "managementplane",
+          "sourceRef": "019a1328-5574-7646-8053-1ba3d47bfa22"
+        },
+        {
+          "environmentVariable": "BROWSERBASE_API_KEY",
+          "id": "019a1328-5664-7841-8bb2-ee830b9dc37c",
+          "name": "BROWSERBASE_API_KEY",
+          "scope": "SCOPE_PROJECT",
+          "session": "019ca536-c073-77ea-b4d9-923ab3c42f29",
+          "source": "managementplane",
+          "sourceRef": "019a1328-5664-7841-8bb2-ee830b9dc37c"
+        },
+        {
+          "environmentVariable": "BROWSERBASE_PROJECT_ID",
+          "id": "019a1328-5767-7a7f-8417-61bd2258f2c5",
+          "name": "BROWSERBASE_PROJECT_ID",
+          "scope": "SCOPE_PROJECT",
+          "session": "019ca536-c073-77f0-9301-2f491df82ea6",
+          "source": "managementplane",
+          "sourceRef": "019a1328-5767-7a7f-8417-61bd2258f2c5"
+        },
+        {
+          "environmentVariable": "CLOUDSMITH_NPM_TOKEN",
+          "id": "019bb829-d4c0-72ba-b233-2bb3697fdfe0",
+          "name": "CLOUDSMITH_NPM_TOKEN",
+          "scope": "SCOPE_PROJECT",
+          "session": "019ca536-c073-77f6-834d-891d15bd1fa8",
+          "source": "managementplane",
+          "sourceRef": "019bb829-d4c0-72ba-b233-2bb3697fdfe0"
+        },
+        {
+          "environmentVariable": "DATADOG_LOCAL_DEVELOPMENT_KEY_2",
+          "id": "019a1328-5867-7103-82b5-c0944b4aef8b",
+          "name": "DATADOG_LOCAL_DEVELOPMENT_KEY_2",
+          "scope": "SCOPE_PROJECT",
+          "session": "019ca536-c073-77fc-939b-2ff0ff6359ff",
+          "source": "managementplane",
+          "sourceRef": "019a1328-5867-7103-82b5-c0944b4aef8b"
+        },
+        {
+          "environmentVariable": "GOOGLE_AI_API_KEY",
+          "id": "019a1328-5972-7acc-806f-2363a86ae495",
+          "name": "GOOGLE_AI_API_KEY",
+          "scope": "SCOPE_PROJECT",
+          "session": "019ca536-c073-7808-bd39-580867db237a",
+          "source": "managementplane",
+          "sourceRef": "019a1328-5972-7acc-806f-2363a86ae495"
+        },
+        {
+          "environmentVariable": "GOOGLE_CUA_SVC_ACC_CRED",
+          "id": "019a1328-5a7a-70d1-8cfd-3d0f68db5b76",
+          "name": "GOOGLE_CUA_SVC_ACC_CRED",
+          "scope": "SCOPE_PROJECT",
+          "session": "019ca536-c073-780e-a9c3-b5545053226d",
+          "source": "managementplane",
+          "sourceRef": "019a1328-5a7a-70d1-8cfd-3d0f68db5b76"
+        },
+        {
+          "environmentVariable": "GURU_EMAIL",
+          "id": "019a1328-5b6b-7a4f-8876-57159d03eb11",
+          "name": "GURU_EMAIL",
+          "scope": "SCOPE_PROJECT",
+          "session": "019ca536-c073-7815-812d-777d256e8868",
+          "source": "managementplane",
+          "sourceRef": "019a1328-5b6b-7a4f-8876-57159d03eb11"
+        },
+        {
+          "environmentVariable": "GURU_TOKEN",
+          "id": "019a1328-5c58-72bf-819d-3d53c6ffa087",
+          "name": "GURU_TOKEN",
+          "scope": "SCOPE_PROJECT",
+          "session": "019ca536-c073-781a-885e-8707d72158dd",
+          "source": "managementplane",
+          "sourceRef": "019a1328-5c58-72bf-819d-3d53c6ffa087"
+        },
+        {
+          "environmentVariable": "HUMANLOOP_API_KEY",
+          "id": "019a1328-5d4f-776f-996b-26edd9d351eb",
+          "name": "HUMANLOOP_API_KEY",
+          "scope": "SCOPE_PROJECT",
+          "session": "019ca536-c073-7820-801f-a60665b139f5",
+          "source": "managementplane",
+          "sourceRef": "019a1328-5d4f-776f-996b-26edd9d351eb"
+        },
+        {
+          "environmentVariable": "INCIDENT_IO_API_KEY",
+          "id": "019a1328-5e3f-7bf4-97d4-fa6673a5b258",
+          "name": "INCIDENT_IO_API_KEY",
+          "scope": "SCOPE_PROJECT",
+          "session": "019ca536-c073-7826-b247-dd668403b6ed",
+          "source": "managementplane",
+          "sourceRef": "019a1328-5e3f-7bf4-97d4-fa6673a5b258"
+        },
+        {
+          "environmentVariable": "JINA_API_KEY",
+          "id": "019a1328-5f42-7254-a924-d8762269ed8c",
+          "name": "JINA_API_KEY",
+          "scope": "SCOPE_PROJECT",
+          "session": "019ca536-c073-782c-9be8-29cc01d9c2ac",
+          "source": "managementplane",
+          "sourceRef": "019a1328-5f42-7254-a924-d8762269ed8c"
+        },
+        {
+          "environmentVariable": "LANG",
+          "id": "019b9a9f-ffc9-7e9a-a139-463841cc0c11",
+          "name": "LANG",
+          "scope": "SCOPE_PROJECT",
+          "session": "019ca536-c073-7832-87f6-06055e94e295",
+          "source": "managementplane",
+          "sourceRef": "019b9a9f-ffc9-7e9a-a139-463841cc0c11"
+        },
+        {
+          "environmentVariable": "LANGSMITH_API_KEY",
+          "id": "019a1328-6036-78fc-8c43-58d9d93b0dbf",
+          "name": "LANGSMITH_API_KEY",
+          "scope": "SCOPE_PROJECT",
+          "session": "019ca536-c073-7838-941f-72133848f95c",
+          "source": "managementplane",
+          "sourceRef": "019a1328-6036-78fc-8c43-58d9d93b0dbf"
+        },
+        {
+          "environmentVariable": "NGROK_AUTHTOKEN",
+          "id": "019a1328-6123-7eb8-814b-0a465193b7fe",
+          "name": "NGROK_AUTHTOKEN",
+          "scope": "SCOPE_PROJECT",
+          "session": "019ca536-c073-783f-8a7d-37e96826fc04",
+          "source": "managementplane",
+          "sourceRef": "019a1328-6123-7eb8-814b-0a465193b7fe"
+        },
+        {
+          "environmentVariable": "NPM_TASKFORCESH_TOKEN",
+          "id": "01993030-7f6a-793e-ab44-0c1d2ae09379",
+          "name": "NPM_TASKFORCESH_TOKEN",
+          "scope": "SCOPE_PROJECT",
+          "session": "019ca536-c073-7845-8090-416e886851eb",
+          "source": "managementplane",
+          "sourceRef": "01993030-7f6a-793e-ab44-0c1d2ae09379"
+        },
+        {
+          "environmentVariable": "OPENAI_API_KEY",
+          "id": "019a1328-630f-7574-b0ef-2aed99003676",
+          "name": "OPENAI_API_KEY",
+          "scope": "SCOPE_PROJECT",
+          "session": "019ca536-c073-784b-a48b-69222dc0458c",
+          "source": "managementplane",
+          "sourceRef": "019a1328-630f-7574-b0ef-2aed99003676"
+        },
+        {
+          "environmentVariable": "PINECONE_API_KEY",
+          "id": "019a1328-640b-79d8-9c09-d42da55a095a",
+          "name": "PINECONE_API_KEY",
+          "scope": "SCOPE_PROJECT",
+          "session": "019ca536-c073-7855-b683-d287b77e9213",
+          "source": "managementplane",
+          "sourceRef": "019a1328-640b-79d8-9c09-d42da55a095a"
+        },
+        {
+          "environmentVariable": "SEMGREP_APP_TOKEN",
+          "id": "019a1328-64fc-71c7-8ca2-0c9026043110",
+          "name": "SEMGREP_APP_TOKEN",
+          "scope": "SCOPE_PROJECT",
+          "session": "019ca536-c073-785c-99af-d3c9441f404e",
+          "source": "managementplane",
+          "sourceRef": "019a1328-64fc-71c7-8ca2-0c9026043110"
+        },
+        {
+          "environmentVariable": "SKIP_PREPARE_DEV_SERVICES",
+          "id": "019b389f-1356-7bc8-b1e5-8a88deed2d8c",
+          "name": "SKIP_PREPARE_DEV_SERVICES",
+          "scope": "SCOPE_PROJECT",
+          "session": "019ca536-c073-7862-a2c7-6902a57acd70",
+          "source": "managementplane",
+          "sourceRef": "019b389f-1356-7bc8-b1e5-8a88deed2d8c"
+        },
+        {
+          "environmentVariable": "TASKFORCE_DOCKER_LICENSE_KEY",
+          "id": "019a1328-65ff-717a-91fc-c51b846db53e",
+          "name": "TASKFORCE_DOCKER_LICENSE_KEY",
+          "scope": "SCOPE_PROJECT",
+          "session": "019ca536-c073-7868-89c8-8788a74cd15b",
+          "source": "managementplane",
+          "sourceRef": "019a1328-65ff-717a-91fc-c51b846db53e"
+        },
+        {
+          "environmentVariable": "TASKFORCE_DOCKER_USER",
+          "id": "019a1328-66fa-7187-bec5-0262e63f032f",
+          "name": "TASKFORCE_DOCKER_USER",
+          "scope": "SCOPE_PROJECT",
+          "session": "019ca536-c073-786d-9e54-7de0b732e0ba",
+          "source": "managementplane",
+          "sourceRef": "019a1328-66fa-7187-bec5-0262e63f032f"
+        },
+        {
+          "environmentVariable": "TURBOREPO_REMOTE_CACHE_ACCESS_KEY",
+          "id": "019930cd-74e3-7b2b-b6a9-b1f571c15c15",
+          "name": "TURBOREPO_REMOTE_CACHE_ACCESS_KEY",
+          "scope": "SCOPE_PROJECT",
+          "session": "019ca536-c073-7873-a852-78d21fcf3bd0",
+          "source": "managementplane",
+          "sourceRef": "019930cd-74e3-7b2b-b6a9-b1f571c15c15"
+        },
+        {
+          "environmentVariable": "TURBOREPO_REMOTE_CACHE_ACCESS_KEY_ID",
+          "id": "019930cd-b4b0-7d32-b3c7-154f40528109",
+          "name": "TURBOREPO_REMOTE_CACHE_ACCESS_KEY_ID",
+          "scope": "SCOPE_PROJECT",
+          "session": "019ca536-c073-788f-b04c-4e29b8c65d9c",
+          "source": "managementplane",
+          "sourceRef": "019930cd-b4b0-7d32-b3c7-154f40528109"
+        },
+        {
+          "environmentVariable": "GITHUB_USER",
+          "id": "019c4f4b-fcc9-75a5-bc0d-1ef33b27db07",
+          "name": "GITHUB_USER",
+          "scope": "SCOPE_USER",
+          "session": "019ca536-c073-7894-8d0c-2a38dd09728a",
+          "source": "managementplane",
+          "sourceRef": "019c4f4b-fcc9-75a5-bc0d-1ef33b27db07"
+        },
+        {
+          "environmentVariable": "EMAIL",
+          "id": "019c4f4c-587b-7076-aafb-ac4ae4e7869b",
+          "name": "EMAIL",
+          "scope": "SCOPE_USER",
+          "session": "019ca536-c073-789a-8ce9-3fa251f3c510",
+          "source": "managementplane",
+          "sourceRef": "019c4f4c-587b-7076-aafb-ac4ae4e7869b"
+        },
+        {
+          "environmentVariable": "DATADOG_APP_KEY",
+          "id": "019c53e9-5abb-723a-95fc-63b2b55baea6",
+          "name": "DATADOG_APP_KEY",
+          "scope": "SCOPE_USER",
+          "session": "019ca536-c073-78a1-a9d4-c2d756ff3a85",
+          "source": "managementplane",
+          "sourceRef": "019c53e9-5abb-723a-95fc-63b2b55baea6"
+        },
+        {
+          "environmentVariable": "ENABLE_GURU_MCP_SERVER",
+          "id": "019c53e9-a6e5-7303-b9bd-e120b1e89c3b",
+          "name": "ENABLE_GURU_MCP_SERVER",
+          "scope": "SCOPE_USER",
+          "session": "019ca536-c073-78a7-ba94-44ee00a6a76c",
+          "source": "managementplane",
+          "sourceRef": "019c53e9-a6e5-7303-b9bd-e120b1e89c3b"
+        },
+        {
+          "environmentVariable": "JIRA_API_TOKEN",
+          "id": "019c53eb-7484-722b-8877-c9a407f694e3",
+          "name": "JIRA_API_TOKEN",
+          "scope": "SCOPE_USER",
+          "session": "019ca536-c073-78ad-96ee-02d39d58ed24",
+          "source": "managementplane",
+          "sourceRef": "019c53eb-7484-722b-8877-c9a407f694e3"
+        },
+        {
+          "environmentVariable": "JIRA_EMAIL",
+          "id": "019c53eb-bda4-713a-8929-3bb43fac9e53",
+          "name": "JIRA_EMAIL",
+          "scope": "SCOPE_USER",
+          "session": "019ca536-c073-78b3-8daf-74ea268ffb97",
+          "source": "managementplane",
+          "sourceRef": "019c53eb-bda4-713a-8929-3bb43fac9e53"
+        },
+        {
+          "environmentVariable": "LANGSMITH_API_KEY",
+          "id": "019c53ec-6eba-7016-afed-59eff1c16188",
+          "name": "LANGSMITH_API_KEY",
+          "scope": "SCOPE_USER",
+          "session": "019ca536-c073-78b9-ba4d-e3f232c32e70",
+          "source": "managementplane",
+          "sourceRef": "019c53ec-6eba-7016-afed-59eff1c16188"
+        },
+        {
+          "environmentVariable": "NON_LOCAL_IMPERSONATION_ENABLED",
+          "id": "019c5454-73fc-7705-8cf5-10d757113c9a",
+          "name": "NON_LOCAL_IMPERSONATION_ENABLED",
+          "scope": "SCOPE_USER",
+          "session": "019ca536-c073-78bf-ae6e-ff5695b02846",
+          "source": "managementplane",
+          "sourceRef": "019c5454-73fc-7705-8cf5-10d757113c9a"
+        },
+        {
+          "filePath": "/usr/local/gitpod/secrets/token",
+          "id": "019c58cb-e6f6-7232-9224-e221d4033a67",
+          "name": "ENVIRONMENT_TOKEN",
+          "scope": "SCOPE_RUNNER",
+          "session": "019ca536-c073-78c5-b463-36cf235163cd",
+          "source": "verbatim"
+        },
+        {
+          "gitCredentialHost": "github.com",
+          "id": "019c58cb-e6fc-74eb-8e0c-d8add9ee87a3",
+          "name": "SCM_TOKEN",
+          "scope": "SCOPE_RUNNER",
+          "session": "019ca536-c073-78cb-8ac7-093dc02ec0a0",
+          "source": "verbatim"
+        }
+      ],
+      "specVersion": "1871",
+      "sshPublicKeys": [
+        {
+          "id": "7b22757269536368656d65223a227673636f6465222c22657874656e73696f6e4964223a22676974706f642e676974706f642d666c6578222c226d616368696e654964223a2262393432393736396238663031633036353435643032633732363961323163306165376334346662613831643962666236313031613137353130323462633363227d",
+          "value": "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIBYup8833sBpMxsINPBjbzHcqQEda904Wm4ntqKCVjZT yanxichen@YanxiC-J0396Y2QYC"
+        },
+        {
+          "id": "cf8964a1-7c05-5457-8d7f-3e9077ad11cc",
+          "value": "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIKGHsZhF74Y9LNrH3/pRhuybxg6BXKU2IDZxpX9qE1Zw"
+        },
+        {
+          "id": "7b22757269536368656d65223a22637572736f72222c22657874656e73696f6e4964223a22676974706f642e676974706f642d666c6578222c226d616368696e654964223a2232313736656336303130373235363535653332646439373866316539613134323037383437313161366438373430326635376663376434383230653537306363227d",
+          "value": "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIBYup8833sBpMxsINPBjbzHcqQEda904Wm4ntqKCVjZT yanxichen@YanxiC-J0396Y2QYC"
+        }
+      ],
+      "timeout": {
+        "disconnected": "28800s"
+      }
+    },
+    "status": {
+      "activitySignal": {
+        "source": "SSH connections",
+        "timestamp": "2026-03-01T01:10:00Z"
+      },
+      "automationsFile": {
+        "automationsFilePath": ".ona/automations.yaml",
+        "automationsFilePresence": "PRESENCE_DISCOVERED",
+        "phase": "CONTENT_PHASE_READY",
+        "session": "019c58cb-e6bc-77c2-9e6d-00ba79308327"
+      },
+      "content": {
+        "contentLocationInMachine": "/workspaces/obsidian",
+        "git": {
+          "branch": "yanxi/AIPLAT-188-shadow-mode-poc",
+          "changedFiles": [
+            {
+              "changeType": "CHANGE_TYPE_MODIFIED",
+              "path": "apps/ai-worker/src/jobs/release-orchestrator/index.ts"
+            },
+            {
+              "changeType": "CHANGE_TYPE_MODIFIED",
+              "path": "docker-compose-base.yml"
+            },
+            {
+              "changeType": "CHANGE_TYPE_MODIFIED",
+              "path": "packages/ai/src/product-specific-api-keys.ts"
+            },
+            {
+              "changeType": "CHANGE_TYPE_MODIFIED",
+              "path": "packages/ai/src/release/release-configs.ts"
+            },
+            {
+              "changeType": "CHANGE_TYPE_MODIFIED",
+              "path": "packages/core-infra/src/server/datadog.ts"
+            },
+            {
+              "changeType": "CHANGE_TYPE_MODIFIED",
+              "path": "packages/core-infra/src/service-lifecycle/service-startup.ts"
+            },
+            {
+              "changeType": "CHANGE_TYPE_UNTRACKED",
+              "path": ".cursor/rules/use-glean-for-google-docs.mdc"
+            },
+            {
+              "changeType": "CHANGE_TYPE_UNTRACKED",
+              "path": "AIPLAT-3-model-upgrade-tracker.xlsx"
+            },
+            {
+              "changeType": "CHANGE_TYPE_UNTRACKED",
+              "path": "Discuss Release Processes in Evidence Ev.md"
+            },
+            {
+              "changeType": "CHANGE_TYPE_UNTRACKED",
+              "path": "RFC_ AI Release Ramp.zip"
+            },
+            {
+              "changeType": "CHANGE_TYPE_UNTRACKED",
+              "path": "ai-product-release-processes-report.md"
+            },
+            {
+              "changeType": "CHANGE_TYPE_UNTRACKED",
+              "path": "apps/ai-worker/src/jobs/execute-evaluators-on-runs/index.ts"
+            },
+            {
+              "changeType": "CHANGE_TYPE_UNTRACKED",
+              "path": "auto-gradual-release-design.md"
+            },
+            {
+              "changeType": "CHANGE_TYPE_UNTRACKED",
+              "path": "packages/ai/src/config/llmVersionConfigs/ONBOARDING.md"
+            },
+            {
+              "changeType": "CHANGE_TYPE_UNTRACKED",
+              "path": "\"packages/server-common/src/grc/evidence-eval/completions/Screenshot 2026-02-27 at 11.32.01\\342\\200\\257AM.png\""
+            },
+            {
+              "changeType": "CHANGE_TYPE_UNTRACKED",
+              "path": "\"packages/server-common/src/grc/evidence-eval/completions/Screenshot 2026-02-27 at 12.00.26\\342\\200\\257PM.png\""
+            },
+            {
+              "changeType": "CHANGE_TYPE_UNTRACKED",
+              "path": "\"packages/server-common/src/grc/evidence-eval/completions/Screenshot 2026-02-27 at 12.05.50\\342\\200\\257PM.png\""
+            },
+            {
+              "changeType": "CHANGE_TYPE_UNTRACKED",
+              "path": "rfc-ai-release-ramp/RFCAIReleaseRamp.html"
+            },
+            {
+              "changeType": "CHANGE_TYPE_UNTRACKED",
+              "path": "rfc-ai-release-ramp/RFCAIReleaseRamp.md"
+            },
+            {
+              "changeType": "CHANGE_TYPE_UNTRACKED",
+              "path": "\"rfc-ai-release-ramp/Screenshot 2026-02-27 at 10.05.44\\342\\200\\257AM.png\""
+            },
+            {
+              "changeType": "CHANGE_TYPE_UNTRACKED",
+              "path": "\"rfc-ai-release-ramp/Screenshot 2026-02-27 at 10.32.11\\342\\200\\257AM.png\""
+            },
+            {
+              "changeType": "CHANGE_TYPE_UNTRACKED",
+              "path": "\"rfc-ai-release-ramp/Screenshot 2026-02-27 at 10.35.52\\342\\200\\257AM.png\""
+            },
+            {
+              "changeType": "CHANGE_TYPE_UNTRACKED",
+              "path": "\"rfc-ai-release-ramp/Screenshot 2026-02-27 at 9.46.19\\342\\200\\257AM.png\""
+            },
+            {
+              "changeType": "CHANGE_TYPE_UNTRACKED",
+              "path": "\"rfc-ai-release-ramp/Screenshot 2026-02-27 at 9.48.19\\342\\200\\257AM.png\""
+            },
+            {
+              "changeType": "CHANGE_TYPE_UNTRACKED",
+              "path": "rfc-ai-release-ramp/Untitled 3_2026-02-26-1302.csv"
+            },
+            {
+              "changeType": "CHANGE_TYPE_UNTRACKED",
+              "path": "rfc-ai-release-ramp/datadog.json"
+            },
+            {
+              "changeType": "CHANGE_TYPE_UNTRACKED",
+              "path": "rfc-ai-release-ramp/dependencies-and-failure-modes.md"
+            },
+            {
+              "changeType": "CHANGE_TYPE_UNTRACKED",
+              "path": "rfc-ai-release-ramp/execution-plan.md"
+            },
+            {
+              "changeType": "CHANGE_TYPE_UNTRACKED",
+              "path": "rfc-ai-release-ramp/images/image1.png"
+            },
+            {
+              "changeType": "CHANGE_TYPE_UNTRACKED",
+              "path": "rfc-ai-release-ramp/images/image2.png"
+            },
+            {
+              "changeType": "CHANGE_TYPE_UNTRACKED",
+              "path": "rfc-ai-release-ramp/sigma-dashboard-queries.sql"
+            },
+            {
+              "changeType": "CHANGE_TYPE_UNTRACKED",
+              "path": "session-notes-shadow-mode-poc.md"
+            },
+            {
+              "changeType": "CHANGE_TYPE_UNTRACKED",
+              "path": "vscode-ona-extension-plan.md"
+            }
+          ],
+          "cloneUrl": "https://github.com/VantaInc/obsidian.git",
+          "latestCommit": "afb4c49d938c389be56af70c3efd7fb3cd1e09aa",
+          "totalChangedFiles": 33
+        },
+        "phase": "CONTENT_PHASE_READY"
+      },
+      "devcontainer": {
+        "containerId": "18fcaa26176f1da7231ff7e7ffa1db6fa60544f1601f3c4a464f922d09cc2523",
+        "containerName": "/festive_benz",
+        "devcontainerFilePath": "/workspaces/obsidian/.devcontainer/devcontainer.json",
+        "devcontainerFilePresence": "PRESENCE_DISCOVERED",
+        "devcontainerconfigInSync": true,
+        "phase": "PHASE_RUNNING",
+        "remoteUser": "vscode",
+        "remoteWorkspaceFolder": "/workspaces/obsidian",
+        "secretsInSync": true,
+        "session": "019c58cb-e6f6-7237-881c-4dd5b9ea421f"
+      },
+      "environmentUrls": {
+        "logs": "https://22999--019c58cb-e6fc-7b62-a461-3851802bba52.ona-runner-us-west-2.ilmalabs.dev/logs",
+        "ops": "https://22999--019c58cb-e6fc-7b62-a461-3851802bba52.ona-runner-us-west-2.ilmalabs.dev",
+        "ports": [
+          {
+            "port": 8080,
+            "url": "https://8080s--019c58cb-e6fc-7b62-a461-3851802bba52.ona-runner-us-west-2.ilmalabs.dev"
+          }
+        ],
+        "ssh": {
+          "url": "https://019c58cb-e6fc-7b62-a461-3851802bba52.ona-runner-us-west-2.ilmalabs.dev:443"
+        },
+        "supportBundle": "https://019aebc6-eea0-7bfc-9c48-3046995ba7b0.ona-runner-us-west-2.ilmalabs.dev/support-bundle/environments/019c58cb-e6fc-7b62-a461-3851802bba52"
+      },
+      "machine": {
+        "phase": "PHASE_RUNNING",
+        "session": "019ca536-c06c-7d12-9d49-cdfc7bc942d0",
+        "versions": {
+          "supervisorCommit": "fa64bc5b0c6191a660ec026152b9553e1c2d3a33",
+          "supervisorVersion": "fa64bc5"
+        }
+      },
+      "phase": "ENVIRONMENT_PHASE_RUNNING",
+      "secrets": [
+        {
+          "id": "019a1328-4ef3-7d4a-b483-6576ef02e3fa",
+          "phase": "CONTENT_PHASE_READY",
+          "secretName": "AI_EVAL_AWS_SECRET_KEY",
+          "session": "019ca536-c073-77b8-9cf9-82349f877615"
+        },
+        {
+          "id": "019a1328-5054-7d53-a741-c12cc151aaff",
+          "phase": "CONTENT_PHASE_READY",
+          "secretName": "ANTHROPIC_API_KEY",
+          "session": "019ca536-c073-77c5-aabe-9406e3376c67"
+        },
+        {
+          "id": "019a1328-5182-755a-903f-1072b7698782",
+          "phase": "CONTENT_PHASE_READY",
+          "secretName": "AWS_DEV_ACCOUNT_ACCESS_KEY_ID",
+          "session": "019ca536-c073-77cc-a2e0-4e7f08d534ff"
+        },
+        {
+          "id": "019a1328-528f-7522-a4c5-fb323217903a",
+          "phase": "CONTENT_PHASE_READY",
+          "secretName": "AWS_DEV_ACCOUNT_SECRET_ACCESS_KEY",
+          "session": "019ca536-c073-77d1-9313-ca9bb77d17df"
+        },
+        {
+          "id": "0199303c-ada5-7b6d-b484-7e3ca2c49a0c",
+          "phase": "CONTENT_PHASE_READY",
+          "secretName": "AWS_SNAPSHOT_READER_ACCESS_KEY_ID_2",
+          "session": "019ca536-c073-77d7-aa05-c1899d262837"
+        },
+        {
+          "id": "0199303d-1367-7efb-8876-fb2305a934a3",
+          "phase": "CONTENT_PHASE_READY",
+          "secretName": "AWS_SNAPSHOT_READER_SECRET_ACCESS_KEY_2",
+          "session": "019ca536-c073-77de-ac2b-a7074f50c22f"
+        },
+        {
+          "id": "019a1328-5574-7646-8053-1ba3d47bfa22",
+          "phase": "CONTENT_PHASE_READY",
+          "secretName": "AZURE_AI_API_KEY",
+          "session": "019ca536-c073-77e4-add7-5670bd4c1054"
+        },
+        {
+          "id": "019a1328-5664-7841-8bb2-ee830b9dc37c",
+          "phase": "CONTENT_PHASE_READY",
+          "secretName": "BROWSERBASE_API_KEY",
+          "session": "019ca536-c073-77ea-b4d9-923ab3c42f29"
+        },
+        {
+          "id": "019a1328-5767-7a7f-8417-61bd2258f2c5",
+          "phase": "CONTENT_PHASE_READY",
+          "secretName": "BROWSERBASE_PROJECT_ID",
+          "session": "019ca536-c073-77f0-9301-2f491df82ea6"
+        },
+        {
+          "id": "019bb829-d4c0-72ba-b233-2bb3697fdfe0",
+          "phase": "CONTENT_PHASE_READY",
+          "secretName": "CLOUDSMITH_NPM_TOKEN",
+          "session": "019ca536-c073-77f6-834d-891d15bd1fa8"
+        },
+        {
+          "id": "019c53e9-5abb-723a-95fc-63b2b55baea6",
+          "phase": "CONTENT_PHASE_READY",
+          "secretName": "DATADOG_APP_KEY",
+          "session": "019ca536-c073-78a1-a9d4-c2d756ff3a85"
+        },
+        {
+          "id": "019a1328-5867-7103-82b5-c0944b4aef8b",
+          "phase": "CONTENT_PHASE_READY",
+          "secretName": "DATADOG_LOCAL_DEVELOPMENT_KEY_2",
+          "session": "019ca536-c073-77fc-939b-2ff0ff6359ff"
+        },
+        {
+          "id": "019c4f4c-587b-7076-aafb-ac4ae4e7869b",
+          "phase": "CONTENT_PHASE_READY",
+          "secretName": "EMAIL",
+          "session": "019ca536-c073-789a-8ce9-3fa251f3c510"
+        },
+        {
+          "id": "019c53e9-a6e5-7303-b9bd-e120b1e89c3b",
+          "phase": "CONTENT_PHASE_READY",
+          "secretName": "ENABLE_GURU_MCP_SERVER",
+          "session": "019ca536-c073-78a7-ba94-44ee00a6a76c"
+        },
+        {
+          "id": "019c58cb-e6f6-7232-9224-e221d4033a67",
+          "phase": "CONTENT_PHASE_READY",
+          "secretName": "ENVIRONMENT_TOKEN",
+          "session": "019ca536-c073-78c5-b463-36cf235163cd"
+        },
+        {
+          "id": "019c4f4b-fcc9-75a5-bc0d-1ef33b27db07",
+          "phase": "CONTENT_PHASE_READY",
+          "secretName": "GITHUB_USER",
+          "session": "019ca536-c073-7894-8d0c-2a38dd09728a"
+        },
+        {
+          "id": "019a1328-5972-7acc-806f-2363a86ae495",
+          "phase": "CONTENT_PHASE_READY",
+          "secretName": "GOOGLE_AI_API_KEY",
+          "session": "019ca536-c073-7808-bd39-580867db237a"
+        },
+        {
+          "id": "019a1328-5a7a-70d1-8cfd-3d0f68db5b76",
+          "phase": "CONTENT_PHASE_READY",
+          "secretName": "GOOGLE_CUA_SVC_ACC_CRED",
+          "session": "019ca536-c073-780e-a9c3-b5545053226d"
+        },
+        {
+          "id": "019a1328-5b6b-7a4f-8876-57159d03eb11",
+          "phase": "CONTENT_PHASE_READY",
+          "secretName": "GURU_EMAIL",
+          "session": "019ca536-c073-7815-812d-777d256e8868"
+        },
+        {
+          "id": "019a1328-5c58-72bf-819d-3d53c6ffa087",
+          "phase": "CONTENT_PHASE_READY",
+          "secretName": "GURU_TOKEN",
+          "session": "019ca536-c073-781a-885e-8707d72158dd"
+        },
+        {
+          "id": "019a1328-5d4f-776f-996b-26edd9d351eb",
+          "phase": "CONTENT_PHASE_READY",
+          "secretName": "HUMANLOOP_API_KEY",
+          "session": "019ca536-c073-7820-801f-a60665b139f5"
+        },
+        {
+          "id": "019a1328-5e3f-7bf4-97d4-fa6673a5b258",
+          "phase": "CONTENT_PHASE_READY",
+          "secretName": "INCIDENT_IO_API_KEY",
+          "session": "019ca536-c073-7826-b247-dd668403b6ed"
+        },
+        {
+          "id": "019a1298-46ca-7b1e-86dc-55eb38ecab9d",
+          "phase": "CONTENT_PHASE_READY",
+          "secretName": "IS_ON_ONA",
+          "session": "019ca536-c073-778b-9c46-ead590c57f07"
+        },
+        {
+          "id": "019a1328-5f42-7254-a924-d8762269ed8c",
+          "phase": "CONTENT_PHASE_READY",
+          "secretName": "JINA_API_KEY",
+          "session": "019ca536-c073-782c-9be8-29cc01d9c2ac"
+        },
+        {
+          "id": "019c53eb-7484-722b-8877-c9a407f694e3",
+          "phase": "CONTENT_PHASE_READY",
+          "secretName": "JIRA_API_TOKEN",
+          "session": "019ca536-c073-78ad-96ee-02d39d58ed24"
+        },
+        {
+          "id": "019c53eb-bda4-713a-8929-3bb43fac9e53",
+          "phase": "CONTENT_PHASE_READY",
+          "secretName": "JIRA_EMAIL",
+          "session": "019ca536-c073-78b3-8daf-74ea268ffb97"
+        },
+        {
+          "id": "019b9a9f-ffc9-7e9a-a139-463841cc0c11",
+          "phase": "CONTENT_PHASE_READY",
+          "secretName": "LANG",
+          "session": "019ca536-c073-7832-87f6-06055e94e295"
+        },
+        {
+          "id": "019c53ec-6eba-7016-afed-59eff1c16188",
+          "phase": "CONTENT_PHASE_READY",
+          "secretName": "LANGSMITH_API_KEY",
+          "session": "019ca536-c073-78b9-ba4d-e3f232c32e70"
+        },
+        {
+          "id": "019a1328-6123-7eb8-814b-0a465193b7fe",
+          "phase": "CONTENT_PHASE_READY",
+          "secretName": "NGROK_AUTHTOKEN",
+          "session": "019ca536-c073-783f-8a7d-37e96826fc04"
+        },
+        {
+          "id": "019c5454-73fc-7705-8cf5-10d757113c9a",
+          "phase": "CONTENT_PHASE_READY",
+          "secretName": "NON_LOCAL_IMPERSONATION_ENABLED",
+          "session": "019ca536-c073-78bf-ae6e-ff5695b02846"
+        },
+        {
+          "id": "01993030-7f6a-793e-ab44-0c1d2ae09379",
+          "phase": "CONTENT_PHASE_READY",
+          "secretName": "NPM_TASKFORCESH_TOKEN",
+          "session": "019ca536-c073-7845-8090-416e886851eb"
+        },
+        {
+          "id": "019a1328-630f-7574-b0ef-2aed99003676",
+          "phase": "CONTENT_PHASE_READY",
+          "secretName": "OPENAI_API_KEY",
+          "session": "019ca536-c073-784b-a48b-69222dc0458c"
+        },
+        {
+          "id": "019a1328-640b-79d8-9c09-d42da55a095a",
+          "phase": "CONTENT_PHASE_READY",
+          "secretName": "PINECONE_API_KEY",
+          "session": "019ca536-c073-7855-b683-d287b77e9213"
+        },
+        {
+          "id": "019ca6f2-5a0b-771c-958e-3c8311b8871c",
+          "phase": "CONTENT_PHASE_READY",
+          "secretName": "SCM_TOKEN",
+          "session": "8bf64691-5d94-4401-9721-d85bb027cb5d"
+        },
+        {
+          "id": "019a1328-64fc-71c7-8ca2-0c9026043110",
+          "phase": "CONTENT_PHASE_READY",
+          "secretName": "SEMGREP_APP_TOKEN",
+          "session": "019ca536-c073-785c-99af-d3c9441f404e"
+        },
+        {
+          "id": "019b389f-1356-7bc8-b1e5-8a88deed2d8c",
+          "phase": "CONTENT_PHASE_READY",
+          "secretName": "SKIP_PREPARE_DEV_SERVICES",
+          "session": "019ca536-c073-7862-a2c7-6902a57acd70"
+        },
+        {
+          "id": "019a1328-65ff-717a-91fc-c51b846db53e",
+          "phase": "CONTENT_PHASE_READY",
+          "secretName": "TASKFORCE_DOCKER_LICENSE_KEY",
+          "session": "019ca536-c073-7868-89c8-8788a74cd15b"
+        },
+        {
+          "id": "019a1328-66fa-7187-bec5-0262e63f032f",
+          "phase": "CONTENT_PHASE_READY",
+          "secretName": "TASKFORCE_DOCKER_USER",
+          "session": "019ca536-c073-786d-9e54-7de0b732e0ba"
+        },
+        {
+          "id": "019930cd-74e3-7b2b-b6a9-b1f571c15c15",
+          "phase": "CONTENT_PHASE_READY",
+          "secretName": "TURBOREPO_REMOTE_CACHE_ACCESS_KEY",
+          "session": "019ca536-c073-7873-a852-78d21fcf3bd0"
+        },
+        {
+          "id": "019930cd-b4b0-7d32-b3c7-154f40528109",
+          "phase": "CONTENT_PHASE_READY",
+          "secretName": "TURBOREPO_REMOTE_CACHE_ACCESS_KEY_ID",
+          "session": "019ca536-c073-788f-b04c-4e29b8c65d9c"
+        }
+      ],
+      "sshPublicKeys": [
+        {
+          "id": "7b22757269536368656d65223a227673636f6465222c22657874656e73696f6e4964223a22676974706f642e676974706f642d666c6578222c226d616368696e654964223a2262393432393736396238663031633036353435643032633732363961323163306165376334346662613831643962666236313031613137353130323462633363227d",
+          "phase": "CONTENT_PHASE_READY"
+        },
+        {
+          "id": "cf8964a1-7c05-5457-8d7f-3e9077ad11cc",
+          "phase": "CONTENT_PHASE_READY"
+        },
+        {
+          "id": "7b22757269536368656d65223a22637572736f72222c22657874656e73696f6e4964223a22676974706f642e676974706f642d666c6578222c226d616368696e654964223a2232313736656336303130373235363535653332646439373866316539613134323037383437313161366438373430326635376663376434383230653537306363227d",
+          "phase": "CONTENT_PHASE_READY"
+        }
+      ],
+      "statusVersion": "2602"
+    }
+  },
+  {
+    "id": "019c53ec-9b02-75ba-b3cf-aa1b4d6ee2a9",
+    "metadata": {
+      "createdAt": "2026-02-12T22:15:41.058392Z",
+      "creator": {
+        "id": "019c4f44-deec-71f6-b7f4-989f25e1185e",
+        "principal": "PRINCIPAL_USER"
+      },
+      "lastStartedAt": "2026-02-28T17:05:56.090780Z",
+      "organizationId": "0198ce60-f77b-7637-81a9-4b8e409a0de8",
+      "prebuildId": "019c5227-4fe9-7d70-99d7-cad45bdc3c86",
+      "projectId": "01992fca-c2a8-74d0-92dc-c356e45266ce",
+      "role": "ENVIRONMENT_ROLE_DEFAULT",
+      "runnerId": "019aebc6-eea0-7bfc-9c48-3046995ba7b0"
+    },
+    "spec": {
+      "automationsFile": {
+        "session": "019c53ec-9acb-70c7-a1d9-ee4eb75a5bfd"
+      },
+      "content": {
+        "initializer": {
+          "specs": [
+            {
+              "git": {
+                "checkoutLocation": "obsidian",
+                "cloneTarget": "main",
+                "remoteUri": "https://github.com/VantaInc/obsidian.git",
+                "targetMode": "CLONE_TARGET_MODE_REMOTE_BRANCH"
+              }
+            }
+          ]
+        }
+      },
+      "desiredPhase": "ENVIRONMENT_PHASE_RUNNING",
+      "devcontainer": {
+        "dotfiles": {
+          "repository": "https://github.com/YanxiChen-gh/Dotfiles"
+        },
+        "session": "019c53ec-9afc-7c01-a8ca-7c50950aa40a"
+      },
+      "machine": {
+        "class": "019b3484-f550-77bc-8c28-86627185b6a3",
+        "session": "019ca536-c575-7729-aaea-060fbac27143"
+      },
+      "ports": [
+        {
+          "admission": "ADMISSION_LEVEL_EVERYONE",
+          "name": "web",
+          "port": 8080,
+          "protocol": "PROTOCOL_HTTPS"
+        }
+      ],
+      "secrets": [
+        {
+          "environmentVariable": "NPM_TASKFORCESH_TOKEN",
+          "id": "01993ac3-ca8a-75bc-a700-c08eb214a42c",
+          "name": "NPM_TASKFORCESH_TOKEN",
+          "scope": "SCOPE_ORGANIZATION",
+          "session": "019ca536-c57a-7a31-9daa-8318f75a12b7",
+          "source": "managementplane",
+          "sourceRef": "01993ac3-ca8a-75bc-a700-c08eb214a42c"
+        },
+        {
+          "environmentVariable": "AWS_SNAPSHOT_READER_ACCESS_KEY_ID_2",
+          "id": "01993ac4-1e5d-755b-af98-d1e23b661755",
+          "name": "AWS_SNAPSHOT_READER_ACCESS_KEY_ID_2",
+          "scope": "SCOPE_ORGANIZATION",
+          "session": "019ca536-c57a-7a3c-94e3-3601a904b721",
+          "source": "managementplane",
+          "sourceRef": "01993ac4-1e5d-755b-af98-d1e23b661755"
+        },
+        {
+          "environmentVariable": "AWS_SNAPSHOT_READER_SECRET_ACCESS_KEY_2",
+          "id": "01993ac4-6e1a-768e-ba73-af08d5237114",
+          "name": "AWS_SNAPSHOT_READER_SECRET_ACCESS_KEY_2",
+          "scope": "SCOPE_ORGANIZATION",
+          "session": "019ca536-c57a-7a45-957c-cc1ee2fa67d2",
+          "source": "managementplane",
+          "sourceRef": "01993ac4-6e1a-768e-ba73-af08d5237114"
+        },
+        {
+          "environmentVariable": "TURBOREPO_REMOTE_CACHE_ACCESS_KEY_ID",
+          "id": "01993ac5-4dab-749a-8cc0-9b21b9e563f0",
+          "name": "TURBOREPO_REMOTE_CACHE_ACCESS_KEY_ID",
+          "scope": "SCOPE_ORGANIZATION",
+          "session": "019ca536-c57a-7a56-921b-2f1738e8cbcb",
+          "source": "managementplane",
+          "sourceRef": "01993ac5-4dab-749a-8cc0-9b21b9e563f0"
+        },
+        {
+          "environmentVariable": "TURBOREPO_REMOTE_CACHE_ACCESS_KEY",
+          "id": "01993ac5-8f00-7378-a5e0-4f5665ef0001",
+          "name": "TURBOREPO_REMOTE_CACHE_ACCESS_KEY",
+          "scope": "SCOPE_ORGANIZATION",
+          "session": "019ca536-c57a-7a5d-ad56-c7d32c8d5347",
+          "source": "managementplane",
+          "sourceRef": "01993ac5-8f00-7378-a5e0-4f5665ef0001"
+        },
+        {
+          "environmentVariable": "AWS_DEV_ACCOUNT_ACCESS_KEY_ID",
+          "id": "01993e6c-47c3-7d9d-b6bf-887a0d94efb6",
+          "name": "AWS_DEV_ACCOUNT_ACCESS_KEY_ID",
+          "scope": "SCOPE_ORGANIZATION",
+          "session": "019ca536-c57a-7a68-981f-f5dcdaa8a76a",
+          "source": "managementplane",
+          "sourceRef": "01993e6c-47c3-7d9d-b6bf-887a0d94efb6"
+        },
+        {
+          "environmentVariable": "AWS_DEV_ACCOUNT_SECRET_ACCESS_KEY",
+          "id": "01993e6c-9eaa-77af-b9ea-567f6895cafc",
+          "name": "AWS_DEV_ACCOUNT_SECRET_ACCESS_KEY",
+          "scope": "SCOPE_ORGANIZATION",
+          "session": "019ca536-c57a-7a6e-bf84-b974da887ab7",
+          "source": "managementplane",
+          "sourceRef": "01993e6c-9eaa-77af-b9ea-567f6895cafc"
+        },
+        {
+          "environmentVariable": "IS_ON_ONA",
+          "id": "019a1298-46ca-7b1e-86dc-55eb38ecab9d",
+          "name": "IS_ON_ONA",
+          "scope": "SCOPE_ORGANIZATION",
+          "session": "019ca536-c57a-7a73-9acb-27646353b710",
+          "source": "managementplane",
+          "sourceRef": "019a1298-46ca-7b1e-86dc-55eb38ecab9d"
+        },
+        {
+          "environmentVariable": "AI_EVAL_AWS_SECRET_KEY",
+          "id": "019a1328-4ef3-7d4a-b483-6576ef02e3fa",
+          "name": "AI_EVAL_AWS_SECRET_KEY",
+          "scope": "SCOPE_PROJECT",
+          "session": "019ca536-c57a-7a77-b210-813f8bbcb259",
+          "source": "managementplane",
+          "sourceRef": "019a1328-4ef3-7d4a-b483-6576ef02e3fa"
+        },
+        {
+          "environmentVariable": "ANTHROPIC_API_KEY",
+          "id": "019a1328-5054-7d53-a741-c12cc151aaff",
+          "name": "ANTHROPIC_API_KEY",
+          "scope": "SCOPE_PROJECT",
+          "session": "019ca536-c57a-7a81-9bc5-40e894dbb61b",
+          "source": "managementplane",
+          "sourceRef": "019a1328-5054-7d53-a741-c12cc151aaff"
+        },
+        {
+          "environmentVariable": "AWS_DEV_ACCOUNT_ACCESS_KEY_ID",
+          "id": "019a1328-5182-755a-903f-1072b7698782",
+          "name": "AWS_DEV_ACCOUNT_ACCESS_KEY_ID",
+          "scope": "SCOPE_PROJECT",
+          "session": "019ca536-c57a-7a86-8d3e-873690469e9d",
+          "source": "managementplane",
+          "sourceRef": "019a1328-5182-755a-903f-1072b7698782"
+        },
+        {
+          "environmentVariable": "AWS_DEV_ACCOUNT_SECRET_ACCESS_KEY",
+          "id": "019a1328-528f-7522-a4c5-fb323217903a",
+          "name": "AWS_DEV_ACCOUNT_SECRET_ACCESS_KEY",
+          "scope": "SCOPE_PROJECT",
+          "session": "019ca536-c57a-7a8a-8ce7-0f1aea0ae630",
+          "source": "managementplane",
+          "sourceRef": "019a1328-528f-7522-a4c5-fb323217903a"
+        },
+        {
+          "environmentVariable": "AWS_SNAPSHOT_READER_ACCESS_KEY_ID_2",
+          "id": "0199303c-ada5-7b6d-b484-7e3ca2c49a0c",
+          "name": "AWS_SNAPSHOT_READER_ACCESS_KEY_ID_2",
+          "scope": "SCOPE_PROJECT",
+          "session": "019ca536-c57a-7a8f-a2a2-452d2fd73e0e",
+          "source": "managementplane",
+          "sourceRef": "0199303c-ada5-7b6d-b484-7e3ca2c49a0c"
+        },
+        {
+          "environmentVariable": "AWS_SNAPSHOT_READER_SECRET_ACCESS_KEY_2",
+          "id": "0199303d-1367-7efb-8876-fb2305a934a3",
+          "name": "AWS_SNAPSHOT_READER_SECRET_ACCESS_KEY_2",
+          "scope": "SCOPE_PROJECT",
+          "session": "019ca536-c57a-7a94-b138-7a70656c9f4d",
+          "source": "managementplane",
+          "sourceRef": "0199303d-1367-7efb-8876-fb2305a934a3"
+        },
+        {
+          "environmentVariable": "AZURE_AI_API_KEY",
+          "id": "019a1328-5574-7646-8053-1ba3d47bfa22",
+          "name": "AZURE_AI_API_KEY",
+          "scope": "SCOPE_PROJECT",
+          "session": "019ca536-c57a-7a98-bc8b-fd60fbf028d6",
+          "source": "managementplane",
+          "sourceRef": "019a1328-5574-7646-8053-1ba3d47bfa22"
+        },
+        {
+          "environmentVariable": "BROWSERBASE_API_KEY",
+          "id": "019a1328-5664-7841-8bb2-ee830b9dc37c",
+          "name": "BROWSERBASE_API_KEY",
+          "scope": "SCOPE_PROJECT",
+          "session": "019ca536-c57a-7a9d-8b65-f1a8d670aade",
+          "source": "managementplane",
+          "sourceRef": "019a1328-5664-7841-8bb2-ee830b9dc37c"
+        },
+        {
+          "environmentVariable": "BROWSERBASE_PROJECT_ID",
+          "id": "019a1328-5767-7a7f-8417-61bd2258f2c5",
+          "name": "BROWSERBASE_PROJECT_ID",
+          "scope": "SCOPE_PROJECT",
+          "session": "019ca536-c57a-7aa2-b4ad-c1a1e7992164",
+          "source": "managementplane",
+          "sourceRef": "019a1328-5767-7a7f-8417-61bd2258f2c5"
+        },
+        {
+          "environmentVariable": "CLOUDSMITH_NPM_TOKEN",
+          "id": "019bb829-d4c0-72ba-b233-2bb3697fdfe0",
+          "name": "CLOUDSMITH_NPM_TOKEN",
+          "scope": "SCOPE_PROJECT",
+          "session": "019ca536-c57a-7aa6-bc05-9029d6abe8bc",
+          "source": "managementplane",
+          "sourceRef": "019bb829-d4c0-72ba-b233-2bb3697fdfe0"
+        },
+        {
+          "environmentVariable": "DATADOG_LOCAL_DEVELOPMENT_KEY_2",
+          "id": "019a1328-5867-7103-82b5-c0944b4aef8b",
+          "name": "DATADOG_LOCAL_DEVELOPMENT_KEY_2",
+          "scope": "SCOPE_PROJECT",
+          "session": "019ca536-c57a-7aaa-908f-c5dfdf85476b",
+          "source": "managementplane",
+          "sourceRef": "019a1328-5867-7103-82b5-c0944b4aef8b"
+        },
+        {
+          "environmentVariable": "GOOGLE_AI_API_KEY",
+          "id": "019a1328-5972-7acc-806f-2363a86ae495",
+          "name": "GOOGLE_AI_API_KEY",
+          "scope": "SCOPE_PROJECT",
+          "session": "019ca536-c57a-7ab5-aa4b-729902023006",
+          "source": "managementplane",
+          "sourceRef": "019a1328-5972-7acc-806f-2363a86ae495"
+        },
+        {
+          "environmentVariable": "GOOGLE_CUA_SVC_ACC_CRED",
+          "id": "019a1328-5a7a-70d1-8cfd-3d0f68db5b76",
+          "name": "GOOGLE_CUA_SVC_ACC_CRED",
+          "scope": "SCOPE_PROJECT",
+          "session": "019ca536-c57a-7aba-8cfa-97f4df932d2d",
+          "source": "managementplane",
+          "sourceRef": "019a1328-5a7a-70d1-8cfd-3d0f68db5b76"
+        },
+        {
+          "environmentVariable": "GURU_EMAIL",
+          "id": "019a1328-5b6b-7a4f-8876-57159d03eb11",
+          "name": "GURU_EMAIL",
+          "scope": "SCOPE_PROJECT",
+          "session": "019ca536-c57a-7abf-9043-845f87b7af02",
+          "source": "managementplane",
+          "sourceRef": "019a1328-5b6b-7a4f-8876-57159d03eb11"
+        },
+        {
+          "environmentVariable": "GURU_TOKEN",
+          "id": "019a1328-5c58-72bf-819d-3d53c6ffa087",
+          "name": "GURU_TOKEN",
+          "scope": "SCOPE_PROJECT",
+          "session": "019ca536-c57a-7ac3-8e89-ec9d0c369385",
+          "source": "managementplane",
+          "sourceRef": "019a1328-5c58-72bf-819d-3d53c6ffa087"
+        },
+        {
+          "environmentVariable": "HUMANLOOP_API_KEY",
+          "id": "019a1328-5d4f-776f-996b-26edd9d351eb",
+          "name": "HUMANLOOP_API_KEY",
+          "scope": "SCOPE_PROJECT",
+          "session": "019ca536-c57a-7ac7-84f1-c01728b68bc6",
+          "source": "managementplane",
+          "sourceRef": "019a1328-5d4f-776f-996b-26edd9d351eb"
+        },
+        {
+          "environmentVariable": "INCIDENT_IO_API_KEY",
+          "id": "019a1328-5e3f-7bf4-97d4-fa6673a5b258",
+          "name": "INCIDENT_IO_API_KEY",
+          "scope": "SCOPE_PROJECT",
+          "session": "019ca536-c57a-7acc-bd04-59d903b445bc",
+          "source": "managementplane",
+          "sourceRef": "019a1328-5e3f-7bf4-97d4-fa6673a5b258"
+        },
+        {
+          "environmentVariable": "JINA_API_KEY",
+          "id": "019a1328-5f42-7254-a924-d8762269ed8c",
+          "name": "JINA_API_KEY",
+          "scope": "SCOPE_PROJECT",
+          "session": "019ca536-c57a-7ad1-9eea-bd92c3294ad0",
+          "source": "managementplane",
+          "sourceRef": "019a1328-5f42-7254-a924-d8762269ed8c"
+        },
+        {
+          "environmentVariable": "LANG",
+          "id": "019b9a9f-ffc9-7e9a-a139-463841cc0c11",
+          "name": "LANG",
+          "scope": "SCOPE_PROJECT",
+          "session": "019ca536-c57a-7ad5-86ea-dbac3cd61c11",
+          "source": "managementplane",
+          "sourceRef": "019b9a9f-ffc9-7e9a-a139-463841cc0c11"
+        },
+        {
+          "environmentVariable": "LANGSMITH_API_KEY",
+          "id": "019a1328-6036-78fc-8c43-58d9d93b0dbf",
+          "name": "LANGSMITH_API_KEY",
+          "scope": "SCOPE_PROJECT",
+          "session": "019ca536-c57a-7ada-ac7f-48d15c2adbac",
+          "source": "managementplane",
+          "sourceRef": "019a1328-6036-78fc-8c43-58d9d93b0dbf"
+        },
+        {
+          "environmentVariable": "NGROK_AUTHTOKEN",
+          "id": "019a1328-6123-7eb8-814b-0a465193b7fe",
+          "name": "NGROK_AUTHTOKEN",
+          "scope": "SCOPE_PROJECT",
+          "session": "019ca536-c57a-7ade-8722-de88103bd154",
+          "source": "managementplane",
+          "sourceRef": "019a1328-6123-7eb8-814b-0a465193b7fe"
+        },
+        {
+          "environmentVariable": "NPM_TASKFORCESH_TOKEN",
+          "id": "01993030-7f6a-793e-ab44-0c1d2ae09379",
+          "name": "NPM_TASKFORCESH_TOKEN",
+          "scope": "SCOPE_PROJECT",
+          "session": "019ca536-c57a-7ae3-806a-1c8f600a1c3c",
+          "source": "managementplane",
+          "sourceRef": "01993030-7f6a-793e-ab44-0c1d2ae09379"
+        },
+        {
+          "environmentVariable": "OPENAI_API_KEY",
+          "id": "019a1328-630f-7574-b0ef-2aed99003676",
+          "name": "OPENAI_API_KEY",
+          "scope": "SCOPE_PROJECT",
+          "session": "019ca536-c57a-7ae7-bbf0-b0b0bfbaf3f2",
+          "source": "managementplane",
+          "sourceRef": "019a1328-630f-7574-b0ef-2aed99003676"
+        },
+        {
+          "environmentVariable": "PINECONE_API_KEY",
+          "id": "019a1328-640b-79d8-9c09-d42da55a095a",
+          "name": "PINECONE_API_KEY",
+          "scope": "SCOPE_PROJECT",
+          "session": "019ca536-c57a-7aeb-a8b8-a5873ed70356",
+          "source": "managementplane",
+          "sourceRef": "019a1328-640b-79d8-9c09-d42da55a095a"
+        },
+        {
+          "environmentVariable": "SEMGREP_APP_TOKEN",
+          "id": "019a1328-64fc-71c7-8ca2-0c9026043110",
+          "name": "SEMGREP_APP_TOKEN",
+          "scope": "SCOPE_PROJECT",
+          "session": "019ca536-c57a-7af0-a1b8-0efc124ac71b",
+          "source": "managementplane",
+          "sourceRef": "019a1328-64fc-71c7-8ca2-0c9026043110"
+        },
+        {
+          "environmentVariable": "SKIP_PREPARE_DEV_SERVICES",
+          "id": "019b389f-1356-7bc8-b1e5-8a88deed2d8c",
+          "name": "SKIP_PREPARE_DEV_SERVICES",
+          "scope": "SCOPE_PROJECT",
+          "session": "019ca536-c57a-7af5-9500-614d8eea66a2",
+          "source": "managementplane",
+          "sourceRef": "019b389f-1356-7bc8-b1e5-8a88deed2d8c"
+        },
+        {
+          "environmentVariable": "TASKFORCE_DOCKER_LICENSE_KEY",
+          "id": "019a1328-65ff-717a-91fc-c51b846db53e",
+          "name": "TASKFORCE_DOCKER_LICENSE_KEY",
+          "scope": "SCOPE_PROJECT",
+          "session": "019ca536-c57a-7af9-b0c2-5f0302b86abd",
+          "source": "managementplane",
+          "sourceRef": "019a1328-65ff-717a-91fc-c51b846db53e"
+        },
+        {
+          "environmentVariable": "TASKFORCE_DOCKER_USER",
+          "id": "019a1328-66fa-7187-bec5-0262e63f032f",
+          "name": "TASKFORCE_DOCKER_USER",
+          "scope": "SCOPE_PROJECT",
+          "session": "019ca536-c57a-7afd-bf1d-7866e09ef0df",
+          "source": "managementplane",
+          "sourceRef": "019a1328-66fa-7187-bec5-0262e63f032f"
+        },
+        {
+          "environmentVariable": "TURBOREPO_REMOTE_CACHE_ACCESS_KEY",
+          "id": "019930cd-74e3-7b2b-b6a9-b1f571c15c15",
+          "name": "TURBOREPO_REMOTE_CACHE_ACCESS_KEY",
+          "scope": "SCOPE_PROJECT",
+          "session": "019ca536-c57a-7b03-9f88-ef894e946658",
+          "source": "managementplane",
+          "sourceRef": "019930cd-74e3-7b2b-b6a9-b1f571c15c15"
+        },
+        {
+          "environmentVariable": "TURBOREPO_REMOTE_CACHE_ACCESS_KEY_ID",
+          "id": "019930cd-b4b0-7d32-b3c7-154f40528109",
+          "name": "TURBOREPO_REMOTE_CACHE_ACCESS_KEY_ID",
+          "scope": "SCOPE_PROJECT",
+          "session": "019ca536-c57a-7b25-9acb-c86f7c000c2a",
+          "source": "managementplane",
+          "sourceRef": "019930cd-b4b0-7d32-b3c7-154f40528109"
+        },
+        {
+          "environmentVariable": "GITHUB_USER",
+          "id": "019c4f4b-fcc9-75a5-bc0d-1ef33b27db07",
+          "name": "GITHUB_USER",
+          "scope": "SCOPE_USER",
+          "session": "019ca536-c57a-7b2a-9973-2cf41fb59be9",
+          "source": "managementplane",
+          "sourceRef": "019c4f4b-fcc9-75a5-bc0d-1ef33b27db07"
+        },
+        {
+          "environmentVariable": "EMAIL",
+          "id": "019c4f4c-587b-7076-aafb-ac4ae4e7869b",
+          "name": "EMAIL",
+          "scope": "SCOPE_USER",
+          "session": "019ca536-c57a-7b2e-ada9-5dc8ab51ddf4",
+          "source": "managementplane",
+          "sourceRef": "019c4f4c-587b-7076-aafb-ac4ae4e7869b"
+        },
+        {
+          "environmentVariable": "DATADOG_APP_KEY",
+          "id": "019c53e9-5abb-723a-95fc-63b2b55baea6",
+          "name": "DATADOG_APP_KEY",
+          "scope": "SCOPE_USER",
+          "session": "019ca536-c57a-7b39-88e0-75e411a05f51",
+          "source": "managementplane",
+          "sourceRef": "019c53e9-5abb-723a-95fc-63b2b55baea6"
+        },
+        {
+          "environmentVariable": "ENABLE_GURU_MCP_SERVER",
+          "id": "019c53e9-a6e5-7303-b9bd-e120b1e89c3b",
+          "name": "ENABLE_GURU_MCP_SERVER",
+          "scope": "SCOPE_USER",
+          "session": "019ca536-c57a-7b3e-a123-81b16d26a788",
+          "source": "managementplane",
+          "sourceRef": "019c53e9-a6e5-7303-b9bd-e120b1e89c3b"
+        },
+        {
+          "environmentVariable": "JIRA_API_TOKEN",
+          "id": "019c53eb-7484-722b-8877-c9a407f694e3",
+          "name": "JIRA_API_TOKEN",
+          "scope": "SCOPE_USER",
+          "session": "019ca536-c57a-7b42-8b38-00429e362e71",
+          "source": "managementplane",
+          "sourceRef": "019c53eb-7484-722b-8877-c9a407f694e3"
+        },
+        {
+          "environmentVariable": "JIRA_EMAIL",
+          "id": "019c53eb-bda4-713a-8929-3bb43fac9e53",
+          "name": "JIRA_EMAIL",
+          "scope": "SCOPE_USER",
+          "session": "019ca536-c57a-7b47-b792-76dd1c04534d",
+          "source": "managementplane",
+          "sourceRef": "019c53eb-bda4-713a-8929-3bb43fac9e53"
+        },
+        {
+          "environmentVariable": "LANGSMITH_API_KEY",
+          "id": "019c53ec-6eba-7016-afed-59eff1c16188",
+          "name": "LANGSMITH_API_KEY",
+          "scope": "SCOPE_USER",
+          "session": "019ca536-c57a-7b4b-8523-cbf1280290ac",
+          "source": "managementplane",
+          "sourceRef": "019c53ec-6eba-7016-afed-59eff1c16188"
+        },
+        {
+          "filePath": "/usr/local/gitpod/secrets/token",
+          "id": "019c53ec-9afc-7bfd-9740-5089063b07ec",
+          "name": "ENVIRONMENT_TOKEN",
+          "scope": "SCOPE_RUNNER",
+          "session": "019ca536-c57a-7b50-9848-c415f94e8f2a",
+          "source": "verbatim"
+        },
+        {
+          "gitCredentialHost": "github.com",
+          "id": "019c53ec-9b01-7d2f-b8c3-ce2995f70095",
+          "name": "SCM_TOKEN",
+          "scope": "SCOPE_RUNNER",
+          "session": "019ca536-c57a-7b55-b666-a84d9b357792",
+          "source": "verbatim"
+        }
+      ],
+      "specVersion": "1381",
+      "sshPublicKeys": [
+        {
+          "id": "7b22757269536368656d65223a227673636f6465222c22657874656e73696f6e4964223a22676974706f642e676974706f642d666c6578222c226d616368696e654964223a2262393432393736396238663031633036353435643032633732363961323163306165376334346662613831643962666236313031613137353130323462633363227d",
+          "value": "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIBYup8833sBpMxsINPBjbzHcqQEda904Wm4ntqKCVjZT yanxichen@YanxiC-J0396Y2QYC"
+        },
+        {
+          "id": "cf8964a1-7c05-5457-8d7f-3e9077ad11cc",
+          "value": "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIKGHsZhF74Y9LNrH3/pRhuybxg6BXKU2IDZxpX9qE1Zw"
+        },
+        {
+          "id": "7b22757269536368656d65223a22637572736f72222c22657874656e73696f6e4964223a22676974706f642e676974706f642d666c6578222c226d616368696e654964223a2232313736656336303130373235363535653332646439373866316539613134323037383437313161366438373430326635376663376434383230653537306363227d",
+          "value": "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIBYup8833sBpMxsINPBjbzHcqQEda904Wm4ntqKCVjZT yanxichen@YanxiC-J0396Y2QYC"
+        }
+      ],
+      "timeout": {
+        "disconnected": "28800s"
+      }
+    },
+    "status": {
+      "activitySignal": {
+        "source": "SSH connections",
+        "timestamp": "2026-02-28T23:45:00Z"
+      },
+      "automationsFile": {
+        "automationsFilePath": ".ona/automations.yaml",
+        "automationsFilePresence": "PRESENCE_DISCOVERED",
+        "phase": "CONTENT_PHASE_READY",
+        "session": "019c53ec-9acb-70c7-a1d9-ee4eb75a5bfd"
+      },
+      "content": {
+        "contentLocationInMachine": "/workspaces/obsidian",
+        "git": {
+          "branch": "AIPLAT-106",
+          "changedFiles": [
+            {
+              "changeType": "CHANGE_TYPE_UNTRACKED",
+              "path": ".claude/worktrees/AIPLAT-106/"
+            },
+            {
+              "changeType": "CHANGE_TYPE_UNTRACKED",
+              "path": ".cursor/rules/format-urls-as-markdown-links.mdc"
+            }
+          ],
+          "cloneUrl": "https://github.com/VantaInc/obsidian.git",
+          "latestCommit": "62a0547fe706b817e47ce0391d2bbbd2beb27fba",
+          "totalChangedFiles": 2,
+          "totalUnpushedCommits": 1,
+          "unpushedCommits": [
+            "67f079f587a: [AIPLAT-106] Add LangSmith URL import for dataset-from-traces flow"
+          ]
+        },
+        "phase": "CONTENT_PHASE_READY"
+      },
+      "devcontainer": {
+        "containerId": "bce366db170f19a2c9b281046bbd9d4ef22d7b9a0ec3e3297b9bf52366931950",
+        "containerName": "/adoring_swirles",
+        "devcontainerFilePath": "/workspaces/obsidian/.devcontainer/devcontainer.json",
+        "devcontainerFilePresence": "PRESENCE_DISCOVERED",
+        "devcontainerconfigInSync": true,
+        "phase": "PHASE_RUNNING",
+        "remoteUser": "vscode",
+        "remoteWorkspaceFolder": "/workspaces/obsidian",
+        "secretsInSync": true,
+        "session": "019c53ec-9afc-7c01-a8ca-7c50950aa40a"
+      },
+      "environmentUrls": {
+        "logs": "https://22999--019c53ec-9b02-75ba-b3cf-aa1b4d6ee2a9.ona-runner-us-west-2.ilmalabs.dev/logs",
+        "ops": "https://22999--019c53ec-9b02-75ba-b3cf-aa1b4d6ee2a9.ona-runner-us-west-2.ilmalabs.dev",
+        "ports": [
+          {
+            "port": 8080,
+            "url": "https://8080s--019c53ec-9b02-75ba-b3cf-aa1b4d6ee2a9.ona-runner-us-west-2.ilmalabs.dev"
+          }
+        ],
+        "ssh": {
+          "url": "https://019c53ec-9b02-75ba-b3cf-aa1b4d6ee2a9.ona-runner-us-west-2.ilmalabs.dev:443"
+        },
+        "supportBundle": "https://019aebc6-eea0-7bfc-9c48-3046995ba7b0.ona-runner-us-west-2.ilmalabs.dev/support-bundle/environments/019c53ec-9b02-75ba-b3cf-aa1b4d6ee2a9"
+      },
+      "machine": {
+        "phase": "PHASE_RUNNING",
+        "session": "019ca536-c575-7729-aaea-060fbac27143",
+        "versions": {
+          "supervisorCommit": "bd34fc444cb58278d067f8e72157542e9fb91e1f",
+          "supervisorVersion": "bd34fc4"
+        }
+      },
+      "phase": "ENVIRONMENT_PHASE_RUNNING",
+      "secrets": [
+        {
+          "id": "019a1328-4ef3-7d4a-b483-6576ef02e3fa",
+          "phase": "CONTENT_PHASE_READY",
+          "secretName": "AI_EVAL_AWS_SECRET_KEY",
+          "session": "019ca536-c57a-7a77-b210-813f8bbcb259"
+        },
+        {
+          "id": "019a1328-5054-7d53-a741-c12cc151aaff",
+          "phase": "CONTENT_PHASE_READY",
+          "secretName": "ANTHROPIC_API_KEY",
+          "session": "019ca536-c57a-7a81-9bc5-40e894dbb61b"
+        },
+        {
+          "id": "019a1328-5182-755a-903f-1072b7698782",
+          "phase": "CONTENT_PHASE_READY",
+          "secretName": "AWS_DEV_ACCOUNT_ACCESS_KEY_ID",
+          "session": "019ca536-c57a-7a86-8d3e-873690469e9d"
+        },
+        {
+          "id": "019a1328-528f-7522-a4c5-fb323217903a",
+          "phase": "CONTENT_PHASE_READY",
+          "secretName": "AWS_DEV_ACCOUNT_SECRET_ACCESS_KEY",
+          "session": "019ca536-c57a-7a8a-8ce7-0f1aea0ae630"
+        },
+        {
+          "id": "0199303c-ada5-7b6d-b484-7e3ca2c49a0c",
+          "phase": "CONTENT_PHASE_READY",
+          "secretName": "AWS_SNAPSHOT_READER_ACCESS_KEY_ID_2",
+          "session": "019ca536-c57a-7a8f-a2a2-452d2fd73e0e"
+        },
+        {
+          "id": "0199303d-1367-7efb-8876-fb2305a934a3",
+          "phase": "CONTENT_PHASE_READY",
+          "secretName": "AWS_SNAPSHOT_READER_SECRET_ACCESS_KEY_2",
+          "session": "019ca536-c57a-7a94-b138-7a70656c9f4d"
+        },
+        {
+          "id": "019a1328-5574-7646-8053-1ba3d47bfa22",
+          "phase": "CONTENT_PHASE_READY",
+          "secretName": "AZURE_AI_API_KEY",
+          "session": "019ca536-c57a-7a98-bc8b-fd60fbf028d6"
+        },
+        {
+          "id": "019a1328-5664-7841-8bb2-ee830b9dc37c",
+          "phase": "CONTENT_PHASE_READY",
+          "secretName": "BROWSERBASE_API_KEY",
+          "session": "019ca536-c57a-7a9d-8b65-f1a8d670aade"
+        },
+        {
+          "id": "019a1328-5767-7a7f-8417-61bd2258f2c5",
+          "phase": "CONTENT_PHASE_READY",
+          "secretName": "BROWSERBASE_PROJECT_ID",
+          "session": "019ca536-c57a-7aa2-b4ad-c1a1e7992164"
+        },
+        {
+          "id": "019bb829-d4c0-72ba-b233-2bb3697fdfe0",
+          "phase": "CONTENT_PHASE_READY",
+          "secretName": "CLOUDSMITH_NPM_TOKEN",
+          "session": "019ca536-c57a-7aa6-bc05-9029d6abe8bc"
+        },
+        {
+          "id": "019c53e9-5abb-723a-95fc-63b2b55baea6",
+          "phase": "CONTENT_PHASE_READY",
+          "secretName": "DATADOG_APP_KEY",
+          "session": "019ca536-c57a-7b39-88e0-75e411a05f51"
+        },
+        {
+          "id": "019a1328-5867-7103-82b5-c0944b4aef8b",
+          "phase": "CONTENT_PHASE_READY",
+          "secretName": "DATADOG_LOCAL_DEVELOPMENT_KEY_2",
+          "session": "019ca536-c57a-7aaa-908f-c5dfdf85476b"
+        },
+        {
+          "id": "019c4f4c-587b-7076-aafb-ac4ae4e7869b",
+          "phase": "CONTENT_PHASE_READY",
+          "secretName": "EMAIL",
+          "session": "019ca536-c57a-7b2e-ada9-5dc8ab51ddf4"
+        },
+        {
+          "id": "019c53e9-a6e5-7303-b9bd-e120b1e89c3b",
+          "phase": "CONTENT_PHASE_READY",
+          "secretName": "ENABLE_GURU_MCP_SERVER",
+          "session": "019ca536-c57a-7b3e-a123-81b16d26a788"
+        },
+        {
+          "id": "019c53ec-9afc-7bfd-9740-5089063b07ec",
+          "phase": "CONTENT_PHASE_READY",
+          "secretName": "ENVIRONMENT_TOKEN",
+          "session": "019ca536-c57a-7b50-9848-c415f94e8f2a"
+        },
+        {
+          "id": "019c4f4b-fcc9-75a5-bc0d-1ef33b27db07",
+          "phase": "CONTENT_PHASE_READY",
+          "secretName": "GITHUB_USER",
+          "session": "019ca536-c57a-7b2a-9973-2cf41fb59be9"
+        },
+        {
+          "id": "019a1328-5972-7acc-806f-2363a86ae495",
+          "phase": "CONTENT_PHASE_READY",
+          "secretName": "GOOGLE_AI_API_KEY",
+          "session": "019ca536-c57a-7ab5-aa4b-729902023006"
+        },
+        {
+          "id": "019a1328-5a7a-70d1-8cfd-3d0f68db5b76",
+          "phase": "CONTENT_PHASE_READY",
+          "secretName": "GOOGLE_CUA_SVC_ACC_CRED",
+          "session": "019ca536-c57a-7aba-8cfa-97f4df932d2d"
+        },
+        {
+          "id": "019a1328-5b6b-7a4f-8876-57159d03eb11",
+          "phase": "CONTENT_PHASE_READY",
+          "secretName": "GURU_EMAIL",
+          "session": "019ca536-c57a-7abf-9043-845f87b7af02"
+        },
+        {
+          "id": "019a1328-5c58-72bf-819d-3d53c6ffa087",
+          "phase": "CONTENT_PHASE_READY",
+          "secretName": "GURU_TOKEN",
+          "session": "019ca536-c57a-7ac3-8e89-ec9d0c369385"
+        },
+        {
+          "id": "019a1328-5d4f-776f-996b-26edd9d351eb",
+          "phase": "CONTENT_PHASE_READY",
+          "secretName": "HUMANLOOP_API_KEY",
+          "session": "019ca536-c57a-7ac7-84f1-c01728b68bc6"
+        },
+        {
+          "id": "019a1328-5e3f-7bf4-97d4-fa6673a5b258",
+          "phase": "CONTENT_PHASE_READY",
+          "secretName": "INCIDENT_IO_API_KEY",
+          "session": "019ca536-c57a-7acc-bd04-59d903b445bc"
+        },
+        {
+          "id": "019a1298-46ca-7b1e-86dc-55eb38ecab9d",
+          "phase": "CONTENT_PHASE_READY",
+          "secretName": "IS_ON_ONA",
+          "session": "019ca536-c57a-7a73-9acb-27646353b710"
+        },
+        {
+          "id": "019a1328-5f42-7254-a924-d8762269ed8c",
+          "phase": "CONTENT_PHASE_READY",
+          "secretName": "JINA_API_KEY",
+          "session": "019ca536-c57a-7ad1-9eea-bd92c3294ad0"
+        },
+        {
+          "id": "019c53eb-7484-722b-8877-c9a407f694e3",
+          "phase": "CONTENT_PHASE_READY",
+          "secretName": "JIRA_API_TOKEN",
+          "session": "019ca536-c57a-7b42-8b38-00429e362e71"
+        },
+        {
+          "id": "019c53eb-bda4-713a-8929-3bb43fac9e53",
+          "phase": "CONTENT_PHASE_READY",
+          "secretName": "JIRA_EMAIL",
+          "session": "019ca536-c57a-7b47-b792-76dd1c04534d"
+        },
+        {
+          "id": "019b9a9f-ffc9-7e9a-a139-463841cc0c11",
+          "phase": "CONTENT_PHASE_READY",
+          "secretName": "LANG",
+          "session": "019ca536-c57a-7ad5-86ea-dbac3cd61c11"
+        },
+        {
+          "id": "019c53ec-6eba-7016-afed-59eff1c16188",
+          "phase": "CONTENT_PHASE_READY",
+          "secretName": "LANGSMITH_API_KEY",
+          "session": "019ca536-c57a-7b4b-8523-cbf1280290ac"
+        },
+        {
+          "id": "019a1328-6123-7eb8-814b-0a465193b7fe",
+          "phase": "CONTENT_PHASE_READY",
+          "secretName": "NGROK_AUTHTOKEN",
+          "session": "019ca536-c57a-7ade-8722-de88103bd154"
+        },
+        {
+          "id": "01993030-7f6a-793e-ab44-0c1d2ae09379",
+          "phase": "CONTENT_PHASE_READY",
+          "secretName": "NPM_TASKFORCESH_TOKEN",
+          "session": "019ca536-c57a-7ae3-806a-1c8f600a1c3c"
+        },
+        {
+          "id": "019a1328-630f-7574-b0ef-2aed99003676",
+          "phase": "CONTENT_PHASE_READY",
+          "secretName": "OPENAI_API_KEY",
+          "session": "019ca536-c57a-7ae7-bbf0-b0b0bfbaf3f2"
+        },
+        {
+          "id": "019a1328-640b-79d8-9c09-d42da55a095a",
+          "phase": "CONTENT_PHASE_READY",
+          "secretName": "PINECONE_API_KEY",
+          "session": "019ca536-c57a-7aeb-a8b8-a5873ed70356"
+        },
+        {
+          "id": "019ca68e-8f42-7bd9-bfb6-f43e40332d69",
+          "phase": "CONTENT_PHASE_READY",
+          "secretName": "SCM_TOKEN",
+          "session": "e2247767-29e9-4830-abc7-e2830df7d9b2"
+        },
+        {
+          "id": "019a1328-64fc-71c7-8ca2-0c9026043110",
+          "phase": "CONTENT_PHASE_READY",
+          "secretName": "SEMGREP_APP_TOKEN",
+          "session": "019ca536-c57a-7af0-a1b8-0efc124ac71b"
+        },
+        {
+          "id": "019b389f-1356-7bc8-b1e5-8a88deed2d8c",
+          "phase": "CONTENT_PHASE_READY",
+          "secretName": "SKIP_PREPARE_DEV_SERVICES",
+          "session": "019ca536-c57a-7af5-9500-614d8eea66a2"
+        },
+        {
+          "id": "019a1328-65ff-717a-91fc-c51b846db53e",
+          "phase": "CONTENT_PHASE_READY",
+          "secretName": "TASKFORCE_DOCKER_LICENSE_KEY",
+          "session": "019ca536-c57a-7af9-b0c2-5f0302b86abd"
+        },
+        {
+          "id": "019a1328-66fa-7187-bec5-0262e63f032f",
+          "phase": "CONTENT_PHASE_READY",
+          "secretName": "TASKFORCE_DOCKER_USER",
+          "session": "019ca536-c57a-7afd-bf1d-7866e09ef0df"
+        },
+        {
+          "id": "019930cd-74e3-7b2b-b6a9-b1f571c15c15",
+          "phase": "CONTENT_PHASE_READY",
+          "secretName": "TURBOREPO_REMOTE_CACHE_ACCESS_KEY",
+          "session": "019ca536-c57a-7b03-9f88-ef894e946658"
+        },
+        {
+          "id": "019930cd-b4b0-7d32-b3c7-154f40528109",
+          "phase": "CONTENT_PHASE_READY",
+          "secretName": "TURBOREPO_REMOTE_CACHE_ACCESS_KEY_ID",
+          "session": "019ca536-c57a-7b25-9acb-c86f7c000c2a"
+        }
+      ],
+      "sshPublicKeys": [
+        {
+          "id": "7b22757269536368656d65223a227673636f6465222c22657874656e73696f6e4964223a22676974706f642e676974706f642d666c6578222c226d616368696e654964223a2262393432393736396238663031633036353435643032633732363961323163306165376334346662613831643962666236313031613137353130323462633363227d",
+          "phase": "CONTENT_PHASE_READY"
+        },
+        {
+          "id": "cf8964a1-7c05-5457-8d7f-3e9077ad11cc",
+          "phase": "CONTENT_PHASE_READY"
+        },
+        {
+          "id": "7b22757269536368656d65223a22637572736f72222c22657874656e73696f6e4964223a22676974706f642e676974706f642d666c6578222c226d616368696e654964223a2232313736656336303130373235363535653332646439373866316539613134323037383437313161366438373430326635376663376434383230653537306363227d",
+          "phase": "CONTENT_PHASE_READY"
+        }
+      ],
+      "statusVersion": "1928"
+    }
+  }
+]

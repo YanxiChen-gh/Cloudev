@@ -1,0 +1,312 @@
+[
+  {
+    "desiredPhase": "PROJECT_PHASE_ACTIVE",
+    "environmentClass": {
+      "environmentClassId": "01992fc9-7d5f-7719-ba51-1759634e5391"
+    },
+    "environmentClasses": [
+      {
+        "environmentClassId": "019b3485-7dbc-73b5-92f3-023820982606"
+      },
+      {
+        "environmentClassId": "019b3484-f550-77bc-8c28-86627185b6a3",
+        "order": 1
+      },
+      {
+        "environmentClassId": "019b3486-1676-7ccd-abf7-4f40440caf56",
+        "order": 2
+      },
+      {
+        "environmentClassId": "019b3488-0a16-7ba7-b727-2c86ce550cf4",
+        "order": 3
+      },
+      {
+        "environmentClassId": "019b3486-ffc8-7b9e-a0bd-e4db7366edb4",
+        "order": 4
+      }
+    ],
+    "id": "01992fca-c2a8-74d0-92dc-c356e45266ce",
+    "initializer": {
+      "specs": [
+        {
+          "git": {
+            "checkoutLocation": "obsidian",
+            "cloneTarget": "main",
+            "remoteUri": "https://github.com/VantaInc/obsidian.git",
+            "targetMode": "CLONE_TARGET_MODE_REMOTE_BRANCH"
+          }
+        }
+      ]
+    },
+    "metadata": {
+      "createdAt": "2025-09-09T18:44:01.320310Z",
+      "creator": {
+        "id": "0198ce60-f78c-739d-b604-d5c501d1266f",
+        "principal": "PRINCIPAL_USER"
+      },
+      "name": "Obsidian",
+      "organizationId": "0198ce60-f77b-7637-81a9-4b8e409a0de8",
+      "updatedAt": "2026-02-28T22:56:36.719513Z"
+    },
+    "prebuildConfiguration": {
+      "enabled": true,
+      "environmentClassIds": [
+        "019b3486-1676-7ccd-abf7-4f40440caf56",
+        "019b3488-0a16-7ba7-b727-2c86ce550cf4",
+        "019b3486-ffc8-7b9e-a0bd-e4db7366edb4",
+        "019b3485-7dbc-73b5-92f3-023820982606",
+        "019b3484-f550-77bc-8c28-86627185b6a3"
+      ],
+      "executor": {
+        "id": "019b3782-6dcc-7591-80b3-c0006cc72a11",
+        "principal": "PRINCIPAL_SERVICE_ACCOUNT"
+      },
+      "timeout": "7200s",
+      "trigger": {
+        "dailySchedule": {
+          "hourUtc": 14
+        }
+      }
+    },
+    "usedBy": {
+      "subjects": [
+        {
+          "id": "0198ce60-f78c-739d-b604-d5c501d1266f",
+          "principal": "PRINCIPAL_USER"
+        },
+        {
+          "id": "019972ca-5057-79b7-bd8b-f0fb7a73c9e6",
+          "principal": "PRINCIPAL_USER"
+        },
+        {
+          "id": "0199976d-fe05-79a1-b726-7b8a2bb494b0",
+          "principal": "PRINCIPAL_USER"
+        },
+        {
+          "id": "019997b5-bbf3-7302-9c32-1eb44589db32",
+          "principal": "PRINCIPAL_USER"
+        },
+        {
+          "id": "0199cf20-7317-7550-90bb-80acc36a3032",
+          "principal": "PRINCIPAL_USER"
+        }
+      ],
+      "totalSubjects": 298
+    }
+  },
+  {
+    "desiredPhase": "PROJECT_PHASE_ACTIVE",
+    "environmentClasses": [
+      {
+        "environmentClassId": "019b3471-8ea8-754f-90c6-a4f1cc7bb0c1"
+      },
+      {
+        "environmentClassId": "019b346f-b18a-7b65-a4a2-0b70721ed203",
+        "order": 1
+      },
+      {
+        "environmentClassId": "019b347b-2086-74da-a7cb-3d466cd2ef5b",
+        "order": 2
+      },
+      {
+        "environmentClassId": "019b3484-f550-77bc-8c28-86627185b6a3",
+        "order": 3
+      },
+      {
+        "environmentClassId": "019b3470-e672-793a-bda0-164f48d85b51",
+        "order": 4
+      }
+    ],
+    "id": "019aa8de-f87a-7373-8ea7-040083a3a4c3",
+    "initializer": {
+      "specs": [
+        {
+          "git": {
+            "checkoutLocation": "dbt",
+            "cloneTarget": "main",
+            "remoteUri": "https://github.com/VantaInc/dbt.git",
+            "targetMode": "CLONE_TARGET_MODE_REMOTE_BRANCH"
+          }
+        }
+      ]
+    },
+    "metadata": {
+      "createdAt": "2025-11-22T00:02:56.250221Z",
+      "creator": {
+        "id": "0198ce60-f78c-739d-b604-d5c501d1266f",
+        "principal": "PRINCIPAL_USER"
+      },
+      "name": "DBT",
+      "organizationId": "0198ce60-f77b-7637-81a9-4b8e409a0de8",
+      "updatedAt": "2026-02-28T22:56:41.521077Z"
+    },
+    "prebuildConfiguration": {
+      "enabled": true,
+      "environmentClassIds": [
+        "019b3471-8ea8-754f-90c6-a4f1cc7bb0c1"
+      ],
+      "executor": {
+        "id": "019c0124-88d9-7454-9903-2fe9b9eb7df2",
+        "principal": "PRINCIPAL_USER"
+      },
+      "trigger": {
+        "dailySchedule": {
+          "hourUtc": 13
+        }
+      }
+    },
+    "usedBy": {
+      "subjects": [
+        {
+          "id": "0199cf20-7317-7550-90bb-80acc36a3032",
+          "principal": "PRINCIPAL_USER"
+        },
+        {
+          "id": "019ba0bf-16e8-7e2b-a681-48bab1de81ca",
+          "principal": "PRINCIPAL_USER"
+        },
+        {
+          "id": "019bba6e-2348-7a3e-9bfb-14284911cb09",
+          "principal": "PRINCIPAL_USER"
+        },
+        {
+          "id": "019bbd6b-fe08-7b2e-b5cf-2905d805f073",
+          "principal": "PRINCIPAL_USER"
+        },
+        {
+          "id": "019c0124-88d9-7454-9903-2fe9b9eb7df2",
+          "principal": "PRINCIPAL_USER"
+        }
+      ],
+      "totalSubjects": 16
+    }
+  },
+  {
+    "desiredPhase": "PROJECT_PHASE_ACTIVE",
+    "environmentClasses": [
+      {
+        "environmentClassId": "019b3471-8ea8-754f-90c6-a4f1cc7bb0c1"
+      },
+      {
+        "environmentClassId": "019b347b-2086-74da-a7cb-3d466cd2ef5b",
+        "order": 1
+      },
+      {
+        "environmentClassId": "019b3470-e672-793a-bda0-164f48d85b51",
+        "order": 2
+      },
+      {
+        "environmentClassId": "019b346f-b18a-7b65-a4a2-0b70721ed203",
+        "order": 3
+      },
+      {
+        "environmentClassId": "019b3488-0a16-7ba7-b727-2c86ce550cf4",
+        "order": 4
+      }
+    ],
+    "id": "019c0133-4467-72ba-bb95-225ed7edd12a",
+    "initializer": {
+      "specs": [
+        {
+          "git": {
+            "checkoutLocation": "analytics-cluster",
+            "cloneTarget": "main",
+            "remoteUri": "https://github.com/VantaInc/analytics-cluster.git",
+            "targetMode": "CLONE_TARGET_MODE_REMOTE_BRANCH"
+          }
+        }
+      ]
+    },
+    "metadata": {
+      "createdAt": "2026-01-27T20:44:23.015174Z",
+      "creator": {
+        "id": "0198ce60-f78c-739d-b604-d5c501d1266f",
+        "principal": "PRINCIPAL_USER"
+      },
+      "name": "Analytics Cluster",
+      "organizationId": "0198ce60-f77b-7637-81a9-4b8e409a0de8",
+      "updatedAt": "2026-02-28T22:56:43.166766Z"
+    },
+    "prebuildConfiguration": {
+      "enabled": true,
+      "environmentClassIds": [
+        "019b3471-8ea8-754f-90c6-a4f1cc7bb0c1"
+      ],
+      "executor": {
+        "id": "019c0124-88d9-7454-9903-2fe9b9eb7df2",
+        "principal": "PRINCIPAL_USER"
+      },
+      "trigger": {
+        "dailySchedule": {
+          "hourUtc": 13
+        }
+      }
+    },
+    "usedBy": {
+      "subjects": [
+        {
+          "id": "019bbd6b-fe08-7b2e-b5cf-2905d805f073",
+          "principal": "PRINCIPAL_USER"
+        },
+        {
+          "id": "019c0124-88d9-7454-9903-2fe9b9eb7df2",
+          "principal": "PRINCIPAL_USER"
+        },
+        {
+          "id": "019c0538-8bc8-7d3d-9dd8-192b36de28ba",
+          "principal": "PRINCIPAL_USER"
+        },
+        {
+          "id": "019c054b-48a3-7018-a3e1-ef1f960f5c3c",
+          "principal": "PRINCIPAL_USER"
+        }
+      ],
+      "totalSubjects": 4
+    }
+  },
+  {
+    "desiredPhase": "PROJECT_PHASE_ACTIVE",
+    "environmentClasses": [
+      {
+        "environmentClassId": "019b3484-f550-77bc-8c28-86627185b6a3"
+      }
+    ],
+    "id": "019c95fb-e37c-7b87-a21c-7974cb84991a",
+    "initializer": {
+      "specs": [
+        {
+          "git": {
+            "checkoutLocation": "security",
+            "cloneTarget": "main",
+            "remoteUri": "https://github.com/VantaInc/security.git",
+            "targetMode": "CLONE_TARGET_MODE_REMOTE_BRANCH"
+          }
+        }
+      ]
+    },
+    "metadata": {
+      "createdAt": "2026-02-25T18:07:18.908750Z",
+      "creator": {
+        "id": "019c916d-daad-76e7-84c5-19c54a8d6d9b",
+        "principal": "PRINCIPAL_USER"
+      },
+      "name": "Security",
+      "organizationId": "0198ce60-f77b-7637-81a9-4b8e409a0de8",
+      "updatedAt": "2026-02-28T22:56:44.659510Z"
+    },
+    "prebuildConfiguration": {},
+    "usedBy": {
+      "subjects": [
+        {
+          "id": "019c6c31-07c2-72d6-b869-a9d82498ef18",
+          "principal": "PRINCIPAL_USER"
+        },
+        {
+          "id": "019c916d-daad-76e7-84c5-19c54a8d6d9b",
+          "principal": "PRINCIPAL_USER"
+        }
+      ],
+      "totalSubjects": 2
+    }
+  }
+]

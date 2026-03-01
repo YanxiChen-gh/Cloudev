@@ -1,0 +1,154 @@
+{
+  "name": "cloudev",
+  "displayName": "Cloudev",
+  "description": "Manage cloud development environments (Ona/Gitpod, Codespaces) from VS Code",
+  "version": "0.1.0",
+  "publisher": "vanta",
+  "engines": {
+    "vscode": "^1.85.0"
+  },
+  "categories": [
+    "Other"
+  ],
+  "activationEvents": [
+    "onStartupFinished"
+  ],
+  "main": "./out/extension.js",
+  "contributes": {
+    "viewsContainers": {
+      "activitybar": [
+        {
+          "id": "cloudev",
+          "title": "Cloudev",
+          "icon": "$(cloud)"
+        }
+      ]
+    },
+    "views": {
+      "cloudev": [
+        {
+          "id": "cloudev.environments",
+          "name": "Environments"
+        }
+      ]
+    },
+    "commands": [
+      {
+        "command": "cloudev.createEnvironment",
+        "title": "Cloudev: Create Environment",
+        "icon": "$(add)"
+      },
+      {
+        "command": "cloudev.startEnvironment",
+        "title": "Cloudev: Start Environment",
+        "icon": "$(play)"
+      },
+      {
+        "command": "cloudev.stopEnvironment",
+        "title": "Cloudev: Stop Environment",
+        "icon": "$(debug-stop)"
+      },
+      {
+        "command": "cloudev.restartEnvironment",
+        "title": "Cloudev: Restart Environment",
+        "icon": "$(debug-restart)"
+      },
+      {
+        "command": "cloudev.deleteEnvironment",
+        "title": "Cloudev: Delete Environment",
+        "icon": "$(trash)"
+      },
+      {
+        "command": "cloudev.startPortForwarding",
+        "title": "Cloudev: Forward Ports",
+        "icon": "$(plug)"
+      },
+      {
+        "command": "cloudev.stopPortForwarding",
+        "title": "Cloudev: Stop Port Forwarding",
+        "icon": "$(debug-disconnect)"
+      },
+      {
+        "command": "cloudev.openInNewWindow",
+        "title": "Cloudev: Open in New Window",
+        "icon": "$(link-external)"
+      },
+      {
+        "command": "cloudev.refreshEnvironments",
+        "title": "Cloudev: Refresh Environments",
+        "icon": "$(refresh)"
+      },
+      {
+        "command": "cloudev.switchPortForwarding",
+        "title": "Cloudev: Switch Port Forwarding Target"
+      },
+      {
+        "command": "cloudev.startDaemon",
+        "title": "Cloudev: Start Daemon"
+      }
+    ],
+    "menus": {
+      "view/title": [
+        {
+          "command": "cloudev.createEnvironment",
+          "when": "view == cloudev.environments",
+          "group": "navigation"
+        },
+        {
+          "command": "cloudev.refreshEnvironments",
+          "when": "view == cloudev.environments",
+          "group": "navigation"
+        }
+      ],
+      "view/item/context": [
+        {
+          "command": "cloudev.startEnvironment",
+          "when": "view == cloudev.environments && viewItem == environment-stopped",
+          "group": "inline@1"
+        },
+        {
+          "command": "cloudev.stopEnvironment",
+          "when": "view == cloudev.environments && viewItem == environment-running",
+          "group": "inline@1"
+        },
+        {
+          "command": "cloudev.startPortForwarding",
+          "when": "view == cloudev.environments && viewItem == environment-running",
+          "group": "inline@2"
+        },
+        {
+          "command": "cloudev.stopPortForwarding",
+          "when": "view == cloudev.environments && viewItem == environment-forwarding",
+          "group": "inline@2"
+        },
+        {
+          "command": "cloudev.openInNewWindow",
+          "when": "view == cloudev.environments && viewItem =~ /^environment-running|environment-forwarding$/",
+          "group": "inline@3"
+        },
+        {
+          "command": "cloudev.restartEnvironment",
+          "when": "view == cloudev.environments && viewItem =~ /^environment-running|environment-forwarding$/"
+        },
+        {
+          "command": "cloudev.deleteEnvironment",
+          "when": "view == cloudev.environments && viewItem == environment-stopped"
+        }
+      ]
+    }
+  },
+  "scripts": {
+    "vscode:prepublish": "npm run compile",
+    "compile": "tsc -p ./",
+    "watch": "tsc -watch -p ./",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "lint": "eslint src --ext ts"
+  },
+  "devDependencies": {
+    "@types/node": "^20.11.0",
+    "@types/vscode": "^1.85.0",
+    "typescript": "^5.3.0",
+    "vitest": "^4.0.18"
+  }
+}
