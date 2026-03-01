@@ -1,4 +1,5 @@
 import * as vscode from 'vscode';
+import { execFile } from 'child_process';
 import { DaemonClient } from '../client/daemon-client';
 import { StateStore } from '../client/state';
 import { Environment } from '../types';
@@ -85,10 +86,49 @@ export function registerCommands(
   // --- Create Environment ---
   context.subscriptions.push(
     vscode.commands.registerCommand('cloudev.createEnvironment', async () => {
-      const projectId = await vscode.window.showInputBox({
-        prompt: 'Enter project ID',
-        placeHolder: 'project-xxxx-yyyy',
-      });
+      // Pick provider if multiple available
+      const providers = store.getAvailableProviders();
+      if (providers.length === 0) {
+        vscode.window.showErrorMessage('No providers available.');
+        return;
+      }
+
+      let providerId: string | undefined;
+      if (providers.length === 1) {
+        providerId = providers[0].id;
+      } else {
+        interface ProviderPickItem extends vscode.QuickPickItem {
+          providerId: string;
+        }
+        const picked = await vscode.window.showQuickPick<ProviderPickItem>(
+          providers.map((p) => ({ label: p.displayName, providerId: p.id })),
+          { placeHolder: 'Select provider' },
+        );
+        if (!picked) return;
+        providerId = picked.providerId;
+      }
+
+      // Provider-specific prompts
+      let projectId: string | undefined;
+      let branch: string | undefined;
+
+      if (providerId === 'codespaces') {
+        projectId = await vscode.window.showInputBox({
+          prompt: 'Enter repository (owner/repo)',
+          placeHolder: 'octocat/Hello-World',
+        });
+        if (!projectId) return;
+
+        branch = await vscode.window.showInputBox({
+          prompt: 'Branch (leave empty for default)',
+          placeHolder: 'main',
+        });
+      } else {
+        projectId = await vscode.window.showInputBox({
+          prompt: 'Enter project ID',
+          placeHolder: 'project-xxxx-yyyy',
+        });
+      }
       if (!projectId) return;
 
       await vscode.window.withProgress(
@@ -96,7 +136,10 @@ export function registerCommands(
           location: vscode.ProgressLocation.Notification,
           title: 'Creating environment...',
         },
-        () => client.createEnvironment(projectId),
+        () => client.createEnvironment(projectId!, {
+          providerId,
+          branch: branch || undefined,
+        }),
       );
 
       vscode.window.showInformationMessage('Environment created successfully.');
@@ -239,19 +282,22 @@ export function registerCommands(
         const env = store.getEnvironment(envId);
         if (!env) return;
 
-        const sshHost = `${envId}.gitpod.environment`;
-
-        // Build remote path from checkoutLocation (already in env data, no SSH needed)
-        const remoteWorkDir = env.checkoutLocation
-          ? `/workspaces/${env.checkoutLocation}`
-          : '/workspaces';
-
-        const uri = vscode.Uri.parse(
-          `vscode-remote://ssh-remote+${sshHost}${remoteWorkDir}`,
-        );
-        await vscode.commands.executeCommand('vscode.openFolder', uri, {
-          forceNewWindow: true,
-        });
+        // Use provider-specific open commands
+        if (env.provider === 'codespaces') {
+          // Use VS Code remote URI — reuses an existing window if already connected
+          const uri = vscode.Uri.parse(
+            `vscode-remote://codespaces+${env.id}${env.workspacePath}`,
+          );
+          await vscode.commands.executeCommand('vscode.openFolder', uri, {
+            forceNewWindow: true,
+          });
+        } else {
+          execFile('gitpod', ['environment', 'open', env.id, '--editor', 'vscode'], (err) => {
+            if (err) {
+              vscode.window.showErrorMessage(`Failed to open environment: ${err.message}`);
+            }
+          });
+        }
       },
     ),
   );
@@ -322,7 +368,7 @@ export function registerCommands(
         // Always available
         items.push({
           label: '$(copy) Copy SSH Host',
-          description: `${env.id}.gitpod.environment`,
+          description: env.sshHost,
           action: 'copy-ssh',
         });
         items.push({
@@ -359,7 +405,7 @@ export function registerCommands(
             await vscode.commands.executeCommand('cloudev.deleteEnvironment', { env });
             break;
           case 'copy-ssh':
-            await vscode.env.clipboard.writeText(`${env.id}.gitpod.environment`);
+            await vscode.env.clipboard.writeText(env.sshHost);
             vscode.window.showInformationMessage('SSH host copied to clipboard');
             break;
           case 'copy-repo':
@@ -379,13 +425,29 @@ export function registerCommands(
         const env = node?.env;
         if (!env) return;
 
-        const text = [
+        const lines = [
           `Environment: ${env.name}`,
+          `Provider: ${env.provider}`,
           `Branch: ${env.branch}`,
-          `SSH Host: ${env.id}.gitpod.environment`,
+          `SSH Host: ${env.sshHost}`,
           `Repository: ${env.repositoryUrl}`,
           `Status: ${env.status}`,
-        ].join('\n');
+        ];
+
+        // Include forwarded ports + public URLs if this env is being forwarded
+        const pf = store.getPortForwarding();
+        if (pf.activeEnvId === env.id && pf.ports.length > 0) {
+          lines.push(`Ports: ${pf.ports.map((p) => {
+            const label = pf.portLabels[p];
+            const url = pf.portUrls[p];
+            let entry = `${p}`;
+            if (label) entry += ` (${label})`;
+            if (url) entry += ` — ${url}`;
+            return entry;
+          }).join(', ')}`);
+        }
+
+        const text = lines.join('\n');
 
         await vscode.env.clipboard.writeText(text);
         vscode.window.showInformationMessage('Environment details copied to clipboard');
@@ -400,6 +462,7 @@ export function registerCommands(
       async (arg?: number | { port?: number }) => {
         const port = typeof arg === 'number' ? arg : arg?.port;
         if (!port) return;
+        // Always use localhost — tunnel is active when ports are shown
         await vscode.env.openExternal(
           vscode.Uri.parse(`http://localhost:${port}`),
         );
@@ -416,6 +479,25 @@ export function registerCommands(
         if (!port) return;
         await vscode.env.clipboard.writeText(`http://localhost:${port}`);
         vscode.window.showInformationMessage(`Copied http://localhost:${port}`);
+      },
+    ),
+  );
+
+  // --- Copy Public URL ---
+  context.subscriptions.push(
+    vscode.commands.registerCommand(
+      'cloudev.copyPublicUrl',
+      async (arg?: { port?: number }) => {
+        const port = arg?.port;
+        if (!port) return;
+        const pf = store.getPortForwarding();
+        const url = pf.portUrls[port];
+        if (!url) {
+          vscode.window.showInformationMessage('No public URL available for this port.');
+          return;
+        }
+        await vscode.env.clipboard.writeText(url);
+        vscode.window.showInformationMessage(`Copied ${url}`);
       },
     ),
   );

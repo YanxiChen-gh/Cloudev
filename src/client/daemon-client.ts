@@ -102,12 +102,17 @@ export class DaemonClient extends EventEmitter {
     await this.sendRequest({ type: 'environments.stop', requestId: '', envId });
   }
 
-  async createEnvironment(projectId: string, machineClassId?: string): Promise<string> {
+  async createEnvironment(
+    projectId: string,
+    opts?: { machineClassId?: string; providerId?: string; branch?: string },
+  ): Promise<string> {
     const result = await this.sendRequest({
       type: 'environments.create',
       requestId: '',
       projectId,
-      machineClassId,
+      machineClassId: opts?.machineClassId,
+      providerId: opts?.providerId,
+      branch: opts?.branch,
     });
     return result as string;
   }

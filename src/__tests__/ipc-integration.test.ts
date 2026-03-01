@@ -23,9 +23,12 @@ function makeState(): DaemonState {
         branch: 'main',
         status: 'running',
         repositoryUrl: 'https://github.com/test/repo.git',
+        checkoutLocation: 'repo',
+        sshHost: 'env-1.ona.environment',
+        workspacePath: '/workspaces/repo',
       },
     ],
-    portForwarding: { activeEnvId: null, activeEnvName: null, ports: [], status: 'idle' },
+    portForwarding: { activeEnvId: null, activeEnvName: null, ports: [], portLabels: {}, portUrls: {}, status: 'idle' },
     providers: [{ id: 'ona', displayName: 'Ona', available: true }],
   };
 }

@@ -157,6 +157,8 @@ export function mapEnvironment(raw: Record<string, unknown>, providerId: string)
   const repoName = repoUrl.split('/').pop()?.replace(/\.git$/, '') ?? '';
   const name = String(metadata.name ?? '') || repoName || id;
 
+  const checkoutLocation = String(git.checkoutLocation ?? '');
+
   return {
     id,
     provider: providerId,
@@ -166,8 +168,35 @@ export function mapEnvironment(raw: Record<string, unknown>, providerId: string)
     branch,
     status,
     repositoryUrl: repoUrl,
-    checkoutLocation: String(git.checkoutLocation ?? ''),
+    checkoutLocation,
+    sshHost: `${id}.gitpod.environment`,
+    workspacePath: checkoutLocation ? `/workspaces/${checkoutLocation}` : '/workspaces',
   };
+}
+
+/**
+ * Parse `gitpod environment port list <envId> -o json` output.
+ * Returns a map of port → public URL for exposed ports.
+ *
+ * Example input: [{ "port": 8080, "url": "https://8080s--envid.ona-runner.dev" }]
+ */
+export function parseGitpodPorts(output: string): Record<number, string> {
+  try {
+    const parsed = JSON.parse(output);
+    if (!Array.isArray(parsed)) return {};
+
+    const result: Record<number, string> = {};
+    for (const entry of parsed) {
+      const port = Number(entry.port);
+      const url = String(entry.url ?? '');
+      if (!isNaN(port) && port > 0 && url) {
+        result[port] = url;
+      }
+    }
+    return result;
+  } catch {
+    return {};
+  }
 }
 
 /**

@@ -48,14 +48,23 @@ export class EnvironmentsService implements DaemonService {
 
       case 'environments.create': {
         const m = msg as Extract<ClientMessage, { type: 'environments.create' }>;
-        // Use first available provider for creation
-        const provider = this.providers.find(p =>
-          this.providerStatuses.find(s => s.id === p.id)?.available,
-        );
+        // Route to specific provider if requested, otherwise first available
+        let provider: EnvironmentProvider | undefined;
+        if (m.providerId) {
+          provider = this.providers.find(p => p.id === m.providerId);
+          if (!provider) throw new Error(`Provider not found: ${m.providerId}`);
+          const status = this.providerStatuses.find(s => s.id === m.providerId);
+          if (!status?.available) throw new Error(`Provider not available: ${m.providerId}`);
+        } else {
+          provider = this.providers.find(p =>
+            this.providerStatuses.find(s => s.id === p.id)?.available,
+          );
+        }
         if (!provider) throw new Error('No provider available');
         const envId = await provider.create({
           projectId: m.projectId,
           machineClassId: m.machineClassId,
+          branch: m.branch,
         });
         await this.poll();
         return envId;
@@ -173,6 +182,11 @@ export class EnvironmentsService implements DaemonService {
     for (const env of allEnvs) {
       if (env.projectId && !env.projectName) {
         env.projectName = this.projectNameMap.get(env.projectId) ?? '';
+      }
+      // Fallback: use projectId as grouping name if no project name found
+      // (Codespaces uses owner/repo as projectId, which works as a display name)
+      if (!env.projectName && env.projectId) {
+        env.projectName = env.projectId;
       }
       newEnvMap.set(env.id, env);
       const provider = activeProviders.find((p) => p.id === env.provider);

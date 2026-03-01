@@ -84,7 +84,7 @@ export class StatusBarManager implements vscode.Disposable {
     }
 
     // Environment count item
-    this.envCountItem.text = `$(cloud) Ona: ${runningCount} running`;
+    this.envCountItem.text = `$(cloud) ${runningCount} running`;
     this.envCountItem.tooltip = `${runningCount} environment(s) running. Click to refresh.`;
   }
 

@@ -1,0 +1,26 @@
+[
+  {
+    "name": "octocat-Hello-World-abc123",
+    "state": "Available",
+    "repository": "octocat/Hello-World",
+    "gitStatus": {
+      "ref": "main",
+      "hasUncommittedChanges": false,
+      "hasUnpushedChanges": false
+    },
+    "machineName": "basicLinux32gb",
+    "createdAt": "2024-06-15T10:00:00Z"
+  },
+  {
+    "name": "octocat-Hello-World-def456",
+    "state": "Shutdown",
+    "repository": "octocat/Hello-World",
+    "gitStatus": {
+      "ref": "feature-branch",
+      "hasUncommittedChanges": false,
+      "hasUnpushedChanges": false
+    },
+    "machineName": "standardLinux32gb",
+    "createdAt": "2024-06-14T08:00:00Z"
+  }
+]

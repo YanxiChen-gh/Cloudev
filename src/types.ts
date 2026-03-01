@@ -20,6 +20,8 @@ export interface Environment {
   status: EnvironmentStatus;
   repositoryUrl: string;
   checkoutLocation: string;
+  sshHost: string;       // provider-computed SSH host for manual SSH / copy
+  workspacePath: string; // provider-computed remote workspace path
 }
 
 export interface Project {
@@ -41,6 +43,7 @@ export interface PortForwardingState {
   activeEnvName: string | null;
   ports: number[];
   portLabels: Record<number, string>; // port → label (container name or static guess)
+  portUrls: Record<number, string>;   // port → public URL (gitpod URL or codespaces browseUrl)
   status: 'idle' | 'connecting' | 'active' | 'error';
   error?: string;
 }
@@ -74,7 +77,7 @@ export type ClientMessage =
   | { type: 'environments.list'; requestId: string }
   | { type: 'environments.start'; requestId: string; envId: string }
   | { type: 'environments.stop'; requestId: string; envId: string }
-  | { type: 'environments.create'; requestId: string; projectId: string; machineClassId?: string }
+  | { type: 'environments.create'; requestId: string; projectId: string; machineClassId?: string; providerId?: string; branch?: string }
   | { type: 'environments.delete'; requestId: string; envId: string }
   | { type: 'environments.restart'; requestId: string; envId: string }
   | { type: 'environments.refresh'; requestId: string }
