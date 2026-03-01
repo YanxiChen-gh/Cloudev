@@ -34,7 +34,11 @@ export async function activate(
     }
   }
 
-  // 5. Register sidebar tree view
+  // 5. Create output channel for user-visible logs
+  const output = vscode.window.createOutputChannel('Cloudev');
+  context.subscriptions.push(output);
+
+  // 6. Register sidebar tree view
   const sidebarProvider = new SidebarProvider(store, context);
   const treeView = vscode.window.createTreeView('cloudev.environments', {
     treeDataProvider: sidebarProvider,
@@ -103,7 +107,43 @@ export async function activate(
     );
   });
 
-  // 10. Clean up on deactivation
+  // 11. Log forwarding errors + detect VS Code Remote conflicts
+  let lastPfError: string | undefined;
+  let shownVscodeRemoteHint = false;
+  store.on('changed', () => {
+    const pf = store.getPortForwarding();
+    if (pf.status === 'error' && pf.error && pf.error !== lastPfError) {
+      lastPfError = pf.error;
+      const ts = new Date().toLocaleTimeString();
+      output.appendLine(`[${ts}] Port forwarding error: ${pf.error}`);
+    } else if (pf.status !== 'error') {
+      lastPfError = undefined;
+    }
+
+    // One-time hint when VS Code Remote SSH is holding forwarded ports
+    if (!shownVscodeRemoteHint && pf.status === 'active') {
+      const hasVscodeConflict = Object.values(pf.portConflicts).some(
+        (reason) => reason.includes('VS Code Remote'),
+      );
+      if (hasVscodeConflict) {
+        shownVscodeRemoteHint = true;
+        vscode.window.showInformationMessage(
+          'VS Code Remote SSH is also forwarding ports and may override Cloudev. ' +
+          'To let Cloudev manage ports exclusively, disable VS Code auto-forwarding.',
+          'Disable Auto-Forward', 'Dismiss',
+        ).then((action) => {
+          if (action === 'Disable Auto-Forward') {
+            vscode.workspace.getConfiguration('remote').update(
+              'autoForwardPorts', false, vscode.ConfigurationTarget.Global,
+            );
+            vscode.window.showInformationMessage('Auto port forwarding disabled. Reload the Remote SSH window for it to take effect.');
+          }
+        });
+      }
+    }
+  });
+
+  // 12. Clean up on deactivation
   context.subscriptions.push({
     dispose: () => {
       client.disconnect();

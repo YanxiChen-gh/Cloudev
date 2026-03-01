@@ -10,13 +10,11 @@ export class EnvironmentsService implements DaemonService {
   private providerStatuses: ProviderStatus[] = [];
   private projectNameMap = new Map<string, string>(); // projectId → name
   private pollTimer: NodeJS.Timeout | null = null;
-  private sshConfigTimer: NodeJS.Timeout | null = null;
 
   constructor(
     private readonly providers: EnvironmentProvider[],
     private readonly ctx: ServiceContext,
     private readonly pollIntervalMs: number = 10_000,
-    private readonly sshConfigIntervalMs: number = 60_000,
   ) {}
 
   handles(msgType: string): boolean {
@@ -67,6 +65,7 @@ export class EnvironmentsService implements DaemonService {
           branch: m.branch,
         });
         await this.poll();
+        this.syncSshConfigs();
         return envId;
       }
 
@@ -76,6 +75,7 @@ export class EnvironmentsService implements DaemonService {
         if (!provider) throw new Error(`Unknown environment: ${m.envId}`);
         await provider.delete(m.envId);
         await this.poll();
+        this.syncSshConfigs();
         return;
       }
 
@@ -146,25 +146,20 @@ export class EnvironmentsService implements DaemonService {
     // Initial poll
     await this.poll();
 
-    // Initial SSH config sync
+    // SSH config sync — once on startup only.
+    // Periodic syncing removed: the gitpod CLI intermittently corrupts the config
+    // (writes "Only yes" instead of "IdentitiesOnly yes"), which kills active tunnels.
+    // Config is refreshed on-demand via create/delete operations instead.
     this.syncSshConfigs();
 
     // Start periodic polling
     this.pollTimer = setInterval(() => this.poll(), this.pollIntervalMs);
-    this.sshConfigTimer = setInterval(
-      () => this.syncSshConfigs(),
-      this.sshConfigIntervalMs,
-    );
   }
 
   async stop(): Promise<void> {
     if (this.pollTimer) {
       clearInterval(this.pollTimer);
       this.pollTimer = null;
-    }
-    if (this.sshConfigTimer) {
-      clearInterval(this.sshConfigTimer);
-      this.sshConfigTimer = null;
     }
   }
 

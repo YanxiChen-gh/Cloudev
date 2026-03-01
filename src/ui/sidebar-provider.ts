@@ -151,6 +151,10 @@ export class PortNode extends vscode.TreeItem {
     }
     if (conflictReason) {
       lines.push(`⚠ ${conflictReason}`);
+      if (conflictReason.includes('VS Code Remote')) {
+        lines.push('This port may be forwarded to a different env.');
+        lines.push('Set remote.autoForwardPorts: false to disable.');
+      }
     }
     this.tooltip = lines.join('\n');
   }
