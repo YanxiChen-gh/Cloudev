@@ -398,12 +398,24 @@ export function registerCommands(
     vscode.commands.registerCommand(
       'cloudev.openPort',
       async (arg?: number | { port?: number }) => {
-        // Called with raw port number (from QuickPick) or tree node (from inline icon)
         const port = typeof arg === 'number' ? arg : arg?.port;
         if (!port) return;
         await vscode.env.openExternal(
           vscode.Uri.parse(`http://localhost:${port}`),
         );
+      },
+    ),
+  );
+
+  // --- Copy Port URL ---
+  context.subscriptions.push(
+    vscode.commands.registerCommand(
+      'cloudev.copyPortUrl',
+      async (arg?: { port?: number }) => {
+        const port = arg?.port;
+        if (!port) return;
+        await vscode.env.clipboard.writeText(`http://localhost:${port}`);
+        vscode.window.showInformationMessage(`Copied http://localhost:${port}`);
       },
     ),
   );

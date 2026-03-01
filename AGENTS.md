@@ -66,7 +66,19 @@ The `EnvironmentProvider` interface requires: `checkAvailability`, `listEnvironm
 - **IPC framing**: newline-delimited JSON. `JSON.stringify(msg) + '\n'`. Buffer incoming data and split on `'\n'`, keeping the last incomplete segment. Never pretty-print JSON on the wire.
 - **Request/response correlation**: client sets a UUID `requestId`, daemon echoes it back in `response` messages.
 - **Commands**: support dual invocation — tree view node argument OR command palette quick-pick fallback. Pattern: `node?.env?.id ?? await pickEnvironment(store, 'running')`.
-- **package.json menus**: `contextValue` on tree items must exactly match the `when` clauses. Values: `environment-running`, `environment-stopped`, `environment-forwarding`, `environment-starting`.
+- **package.json menus**: `contextValue` on tree items must exactly match the `when` clauses. Values: `environment-running`, `environment-stopped`, `environment-forwarding`, `environment-starting`, `port`.
+- **Command naming**: use `category: "Cloudev"` + short `title` (e.g. `"Stop"`). Context menus show the title; command palette shows `Cloudev: Stop`.
+- **Port labels**: `docker ps` output parsed for container names, with well-known port fallback. See `ona-parser.ts`: `parseDockerPorts()`, `getPortLabel()`.
+
+## UX interaction model
+
+- **Single-click**: selects item (shows tooltip). No action.
+- **Inline icons** (hover): quick actions — Start/Stop, Forward/Unforward, Connect, Open in Browser
+- **Right-click**: full grouped context menu (Lifecycle > Ports > Connect > Copy > Danger)
+- **Status bar click**: port QuickPick when forwarding active, env picker when idle
+- **Forwarding indicator**: env icon changes from `circle-filled` to `radio-tower` (green) when forwarding
+- **Port children**: collapsed by default under forwarded env, with docker container labels
+- **Dangerous ops**: Stop/Restart/Delete show modal confirmation dialogs
 
 ## Things to watch out for
 
@@ -74,8 +86,9 @@ The `EnvironmentProvider` interface requires: `checkAvailability`, `listEnvironm
 - **Socket stale detection**: IPC server tries `net.connect()` before unlinking — distinguishes live daemon from crashed leftover.
 - **Grace period**: daemon waits 10s after last client disconnects before shutting down (handles VS Code reloads).
 - **`disposed` flag**: `DaemonClient.disconnect()` sets `disposed = true`. `connect()` resets it. This matters for the manual reconnect flow.
-- **Port forwarding switch**: 500ms delay after killing old tunnel before spawning new one (TCP TIME_WAIT).
+- **Port forwarding switch**: `killTunnel()` waits for process exit before spawning new tunnel (avoids "Address already in use").
 - **`isDiscovering` mutex**: prevents overlapping port discovery when SSH is slow.
+- **Docker port labels**: `docker ps` runs in parallel with `ss -tln` over SSH. Falls back gracefully if docker is not available.
 
 ## Codespaces stub
 

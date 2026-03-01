@@ -46,13 +46,12 @@ export class EnvironmentNode extends vscode.TreeItem {
       this.description = branchText;
     }
 
-    // Status-based icon
+    // Status-based icon — forwarding env gets radio-tower, running gets green circle
     switch (env.status) {
       case 'running':
-        this.iconPath = new vscode.ThemeIcon(
-          'circle-filled',
-          new vscode.ThemeColor('testing.iconPassed'),
-        );
+        this.iconPath = this.isForwarding
+          ? new vscode.ThemeIcon('radio-tower', new vscode.ThemeColor('testing.iconPassed'))
+          : new vscode.ThemeIcon('circle-filled', new vscode.ThemeColor('testing.iconPassed'));
         break;
       case 'starting':
       case 'creating':

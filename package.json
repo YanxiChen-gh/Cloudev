@@ -67,7 +67,7 @@
         "command": "cloudev.startPortForwarding",
         "category": "Cloudev",
         "title": "Forward Ports",
-        "icon": "$(plug)"
+        "icon": "$(arrow-swap)"
       },
       {
         "command": "cloudev.stopPortForwarding",
@@ -79,7 +79,7 @@
         "command": "cloudev.openInNewWindow",
         "category": "Cloudev",
         "title": "Open in New Window",
-        "icon": "$(link-external)"
+        "icon": "$(remote-explorer)"
       },
       {
         "command": "cloudev.refreshEnvironments",
@@ -113,6 +113,11 @@
         "category": "Cloudev",
         "title": "Open in Browser",
         "icon": "$(link-external)"
+      },
+      {
+        "command": "cloudev.copyPortUrl",
+        "category": "Cloudev",
+        "title": "Copy URL"
       }
     ],
     "menus": {
@@ -198,6 +203,16 @@
           "command": "cloudev.deleteEnvironment",
           "when": "view == cloudev.environments && viewItem == environment-stopped",
           "group": "5_danger@1"
+        },
+        {
+          "command": "cloudev.openPort",
+          "when": "view == cloudev.environments && viewItem == port",
+          "group": "1_port@1"
+        },
+        {
+          "command": "cloudev.copyPortUrl",
+          "when": "view == cloudev.environments && viewItem == port",
+          "group": "1_port@2"
         }
       ]
     }
