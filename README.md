@@ -6,9 +6,15 @@
 
 Manage cloud development environments from VS Code. Start, stop, forward ports, and connect to environments across **Gitpod (Ona)** and **GitHub Codespaces** from a single sidebar.
 
-<!-- TODO: Add screenshot once available
 ![Cloudev sidebar](docs/screenshot-sidebar.png)
--->
+
+**Port forwarding with conflict detection:**
+
+![Port forwarding](docs/screenshot-ports.png)
+
+**Status bar:**
+
+![Status bar](docs/screenshot-statusbar.png)
 
 ## Features
 
