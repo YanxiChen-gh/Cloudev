@@ -2,6 +2,19 @@
 
 All notable changes to the Cloudev extension will be documented in this file.
 
+## [0.3.0] - 2026-03-02
+
+### Added
+- **Shell history sync**: bidirectional sync of bash and zsh history between local machine and remote environments
+- Separate local stores per shell type — no cross-contamination between bash and zsh formats
+- Two-pass sync algorithm: collect from all envs first, then push merged diff back (single sync fully converges)
+- Manual sync via command palette or right-click context menu
+- Configurable periodic auto-sync (`cloudev.shellHistory.periodicSyncMinutes` setting)
+- Set-based dedup prevents duplication on repeated syncs
+- Shell history sync errors logged to Cloudev output channel
+- `execRemoteCommand` added to provider interface (building block for future features)
+- Clear Shell History command to reset local store
+
 ## [0.1.1] - 2026-03-01
 
 ### Fixed
