@@ -893,41 +893,44 @@ export function registerCommands(
           }
         }
 
+        const envCount = updatedPf.sideBySide.length;
+        const summary = envCount === 2
+          ? `Comparing ${primary.envName} ↔ ${added.envName} (port ${webPort})`
+          : `Comparing ${envCount} envs (port ${webPort})`;
+
         const action = await vscode.window.showInformationMessage(
-          `Comparing ${primary.envName} ↔ ${added.envName} (port ${webPort})`,
-          'Open Both', 'Other port...', 'Copy URLs',
+          summary,
+          'Open All', 'Other port...', 'Copy URLs',
         );
 
-        if (action === 'Open Both') {
+        if (action === 'Open All') {
           context.workspaceState.update(LAST_COMPARE_PORT_KEY, webPort);
-          // Open primary first, then compared env — gives user two tabs to arrange
-          await vscode.env.openExternal(
-            vscode.Uri.parse(`http://${primary.hostname}.localhost:${webPort}`),
-          );
-          await vscode.env.openExternal(
-            vscode.Uri.parse(`http://${added.hostname}.localhost:${webPort}`),
-          );
+          for (const s of updatedPf.sideBySide) {
+            await vscode.env.openExternal(
+              vscode.Uri.parse(`http://${s.hostname}.localhost:${webPort}`),
+            );
+          }
         } else if (action === 'Other port...') {
           interface PortPickItem extends vscode.QuickPickItem {
             port: number;
           }
+          const hostnames = updatedPf.sideBySide.map((s) => s.hostname).join('  ↔  ');
           const items: PortPickItem[] = updatedPf.ports.map((p) => ({
             label: `localhost:${p}`,
             description: updatedPf.portLabels[p] || '',
-            detail: `${primary.hostname}.localhost:${p}  ↔  ${added.hostname}.localhost:${p}`,
+            detail: updatedPf.sideBySide.map((s) => `${s.hostname}.localhost:${p}`).join('  ↔  '),
             port: p,
           }));
           const picked = await vscode.window.showQuickPick(items, {
-            placeHolder: `Pick a port to open for both environments`,
+            placeHolder: `Pick a port to open for all ${envCount} environments`,
           });
           if (picked) {
             context.workspaceState.update(LAST_COMPARE_PORT_KEY, picked.port);
-            await vscode.env.openExternal(
-              vscode.Uri.parse(`http://${primary.hostname}.localhost:${picked.port}`),
-            );
-            await vscode.env.openExternal(
-              vscode.Uri.parse(`http://${added.hostname}.localhost:${picked.port}`),
-            );
+            for (const s of updatedPf.sideBySide) {
+              await vscode.env.openExternal(
+                vscode.Uri.parse(`http://${s.hostname}.localhost:${picked.port}`),
+              );
+            }
           }
         } else if (action === 'Copy URLs') {
           await vscode.env.clipboard.writeText(allUrls.join('\n'));
@@ -949,7 +952,7 @@ export function registerCommands(
     ),
   );
 
-  // --- Open Compare (open both primary + compared env in browser) ---
+  // --- Open Compare (open all compared envs in browser) ---
   context.subscriptions.push(
     vscode.commands.registerCommand(
       'cloudev.openCompare',
@@ -958,20 +961,17 @@ export function registerCommands(
         if (!envId) return;
 
         const pf = store.getPortForwarding();
-        const entry = pf.sideBySide.find((s) => s.envId === envId);
-        const primary = pf.sideBySide.find((s) => s.envId === pf.activeEnvId);
-        if (!entry || !primary || pf.ports.length === 0) return;
+        if (pf.sideBySide.length === 0 || pf.ports.length === 0) return;
 
         const lastUsed = context.workspaceState.get<number>(LAST_COMPARE_PORT_KEY);
         const webPort = pickWebPort(pf.ports, pf.portLabels, lastUsed);
 
         context.workspaceState.update(LAST_COMPARE_PORT_KEY, webPort);
-        await vscode.env.openExternal(
-          vscode.Uri.parse(`http://${primary.hostname}.localhost:${webPort}`),
-        );
-        await vscode.env.openExternal(
-          vscode.Uri.parse(`http://${entry.hostname}.localhost:${webPort}`),
-        );
+        for (const s of pf.sideBySide) {
+          await vscode.env.openExternal(
+            vscode.Uri.parse(`http://${s.hostname}.localhost:${webPort}`),
+          );
+        }
       },
     ),
   );

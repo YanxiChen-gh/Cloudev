@@ -16,6 +16,10 @@ Manage cloud development environments from VS Code. Start, stop, forward ports, 
 
 ![Status bar](docs/screenshot-statusbar.png)
 
+**Side-by-side compare mode:**
+
+![Compare mode](docs/compare-mode.gif)
+
 ## Features
 
 - **Unified sidebar** -- environments from all providers, grouped by project
@@ -74,7 +78,7 @@ ext install Yanix.cloudev
 | `Cloudev: Side-by-Side Web Compare` | Compare multiple envs via hostname routing |
 | `Cloudev: Compare with this env` | Add an env to compare alongside the active forwarding target |
 | `Cloudev: Remove from Compare` | Remove an env from the compare session |
-| `Cloudev: Open Both in Browser` | Open primary + compared env side by side in browser |
+| `Cloudev: Compare in Browser` | Open all compared envs side by side in browser |
 | `Cloudev: Stop Side-by-Side` | Stop comparing, return to single-env forwarding |
 | `Cloudev: Sync Shell History` | Bidirectional sync of bash/zsh history with running envs |
 | `Cloudev: Clear Shell History` | Clear locally stored shell history |
