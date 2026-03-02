@@ -266,6 +266,10 @@ export class OnaProvider implements EnvironmentProvider {
     throw lastError ?? new Error('No contexts available');
   }
 
+  async execRemoteCommand(envId: string, command: string): Promise<string> {
+    return this.execSsh(this.sshHost(envId), command);
+  }
+
   private execSsh(host: string, command: string): Promise<string> {
     return new Promise((resolve, reject) => {
       execFile('ssh', [

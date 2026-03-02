@@ -30,6 +30,9 @@ export interface EnvironmentProvider {
   sshHost(envId: string): string;
   syncSshConfig(): Promise<void>;
 
+  // Remote command execution
+  execRemoteCommand?(envId: string, command: string): Promise<string>;
+
   // Metadata
   listProjects(): Promise<Project[]>;
   listMachineClasses?(repo?: string): Promise<MachineClass[]>;

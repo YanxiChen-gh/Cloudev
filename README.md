@@ -26,6 +26,7 @@ Manage cloud development environments from VS Code. Start, stop, forward ports, 
 - **Create/delete** -- provision new environments with project and machine class pickers
 - **Persistent daemon** -- port forwarding survives VS Code reloads; auto-resumes on restart
 - **Status bar** -- daemon health, forwarded port count, running environment count
+- **Shell history sync** -- bidirectional sync of bash/zsh history across environments; persists through env deletion
 - **Multi-window** -- all VS Code windows share state via a background daemon
 
 ## Quick Start
@@ -67,6 +68,8 @@ ext install Yanix.cloudev
 | `Cloudev: Open in New Window` | Open Remote SSH to the environment |
 | `Cloudev: Open in Dashboard` | Open the provider's web UI |
 | `Cloudev: Copy SSH Command` | Copy the SSH command to clipboard |
+| `Cloudev: Sync Shell History` | Bidirectional sync of bash/zsh history with running envs |
+| `Cloudev: Clear Shell History` | Clear locally stored shell history |
 | `Cloudev: View Daemon Log` | Open the daemon log file for debugging |
 | `Cloudev: Start Daemon` | Manually start or reconnect to the daemon |
 
@@ -97,6 +100,11 @@ The daemon auto-starts when the extension activates and stays alive while ports 
 **Port conflict warnings**
 - Another process holds the port on localhost. The warning shows which process (e.g., "VS Code Remote SSH")
 - If VS Code Remote is forwarding ports for the same env, you can disable it: set `remote.autoForwardPorts: false`
+
+**Shell history not syncing**
+- Make sure the environment is running
+- Check the Cloudev output channel for errors: `View > Output > Cloudev`
+- For auto-sync, set `cloudev.shellHistory.periodicSyncMinutes` to a value > 0 in settings
 
 **Codespaces 403 error**
 - The `gh` CLI needs the `codespace` OAuth scope: `gh auth refresh -h github.com -s codespace`

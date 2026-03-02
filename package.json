@@ -2,7 +2,7 @@
   "name": "cloudev",
   "displayName": "Cloudev",
   "description": "Manage cloud development environments (Ona/Gitpod, Codespaces) from VS Code",
-  "version": "0.2.1",
+  "version": "0.3.0",
   "publisher": "Yanix",
   "engines": {
     "vscode": "^1.85.0"
@@ -173,6 +173,17 @@
         "command": "cloudev.copyPortInfo",
         "category": "Cloudev",
         "title": "Copy Details"
+      },
+      {
+        "command": "cloudev.syncHistory",
+        "category": "Cloudev",
+        "title": "Sync Shell History",
+        "icon": "$(history)"
+      },
+      {
+        "command": "cloudev.clearHistory",
+        "category": "Cloudev",
+        "title": "Clear Shell History"
       }
     ],
     "menus": {
@@ -290,6 +301,11 @@
           "group": "4_copy@3"
         },
         {
+          "command": "cloudev.syncHistory",
+          "when": "view == cloudev.environments && viewItem =~ /^environment-running|^environment-forwarding/",
+          "group": "4b_history@1"
+        },
+        {
           "command": "cloudev.deleteEnvironment",
           "when": "view == cloudev.environments && viewItem =~ /^environment-stopped/",
           "group": "5_danger@1"
@@ -325,6 +341,17 @@
           "group": "1_port@4"
         }
       ]
+    },
+    "configuration": {
+      "title": "Cloudev",
+      "properties": {
+        "cloudev.shellHistory.periodicSyncMinutes": {
+          "type": "number",
+          "default": 0,
+          "minimum": 0,
+          "description": "Auto-sync shell history every N minutes (0 = disabled). Bidirectional sync with all running environments."
+        }
+      }
     }
   },
   "scripts": {

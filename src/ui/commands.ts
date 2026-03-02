@@ -744,6 +744,43 @@ export function registerCommands(
       },
     ),
   );
+
+  // --- Sync Shell History ---
+  context.subscriptions.push(
+    vscode.commands.registerCommand(
+      'cloudev.syncHistory',
+      async (node?: { env?: Environment }) => {
+        const envId = node?.env?.id; // undefined = all running envs
+        await vscode.window.withProgress(
+          {
+            location: vscode.ProgressLocation.Notification,
+            title: envId
+              ? `Syncing history with ${store.getEnvironment(envId)?.name ?? envId}...`
+              : 'Syncing shell history with all running environments...',
+          },
+          () => client.syncHistory(envId),
+        );
+        const state = store.getShellHistory();
+        vscode.window.showInformationMessage(
+          `Shell history synced (${state.entryCount} commands).`,
+        );
+      },
+    ),
+  );
+
+  // --- Clear Shell History ---
+  context.subscriptions.push(
+    vscode.commands.registerCommand('cloudev.clearHistory', async () => {
+      const confirm = await vscode.window.showWarningMessage(
+        'Clear all synced shell history? This cannot be undone.',
+        { modal: true },
+        'Clear',
+      );
+      if (confirm !== 'Clear') return;
+      await client.clearHistory();
+      vscode.window.showInformationMessage('Shell history cleared.');
+    }),
+  );
 }
 
 // ---------------------------------------------------------------------------

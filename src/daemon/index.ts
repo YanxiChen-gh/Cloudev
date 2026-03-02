@@ -10,6 +10,7 @@ import { IpcServer } from './ipc-server';
 import { DaemonService, ServiceContext } from './service';
 import { EnvironmentsService } from './services/environments';
 import { PortForwardingService } from './services/port-forwarding';
+import { ShellHistorySyncService } from './services/shell-history-sync';
 import { OnaProvider } from './providers/ona';
 import { CodespacesProvider } from './providers/codespaces';
 import { ClientMessage, DaemonState } from '../types';
@@ -76,7 +77,8 @@ async function main(): Promise<void> {
   // 7. Create services
   const environmentsService = new EnvironmentsService(providers, serviceContext);
   const portForwardingService = new PortForwardingService(serviceContext);
-  services = [environmentsService, portForwardingService];
+  const shellHistorySyncService = new ShellHistorySyncService(serviceContext);
+  services = [environmentsService, portForwardingService, shellHistorySyncService];
 
   // 8. Wire up IPC message routing
   ipcServer.on('message', async (clientId: string, msg: ClientMessage) => {
@@ -178,6 +180,7 @@ async function main(): Promise<void> {
     const merged: DaemonState = {
       environments: [],
       portForwarding: { activeEnvId: null, activeEnvName: null, ports: [], portLabels: {}, portUrls: {}, portConflicts: {}, status: 'idle' },
+      shellHistory: { entryCount: 0, lastSyncTime: null, status: 'idle' },
       providers: [],
     };
     for (const svc of services) {
