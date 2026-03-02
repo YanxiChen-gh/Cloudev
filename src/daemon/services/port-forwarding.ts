@@ -1,5 +1,5 @@
 import { ChildProcess } from 'child_process';
-import { ClientMessage, DaemonState, PortForwardingState } from '../../types';
+import { ClientMessage, DaemonState, PortForwardingState, SideBySideEnv } from '../../types';
 import { PortMapping } from '../providers/types';
 import { DaemonService, ServiceContext } from '../service';
 import { readPersistedState, writePersistedState } from '../state-file';
@@ -51,6 +51,10 @@ export class PortForwardingService implements DaemonService {
   private portMappings = new Map<number, number>();
   // Port cache: remember last-known ports per env for instant switch
   private portCache = new Map<string, CachedDiscovery>();
+  // Side-by-side state
+  private sideBySideEnvs: SideBySideEnv[] = [];
+  // Per-env tunnels for side-by-side mode (envId → process)
+  private sideBySideTunnels = new Map<string, ChildProcess>();
 
   constructor(private readonly ctx: ServiceContext) {}
 
@@ -67,6 +71,14 @@ export class PortForwardingService implements DaemonService {
       }
       case 'port-forwarding.stop':
         await this.stopForwarding();
+        return;
+      case 'port-forwarding.side-by-side': {
+        const m = msg as Extract<ClientMessage, { type: 'port-forwarding.side-by-side' }>;
+        await this.startSideBySide(m.envIds);
+        return;
+      }
+      case 'port-forwarding.stop-side-by-side':
+        await this.stopSideBySide();
         return;
       default:
         throw new Error(`Unknown message type: ${msg.type}`);
@@ -125,6 +137,7 @@ export class PortForwardingService implements DaemonService {
       portConflicts: this.portConflicts,
       status: this.status,
       error: this.error,
+      sideBySide: this.sideBySideEnvs,
     };
   }
 
@@ -426,6 +439,135 @@ export class PortForwardingService implements DaemonService {
       setTimeout(done, SIGKILL_DELAY_MS + 1_000);
     });
   }
+
+  // ---------------------------------------------------------------------------
+  // Side-by-side mode
+  // ---------------------------------------------------------------------------
+
+  /**
+   * Start side-by-side mode: forward ports from multiple envs simultaneously.
+   * HTTP proxy routes by hostname: env-name.localhost:port → correct tunnel.
+   * Requires all envs to be running.
+   */
+  private async startSideBySide(envIds: string[]): Promise<void> {
+    // Stop any existing forwarding first
+    if (this.activeEnvId) await this.stopForwarding();
+    if (this.sideBySideEnvs.length > 0) await this.stopSideBySide();
+
+    this.setStatus('connecting');
+
+    const envs = this.ctx.getEnvironments();
+    const sbsEnvs: SideBySideEnv[] = [];
+
+    // Build hostname mapping: use env name sanitized as hostname prefix
+    const usedHostnames = new Set<string>();
+    for (const envId of envIds) {
+      const env = envs.find((e) => e.id === envId);
+      if (!env || env.status !== 'running') continue;
+      let hostname = env.name.replace(/[^a-z0-9-]/gi, '-').toLowerCase();
+      // Ensure uniqueness — append branch or index if collision
+      if (usedHostnames.has(hostname)) {
+        const branch = env.branch.replace(/[^a-z0-9-]/gi, '-').toLowerCase();
+        hostname = `${hostname}-${branch}`;
+      }
+      let suffix = 2;
+      while (usedHostnames.has(hostname)) {
+        hostname = `${env.name.replace(/[^a-z0-9-]/gi, '-').toLowerCase()}-${suffix++}`;
+      }
+      usedHostnames.add(hostname);
+      sbsEnvs.push({ envId, envName: env.name, hostname });
+    }
+
+    if (sbsEnvs.length < 2) {
+      this.setStatus('error', 'Side-by-side requires at least 2 running environments');
+      return;
+    }
+
+    // Discover ports for all envs
+    const envPorts = new Map<string, number[]>();
+    const envMappings = new Map<string, Map<number, number>>(); // envId → (remotePort → hiddenPort)
+
+    await Promise.allSettled(
+      sbsEnvs.map(async (sbs) => {
+        const provider = this.ctx.getProvider(sbs.envId);
+        if (!provider) return;
+
+        const result = await provider.discoverPorts(sbs.envId);
+        const ports = result.ports.filter((p) => p >= 1024);
+        envPorts.set(sbs.envId, ports);
+
+        // Allocate hidden ports
+        const mappings = new Map<number, number>();
+        const portMappingList: PortMapping[] = [];
+        for (const port of ports) {
+          const hidden = await allocateHiddenPort();
+          mappings.set(port, hidden);
+          portMappingList.push({ remote: port, local: hidden });
+        }
+        envMappings.set(sbs.envId, mappings);
+
+        // Spawn tunnel
+        const tunnel = provider.spawnTunnel(sbs.envId, portMappingList);
+        this.sideBySideTunnels.set(sbs.envId, tunnel);
+      }),
+    );
+
+    // Find all unique ports across all envs
+    const allPorts = new Set<number>();
+    for (const ports of envPorts.values()) {
+      for (const p of ports) allPorts.add(p);
+    }
+
+    // For each port, create an HTTP proxy with hostname routes
+    for (const port of allPorts) {
+      const routes = new Map<string, number>();
+      let defaultUpstream: number | undefined;
+
+      for (const sbs of sbsEnvs) {
+        const hidden = envMappings.get(sbs.envId)?.get(port);
+        if (hidden !== undefined) {
+          routes.set(sbs.hostname, hidden);
+          if (!defaultUpstream) defaultUpstream = hidden; // first env is default
+        }
+      }
+
+      if (defaultUpstream !== undefined) {
+        try {
+          await this.proxyManager.ensureHttpProxy(port, routes, defaultUpstream);
+        } catch (err) {
+          console.error(`[port-forwarding] Failed to create HTTP proxy for port ${port}: ${(err as Error).message}`);
+        }
+      }
+    }
+
+    this.sideBySideEnvs = sbsEnvs;
+    this.currentPorts = [...allPorts].sort((a, b) => a - b);
+    this.activeEnvId = sbsEnvs[0].envId; // first env is "active" for state display
+    this.setStatus('active');
+
+    console.log(`[port-forwarding] Side-by-side active: ${sbsEnvs.map((s) => `${s.envName} → ${s.hostname}.localhost`).join(', ')}`);
+  }
+
+  private async stopSideBySide(): Promise<void> {
+    // Kill all side-by-side tunnels
+    for (const [, tunnel] of this.sideBySideTunnels) {
+      this.killProcess(tunnel);
+    }
+    this.sideBySideTunnels.clear();
+
+    await this.proxyManager.removeAll();
+    this.sideBySideEnvs = [];
+    this.activeEnvId = null;
+    this.currentPorts = [];
+    this.currentLabels = {};
+    this.currentUrls = {};
+    this.portConflicts = {};
+    this.setStatus('idle');
+  }
+
+  // ---------------------------------------------------------------------------
+  // Helpers
+  // ---------------------------------------------------------------------------
 
   private portsEqual(a: number[], b: number[]): boolean {
     return a.length === b.length && a.every((p, i) => p === b[i]);

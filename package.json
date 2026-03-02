@@ -2,7 +2,7 @@
   "name": "cloudev",
   "displayName": "Cloudev",
   "description": "Manage cloud development environments (Ona/Gitpod, Codespaces) from VS Code",
-  "version": "0.3.0",
+  "version": "0.4.0",
   "publisher": "Yanix",
   "engines": {
     "vscode": "^1.85.0"
@@ -173,6 +173,17 @@
         "command": "cloudev.copyPortInfo",
         "category": "Cloudev",
         "title": "Copy Details"
+      },
+      {
+        "command": "cloudev.sideBySide",
+        "category": "Cloudev",
+        "title": "Side-by-Side Web Compare",
+        "icon": "$(split-horizontal)"
+      },
+      {
+        "command": "cloudev.stopSideBySide",
+        "category": "Cloudev",
+        "title": "Stop Side-by-Side"
       },
       {
         "command": "cloudev.syncHistory",

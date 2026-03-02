@@ -745,6 +745,75 @@ export function registerCommands(
     ),
   );
 
+  // --- Side-by-Side Web Compare ---
+  context.subscriptions.push(
+    vscode.commands.registerCommand('cloudev.sideBySide', async () => {
+      const runningEnvs = store.getEnvironments().filter((e) => e.status === 'running');
+      if (runningEnvs.length < 2) {
+        vscode.window.showInformationMessage(
+          'Side-by-side requires at least 2 running environments.',
+        );
+        return;
+      }
+
+      interface EnvPickItem extends vscode.QuickPickItem {
+        envId: string;
+      }
+
+      const items: EnvPickItem[] = runningEnvs.map((env) => ({
+        label: env.name,
+        description: env.branch,
+        envId: env.id,
+        picked: true,
+      }));
+
+      const picked = await vscode.window.showQuickPick(items, {
+        placeHolder: 'Select environments for side-by-side comparison',
+        canPickMany: true,
+      });
+
+      if (!picked || picked.length < 2) return;
+
+      await vscode.window.withProgress(
+        {
+          location: vscode.ProgressLocation.Notification,
+          title: 'Starting side-by-side web compare...',
+        },
+        () => client.startSideBySide(picked.map((p) => p.envId)),
+      );
+
+      // Show the hostname URLs for all ports
+      const pf = store.getPortForwarding();
+      if (pf.sideBySide.length > 0 && pf.ports.length > 0) {
+        const allUrls: string[] = [];
+        for (const s of pf.sideBySide) {
+          for (const port of pf.ports) {
+            allUrls.push(`http://${s.hostname}.localhost:${port}`);
+          }
+        }
+        const summary = pf.sideBySide
+          .map((s) => `${s.envName} → ${s.hostname}.localhost`)
+          .join(', ');
+        vscode.window.showInformationMessage(
+          `Side-by-side active: ${summary}. Ports: ${pf.ports.join(', ')}`,
+          'Copy URLs',
+        ).then((action) => {
+          if (action === 'Copy URLs') {
+            vscode.env.clipboard.writeText(allUrls.join('\n'));
+          }
+        });
+      }
+    }),
+  );
+
+  // --- Stop Side-by-Side ---
+  context.subscriptions.push(
+    vscode.commands.registerCommand('cloudev.stopSideBySide', async () => {
+      await client.stopSideBySide();
+      vscode.window.showInformationMessage('Side-by-side mode stopped.');
+    }),
+  );
+
   // --- Sync Shell History ---
   context.subscriptions.push(
     vscode.commands.registerCommand(

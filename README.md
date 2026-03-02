@@ -27,6 +27,8 @@ Manage cloud development environments from VS Code. Start, stop, forward ports, 
 - **Persistent daemon** -- port forwarding survives VS Code reloads; auto-resumes on restart
 - **Status bar** -- daemon health, forwarded port count, running environment count
 - **Shell history sync** -- bidirectional sync of bash/zsh history across environments; persists through env deletion
+- **Side-by-side web compare** -- compare multiple envs via `env-name.localhost:port` hostname routing (Chrome/Firefox)
+- **Instant quick-switch** -- switch between envs in ~1s via proxy upstream swap, no port rebind
 - **Multi-window** -- all VS Code windows share state via a background daemon
 
 ## Quick Start
@@ -68,6 +70,8 @@ ext install Yanix.cloudev
 | `Cloudev: Open in New Window` | Open Remote SSH to the environment |
 | `Cloudev: Open in Dashboard` | Open the provider's web UI |
 | `Cloudev: Copy SSH Command` | Copy the SSH command to clipboard |
+| `Cloudev: Side-by-Side Web Compare` | Compare multiple envs via hostname routing |
+| `Cloudev: Stop Side-by-Side` | Stop comparing, return to single-env forwarding |
 | `Cloudev: Sync Shell History` | Bidirectional sync of bash/zsh history with running envs |
 | `Cloudev: Clear Shell History` | Clear locally stored shell history |
 | `Cloudev: View Daemon Log` | Open the daemon log file for debugging |
