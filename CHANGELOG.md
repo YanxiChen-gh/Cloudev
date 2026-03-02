@@ -2,6 +2,19 @@
 
 All notable changes to the Cloudev extension will be documented in this file.
 
+## [0.4.0] - 2026-03-02
+
+### Added
+- **Local proxy architecture**: SSH tunnels bind to hidden ports; a local TCP proxy owns user-facing ports. Enables instant env switching (no port rebind) and side-by-side compare.
+- **Instant quick-switch**: switching forwarding between envs is now a proxy upstream swap — no port release/reacquire race. Port cache enables instant switch on second visit.
+- **Side-by-side web compare**: compare multiple envs simultaneously via hostname routing. Access `http://env-name.localhost:port` in Chrome/Firefox for each env while `localhost:port` still works for the primary.
+- **OS-assigned hidden ports**: avoids collisions with old tunnels still releasing
+- **Skip privileged ports** (< 1024) from forwarding
+
+### Changed
+- `spawnTunnel` provider interface now accepts `PortMapping[]` instead of `number[]`
+- Port ownership detection recognizes daemon process as "ours"
+
 ## [0.3.0] - 2026-03-02
 
 ### Added

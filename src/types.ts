@@ -39,6 +39,12 @@ export interface MachineClass {
   memoryGb: number;
 }
 
+export interface SideBySideEnv {
+  envId: string;
+  envName: string;
+  hostname: string;  // e.g., "env-a" → user accesses env-a.localhost:3000
+}
+
 export interface PortForwardingState {
   activeEnvId: string | null;
   activeEnvName: string | null;
@@ -48,6 +54,8 @@ export interface PortForwardingState {
   portConflicts: Record<number, string>; // port → conflict reason (empty if all bound)
   status: 'idle' | 'connecting' | 'active' | 'error';
   error?: string;
+  // Side-by-side mode
+  sideBySide: SideBySideEnv[];  // empty = quick-switch mode, non-empty = side-by-side active
 }
 
 export interface ProviderStatus {
@@ -96,6 +104,8 @@ export type ClientMessage =
   // Port-forwarding service
   | { type: 'port-forwarding.start'; requestId: string; envId: string }
   | { type: 'port-forwarding.stop'; requestId: string }
+  | { type: 'port-forwarding.side-by-side'; requestId: string; envIds: string[] }
+  | { type: 'port-forwarding.stop-side-by-side'; requestId: string }
   // Shell history sync service
   | { type: 'history.collect'; requestId: string; envId?: string }
   | { type: 'history.clear'; requestId: string }

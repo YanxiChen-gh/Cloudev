@@ -179,7 +179,7 @@ async function main(): Promise<void> {
   function buildState(): DaemonState {
     const merged: DaemonState = {
       environments: [],
-      portForwarding: { activeEnvId: null, activeEnvName: null, ports: [], portLabels: {}, portUrls: {}, portConflicts: {}, status: 'idle' },
+      portForwarding: { activeEnvId: null, activeEnvName: null, ports: [], portLabels: {}, portUrls: {}, portConflicts: {}, status: 'idle', sideBySide: [] },
       shellHistory: { entryCount: 0, lastSyncTime: null, status: 'idle' },
       providers: [],
     };

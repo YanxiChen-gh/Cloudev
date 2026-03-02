@@ -13,6 +13,7 @@ export class StateStore extends EventEmitter {
       portUrls: {},
       portConflicts: {},
       status: 'idle',
+      sideBySide: [],
     },
     shellHistory: {
       entryCount: 0,

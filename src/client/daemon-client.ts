@@ -135,6 +135,14 @@ export class DaemonClient extends EventEmitter {
     await this.sendRequest({ type: 'port-forwarding.stop', requestId: '' });
   }
 
+  async startSideBySide(envIds: string[]): Promise<void> {
+    await this.sendRequest({ type: 'port-forwarding.side-by-side', requestId: '', envIds });
+  }
+
+  async stopSideBySide(): Promise<void> {
+    await this.sendRequest({ type: 'port-forwarding.stop-side-by-side', requestId: '' });
+  }
+
   async refresh(): Promise<void> {
     await this.sendRequest({ type: 'environments.refresh', requestId: '' });
   }
