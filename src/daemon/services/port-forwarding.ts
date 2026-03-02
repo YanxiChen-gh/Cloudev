@@ -170,14 +170,17 @@ export class PortForwardingService implements DaemonService {
     this.setStatus('connecting');
     writePersistedState({ activeForwardingEnvId: envId });
 
-    // Use cache for instant start if available
+    // Use cache for instant start if available — set active immediately
     const cached = this.portCache.get(envId);
     if (cached && cached.ports.length > 0) {
       await this.applyPorts(envId, cached.ports, cached.labels, cached.urls);
+      if (this.activeEnvId !== envId) return; // stopped during await
+      this.setStatus('active');
     }
 
     // Always do a fresh discovery (updates cache + corrects if stale)
     await this.discoverAndTunnel();
+    if (this.activeEnvId !== envId) return; // stopped during await
     this.discoveryTimer = setInterval(() => this.discoverAndTunnel(), DISCOVERY_INTERVAL_MS);
   }
 
@@ -317,16 +320,20 @@ export class PortForwardingService implements DaemonService {
     if (!this.activeEnvId) return;
     if (this.isDiscovering) return;
 
+    // Capture envId — if it changes mid-await (stop/switch), bail out
+    const envId = this.activeEnvId;
     this.isDiscovering = true;
 
     try {
-      const provider = this.ctx.getProvider(this.activeEnvId);
+      const provider = this.ctx.getProvider(envId);
       if (!provider) {
         this.setStatus('error', 'Provider not found');
         return;
       }
 
-      const result = await provider.discoverPorts(this.activeEnvId);
+      const result = await provider.discoverPorts(envId);
+      if (this.activeEnvId !== envId) return; // env changed during await
+
       const newPorts = result.ports.filter((p) => p >= 1024);
       newPorts.sort((a, b) => a - b);
 
@@ -334,14 +341,15 @@ export class PortForwardingService implements DaemonService {
       const newUrls = result.urls ?? {};
 
       // Update cache
-      this.portCache.set(this.activeEnvId, {
+      this.portCache.set(envId, {
         ports: newPorts,
         labels: newLabels,
         urls: newUrls,
       });
 
       if (!this.portsEqual(newPorts, this.currentPorts)) {
-        await this.applyPorts(this.activeEnvId, newPorts, newLabels, newUrls);
+        await this.applyPorts(envId, newPorts, newLabels, newUrls);
+        if (this.activeEnvId !== envId) return; // env changed during await
         this.setStatus('active');
       } else {
         // Ports unchanged — just update labels/urls and check ownership
@@ -354,8 +362,9 @@ export class PortForwardingService implements DaemonService {
         }
       }
     } catch (err) {
+      if (this.activeEnvId !== envId) return; // env changed, ignore error
       const msg = (err as Error).message;
-      console.error(`[port-forwarding] Error for ${this.activeEnvId}: ${msg}`);
+      console.error(`[port-forwarding] Error for ${envId}: ${msg}`);
       this.setStatus('error', msg);
     } finally {
       this.isDiscovering = false;
@@ -586,6 +595,12 @@ export class PortForwardingService implements DaemonService {
     const provider = this.ctx.getProvider(envId);
     if (!provider) throw new Error(`No provider found for environment ${envId}`);
 
+    // Stop discovery timer — it would call applyPorts which overwrites HTTP proxies with TCP
+    if (this.discoveryTimer) {
+      clearInterval(this.discoveryTimer);
+      this.discoveryTimer = null;
+    }
+
     // Discover ports for new env
     const result = await provider.discoverPorts(envId);
     const newPorts = result.ports.filter((p) => p >= 1024);
@@ -599,10 +614,25 @@ export class PortForwardingService implements DaemonService {
       portMappingList.push({ remote: port, local: hidden });
     }
 
-    // Spawn tunnel for new env
+    // Spawn tunnel for new env and wait for it to be ready
     const tunnel = provider.spawnTunnel(envId, portMappingList);
     this.sideBySideTunnels.set(envId, tunnel);
     this.compareMappings.set(envId, newMappings);
+
+    // Probe a hidden port until the tunnel accepts connections (up to 10s)
+    if (portMappingList.length > 0) {
+      const probePort = portMappingList[0].local;
+      for (let i = 0; i < 40; i++) {
+        const ok = await new Promise<boolean>((resolve) => {
+          const sock = net.connect(probePort, '127.0.0.1');
+          sock.on('connect', () => { sock.destroy(); resolve(true); });
+          sock.on('error', () => resolve(false));
+          setTimeout(() => { sock.destroy(); resolve(false); }, 250);
+        });
+        if (ok) break;
+        await new Promise((r) => setTimeout(r, 250));
+      }
+    }
 
     const usedHostnames = new Set(this.sideBySideEnvs.map((s) => s.hostname));
 
@@ -684,7 +714,16 @@ export class PortForwardingService implements DaemonService {
       this.sideBySideEnvs.push({ envId, envName: newEnv.name, hostname: newHostname });
     }
 
-    this.ctx.broadcast();
+    this.setStatus('active');
+
+    // Log routes for debugging
+    for (const port of this.currentPorts) {
+      const routes = this.proxyManager.getHttpRoutes(port);
+      if (routes) {
+        const entries = [...routes.entries()].map(([h, p]) => `${h}→:${p}`).join(', ');
+        console.log(`[port-forwarding] Port ${port} routes: ${entries} (mode=${this.proxyManager.getMode(port)})`);
+      }
+    }
     console.log(`[port-forwarding] Added ${newEnv.name} to compare (${this.sideBySideEnvs.length} envs)`);
   }
 
@@ -736,9 +775,14 @@ export class PortForwardingService implements DaemonService {
       // Restore currentPorts to just the active env's ports
       this.currentPorts = [...this.portMappings.keys()].sort((a, b) => a - b);
       this.compareMappings.clear();
+
+      // Restart discovery timer now that we're back to regular TCP mode
+      if (!this.discoveryTimer) {
+        this.discoveryTimer = setInterval(() => this.discoverAndTunnel(), DISCOVERY_INTERVAL_MS);
+      }
     }
 
-    this.ctx.broadcast();
+    this.setStatus('active');
     console.log(`[port-forwarding] Removed env from compare (${this.sideBySideEnvs.length} envs remaining)`);
   }
 

@@ -16,6 +16,10 @@ import { CodespacesProvider } from './providers/codespaces';
 import { ClientMessage, DaemonState } from '../types';
 import { getExtensionVersion } from '../version';
 
+// Cache version at startup — if files change on disk (VSIX reinstall),
+// this stale value triggers a version mismatch and daemon restart.
+const DAEMON_VERSION = getExtensionVersion();
+
 const SOCKET_DIR = path.join(os.homedir(), '.cloudev');
 const SOCKET_PATH = path.join(SOCKET_DIR, 'daemon.sock');
 const PID_PATH = path.join(SOCKET_DIR, 'daemon.pid');
@@ -93,7 +97,7 @@ async function main(): Promise<void> {
             type: 'response',
             requestId: msg.requestId,
             success: true,
-            data: { daemonVersion: getExtensionVersion() },
+            data: { daemonVersion: DAEMON_VERSION },
           });
           return;
         }

@@ -2,6 +2,15 @@
 
 All notable changes to the Cloudev extension will be documented in this file.
 
+## [0.5.1] - 2026-03-02
+
+### Fixed
+- **Compare routing broken by discovery timer**: the 5-second port discovery timer could fire during compare mode and call `applyPorts`, which replaced HTTP proxies (hostname routing) with TCP proxies (single upstream). Discovery timer is now stopped while compare is active and restarted when compare ends.
+- **Debug logging**: `addCompare` now logs per-port routes and proxy mode to `daemon.log` for easier troubleshooting.
+
+### Changed
+- **"Open Both" → "Open All"**: notification and right-click action now open all envs in the compare session (not just primary + one), supporting 3+ way compare.
+
 ## [0.5.0] - 2026-03-02
 
 ### Added
