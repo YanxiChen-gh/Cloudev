@@ -126,6 +126,14 @@ export class MockProvider implements EnvironmentProvider {
   async listMachineClasses(): Promise<MachineClass[]> {
     return [];
   }
+
+  // Remote command execution
+  execRemoteResults: Record<string, string> = {};
+
+  async execRemoteCommand(envId: string, command: string): Promise<string> {
+    this.calls.push({ method: 'execRemoteCommand', args: [envId, command] });
+    return this.execRemoteResults[command] ?? '';
+  }
 }
 
 export { MOCK_ENVS, MOCK_PROJECTS };

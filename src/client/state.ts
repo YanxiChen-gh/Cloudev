@@ -1,5 +1,5 @@
 import { EventEmitter } from 'events';
-import { DaemonState, DaemonEvent, Environment, PortForwardingState, ProviderStatus } from '../types';
+import { DaemonState, DaemonEvent, Environment, PortForwardingState, ShellHistoryState, ProviderStatus } from '../types';
 import { DaemonClient } from './daemon-client';
 
 export class StateStore extends EventEmitter {
@@ -12,6 +12,11 @@ export class StateStore extends EventEmitter {
       portLabels: {},
       portUrls: {},
       portConflicts: {},
+      status: 'idle',
+    },
+    shellHistory: {
+      entryCount: 0,
+      lastSyncTime: null,
       status: 'idle',
     },
     providers: [],
@@ -68,6 +73,10 @@ export class StateStore extends EventEmitter {
 
   isForwarding(envId: string): boolean {
     return this.state.portForwarding.activeEnvId === envId;
+  }
+
+  getShellHistory(): ShellHistoryState {
+    return this.state.shellHistory;
   }
 
   getAvailableProviders(): ProviderStatus[] {

@@ -139,6 +139,18 @@ export class DaemonClient extends EventEmitter {
     await this.sendRequest({ type: 'environments.refresh', requestId: '' });
   }
 
+  async syncHistory(envId?: string): Promise<void> {
+    await this.sendRequest({ type: 'history.collect', requestId: '', envId });
+  }
+
+  async clearHistory(): Promise<void> {
+    await this.sendRequest({ type: 'history.clear', requestId: '' });
+  }
+
+  async configureHistory(periodicSyncMinutes: number): Promise<void> {
+    await this.sendRequest({ type: 'history.configure', requestId: '', periodicSyncMinutes });
+  }
+
   async listProjects(providerId: string): Promise<unknown[]> {
     const result = await this.sendRequest({
       type: 'environments.listProjects',

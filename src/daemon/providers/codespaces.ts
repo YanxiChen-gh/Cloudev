@@ -136,6 +136,10 @@ export class CodespacesProvider implements EnvironmentProvider {
     // No-op — using `gh codespace code` for connections, not SSH Remote
   }
 
+  async execRemoteCommand(envId: string, command: string): Promise<string> {
+    return this.execFn(['codespace', 'ssh', '-c', envId, '--', 'sh', '-c', command]);
+  }
+
   async listProjects(): Promise<Project[]> {
     // Codespaces doesn't have a "projects" concept.
     // Environments are grouped by repository (via projectId = owner/repo).

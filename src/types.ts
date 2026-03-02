@@ -57,6 +57,13 @@ export interface ProviderStatus {
   error?: string;
 }
 
+export interface ShellHistoryState {
+  entryCount: number;
+  lastSyncTime: number | null;
+  status: 'idle' | 'syncing' | 'error';
+  error?: string;
+}
+
 // ---------------------------------------------------------------------------
 // Daemon State — composable snapshot from all services
 // ---------------------------------------------------------------------------
@@ -64,6 +71,7 @@ export interface ProviderStatus {
 export interface DaemonState {
   environments: Environment[];
   portForwarding: PortForwardingState;
+  shellHistory: ShellHistoryState;
   providers: ProviderStatus[];
 }
 
@@ -87,7 +95,11 @@ export type ClientMessage =
   | { type: 'environments.listMachineClasses'; requestId: string; providerId: string; repo?: string }
   // Port-forwarding service
   | { type: 'port-forwarding.start'; requestId: string; envId: string }
-  | { type: 'port-forwarding.stop'; requestId: string };
+  | { type: 'port-forwarding.stop'; requestId: string }
+  // Shell history sync service
+  | { type: 'history.collect'; requestId: string; envId?: string }
+  | { type: 'history.clear'; requestId: string }
+  | { type: 'history.configure'; requestId: string; periodicSyncMinutes: number };
 
 // ---------------------------------------------------------------------------
 // IPC Protocol — Daemon → Client messages

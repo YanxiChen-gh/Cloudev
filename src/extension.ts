@@ -123,8 +123,26 @@ export async function activate(
     );
   });
 
-  // 11. Log forwarding errors + detect VS Code Remote conflicts
+  // 11. Configure shell history periodic sync from settings
+  const sendHistoryConfig = () => {
+    if (!client.isConnected()) return;
+    const minutes = vscode.workspace
+      .getConfiguration('cloudev')
+      .get<number>('shellHistory.periodicSyncMinutes', 0);
+    client.configureHistory(minutes).catch(() => {});
+  };
+  sendHistoryConfig();
+  context.subscriptions.push(
+    vscode.workspace.onDidChangeConfiguration((e) => {
+      if (e.affectsConfiguration('cloudev.shellHistory.periodicSyncMinutes')) {
+        sendHistoryConfig();
+      }
+    }),
+  );
+
+  // 12. Log forwarding + history errors, detect VS Code Remote conflicts
   let lastPfError: string | undefined;
+  let lastHistoryError: string | undefined;
   let shownVscodeRemoteHint = false;
   store.on('changed', () => {
     const pf = store.getPortForwarding();
@@ -133,6 +151,14 @@ export async function activate(
       output.error(`Port forwarding error: ${pf.error}`);
     } else if (pf.status !== 'error') {
       lastPfError = undefined;
+    }
+
+    const sh = store.getShellHistory();
+    if (sh.status === 'error' && sh.error && sh.error !== lastHistoryError) {
+      lastHistoryError = sh.error;
+      output.error(`Shell history sync error: ${sh.error}`);
+    } else if (sh.status !== 'error') {
+      lastHistoryError = undefined;
     }
 
     // One-time hint when VS Code Remote SSH is holding forwarded ports
