@@ -2,6 +2,24 @@
 
 All notable changes to the Cloudev extension will be documented in this file.
 
+## [0.5.0] - 2026-03-02
+
+### Added
+- **Additive compare**: right-click a running env while forwarding → "Compare with this env". Adds envs to an ongoing compare session one at a time, without stopping forwarding.
+- **Compare sidebar indicators**: compared envs show `$(git-compare)` icon (blue) with `hostname.localhost` description
+- **Status bar compare count**: shows `+ N comparing` when compare is active
+- **"Open Both in Browser"**: right-click a compared env to re-open both primary and compared env tabs
+- **"Stop comparing"**: status bar QuickPick action to remove all compares while keeping primary forwarding
+- **Web port heuristic**: `pickWebPort()` auto-selects the best port for compare notifications using last-used → label keywords → well-known ports → lowest
+- **Compare notification**: "Comparing env-a ↔ env-b (port 3000)" with "Open Both", "Other port...", "Copy URLs" actions
+- **`cloudev.isForwarding` context key**: controls inline icon visibility (compare icon vs forward icon on running envs)
+- IPC messages: `port-forwarding.add-compare`, `port-forwarding.remove-compare`
+
+### Changed
+- Status bar QuickPick is compare-aware: shows compared envs with hostnames, remove actions, and "Stop comparing"
+- Inline icons swap: running envs show `$(git-compare)` when forwarding is active (instead of `$(arrow-swap)`)
+- `stopForwarding()` cleans up any active compare session before tearing down
+
 ## [0.4.0] - 2026-03-02
 
 ### Added

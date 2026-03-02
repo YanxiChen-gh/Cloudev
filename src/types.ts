@@ -106,6 +106,8 @@ export type ClientMessage =
   | { type: 'port-forwarding.stop'; requestId: string }
   | { type: 'port-forwarding.side-by-side'; requestId: string; envIds: string[] }
   | { type: 'port-forwarding.stop-side-by-side'; requestId: string }
+  | { type: 'port-forwarding.add-compare'; requestId: string; envId: string }
+  | { type: 'port-forwarding.remove-compare'; requestId: string; envId: string }
   // Shell history sync service
   | { type: 'history.collect'; requestId: string; envId?: string }
   | { type: 'history.clear'; requestId: string }

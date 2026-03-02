@@ -55,6 +55,8 @@ export class PortForwardingService implements DaemonService {
   private sideBySideEnvs: SideBySideEnv[] = [];
   // Per-env tunnels for side-by-side mode (envId → process)
   private sideBySideTunnels = new Map<string, ChildProcess>();
+  // Per-env port mappings for compare mode (envId → (remotePort → hiddenPort))
+  private compareMappings = new Map<string, Map<number, number>>();
 
   constructor(private readonly ctx: ServiceContext) {}
 
@@ -80,6 +82,16 @@ export class PortForwardingService implements DaemonService {
       case 'port-forwarding.stop-side-by-side':
         await this.stopSideBySide();
         return;
+      case 'port-forwarding.add-compare': {
+        const m = msg as Extract<ClientMessage, { type: 'port-forwarding.add-compare' }>;
+        await this.addCompare(m.envId);
+        return;
+      }
+      case 'port-forwarding.remove-compare': {
+        const m = msg as Extract<ClientMessage, { type: 'port-forwarding.remove-compare' }>;
+        await this.removeCompare(m.envId);
+        return;
+      }
       default:
         throw new Error(`Unknown message type: ${msg.type}`);
     }
@@ -212,6 +224,15 @@ export class PortForwardingService implements DaemonService {
     if (this.discoveryTimer) {
       clearInterval(this.discoveryTimer);
       this.discoveryTimer = null;
+    }
+    // Clean up any active compare session
+    if (this.sideBySideEnvs.length > 0) {
+      for (const [, tunnel] of this.sideBySideTunnels) {
+        this.killProcess(tunnel);
+      }
+      this.sideBySideTunnels.clear();
+      this.compareMappings.clear();
+      this.sideBySideEnvs = [];
     }
     await this.killTunnel();
     await this.proxyManager.removeAll();
@@ -548,12 +569,199 @@ export class PortForwardingService implements DaemonService {
     console.log(`[port-forwarding] Side-by-side active: ${sbsEnvs.map((s) => `${s.envName} → ${s.hostname}.localhost`).join(', ')}`);
   }
 
+  /**
+   * Additive compare: add a single env to compare alongside the currently forwarded env.
+   * First call transitions from regular forwarding → compare mode (TCP proxies → HTTP proxies).
+   * Subsequent calls add more envs to the existing compare session.
+   */
+  private async addCompare(envId: string): Promise<void> {
+    if (!this.activeEnvId) throw new Error('No active forwarding — start forwarding first');
+    if (envId === this.activeEnvId) throw new Error('Cannot compare the active forwarding environment with itself');
+    if (this.sideBySideEnvs.some((s) => s.envId === envId)) throw new Error('Environment is already being compared');
+
+    const envs = this.ctx.getEnvironments();
+    const newEnv = envs.find((e) => e.id === envId);
+    if (!newEnv || newEnv.status !== 'running') throw new Error('Environment is not running');
+
+    const provider = this.ctx.getProvider(envId);
+    if (!provider) throw new Error(`No provider found for environment ${envId}`);
+
+    // Discover ports for new env
+    const result = await provider.discoverPorts(envId);
+    const newPorts = result.ports.filter((p) => p >= 1024);
+
+    // Allocate hidden ports for new env
+    const newMappings = new Map<number, number>();
+    const portMappingList: PortMapping[] = [];
+    for (const port of newPorts) {
+      const hidden = await allocateHiddenPort();
+      newMappings.set(port, hidden);
+      portMappingList.push({ remote: port, local: hidden });
+    }
+
+    // Spawn tunnel for new env
+    const tunnel = provider.spawnTunnel(envId, portMappingList);
+    this.sideBySideTunnels.set(envId, tunnel);
+    this.compareMappings.set(envId, newMappings);
+
+    const usedHostnames = new Set(this.sideBySideEnvs.map((s) => s.hostname));
+
+    if (this.sideBySideEnvs.length === 0) {
+      // First compare — transition from regular forwarding to compare mode
+      const activeEnv = envs.find((e) => e.id === this.activeEnvId);
+      const activeHostname = this.generateHostname(activeEnv!, usedHostnames);
+      usedHostnames.add(activeHostname);
+      const newHostname = this.generateHostname(newEnv, usedHostnames);
+
+      // Store active env's mappings for compare mode
+      this.compareMappings.set(this.activeEnvId, new Map(this.portMappings));
+
+      // All ports across both envs
+      const allPorts = new Set([...this.currentPorts, ...newPorts]);
+
+      // Transition each port from TCP → HTTP proxy with hostname routes
+      for (const port of allPorts) {
+        const routes = new Map<string, number>();
+        let defaultUpstream: number | undefined;
+
+        const activeHidden = this.portMappings.get(port);
+        if (activeHidden !== undefined) {
+          routes.set(activeHostname, activeHidden);
+          defaultUpstream = activeHidden;
+        }
+
+        const newHidden = newMappings.get(port);
+        if (newHidden !== undefined) {
+          routes.set(newHostname, newHidden);
+          if (!defaultUpstream) defaultUpstream = newHidden;
+        }
+
+        if (defaultUpstream !== undefined) {
+          try {
+            await this.proxyManager.ensureHttpProxy(port, routes, defaultUpstream);
+          } catch (err) {
+            console.error(`[port-forwarding] Failed to create HTTP proxy for port ${port}: ${(err as Error).message}`);
+          }
+        }
+      }
+
+      // Update current ports to union
+      this.currentPorts = [...allPorts].sort((a, b) => a - b);
+
+      this.sideBySideEnvs = [
+        { envId: this.activeEnvId, envName: activeEnv!.name, hostname: activeHostname },
+        { envId, envName: newEnv.name, hostname: newHostname },
+      ];
+    } else {
+      // Already in compare mode — add routes for new env to existing HTTP proxies
+      const newHostname = this.generateHostname(newEnv, usedHostnames);
+
+      // Update existing HTTP proxies with new routes
+      const allPorts = new Set([...this.currentPorts, ...newPorts]);
+      for (const port of allPorts) {
+        const existingRoutes = this.proxyManager.getHttpRoutes(port);
+        const routes = existingRoutes ? new Map(existingRoutes) : new Map<string, number>();
+
+        const newHidden = newMappings.get(port);
+        if (newHidden !== undefined) {
+          routes.set(newHostname, newHidden);
+        }
+
+        // Determine default upstream (active env's hidden port)
+        const activeHidden = this.compareMappings.get(this.activeEnvId!)?.get(port) ?? this.portMappings.get(port);
+        const defaultUpstream = activeHidden ?? routes.values().next().value;
+
+        if (routes.size > 0 && defaultUpstream !== undefined) {
+          try {
+            await this.proxyManager.ensureHttpProxy(port, routes, defaultUpstream);
+          } catch (err) {
+            console.error(`[port-forwarding] Failed to update HTTP proxy for port ${port}: ${(err as Error).message}`);
+          }
+        }
+      }
+
+      this.currentPorts = [...allPorts].sort((a, b) => a - b);
+      this.sideBySideEnvs.push({ envId, envName: newEnv.name, hostname: newHostname });
+    }
+
+    this.ctx.broadcast();
+    console.log(`[port-forwarding] Added ${newEnv.name} to compare (${this.sideBySideEnvs.length} envs)`);
+  }
+
+  /**
+   * Remove a single env from the compare session.
+   * If only the active env remains, transitions back to regular forwarding (HTTP → TCP proxies).
+   */
+  private async removeCompare(envId: string): Promise<void> {
+    if (envId === this.activeEnvId) throw new Error('Cannot remove the primary forwarding environment from compare');
+
+    const idx = this.sideBySideEnvs.findIndex((s) => s.envId === envId);
+    if (idx === -1) throw new Error('Environment is not in the compare list');
+
+    // Kill tunnel for this env
+    const tunnel = this.sideBySideTunnels.get(envId);
+    if (tunnel) {
+      this.killProcess(tunnel);
+      this.sideBySideTunnels.delete(envId);
+    }
+
+    // Remove hostname route from all HTTP proxies
+    const removedHostname = this.sideBySideEnvs[idx].hostname;
+    for (const port of this.proxyManager.getProxiedPorts()) {
+      const routes = this.proxyManager.getHttpRoutes(port);
+      if (routes) {
+        routes.delete(removedHostname);
+      }
+    }
+
+    this.compareMappings.delete(envId);
+    this.sideBySideEnvs.splice(idx, 1);
+
+    // If only the active env remains, transition back to regular forwarding
+    if (this.sideBySideEnvs.length <= 1) {
+      this.sideBySideEnvs = [];
+
+      // Transition HTTP proxies back to TCP proxies
+      for (const port of this.currentPorts) {
+        const upstream = this.portMappings.get(port);
+        if (upstream !== undefined) {
+          try {
+            await this.proxyManager.ensureProxy(port, upstream);
+          } catch (err) {
+            console.error(`[port-forwarding] Failed to restore TCP proxy for port ${port}: ${(err as Error).message}`);
+          }
+        }
+      }
+
+      // Restore currentPorts to just the active env's ports
+      this.currentPorts = [...this.portMappings.keys()].sort((a, b) => a - b);
+      this.compareMappings.clear();
+    }
+
+    this.ctx.broadcast();
+    console.log(`[port-forwarding] Removed env from compare (${this.sideBySideEnvs.length} envs remaining)`);
+  }
+
+  private generateHostname(env: { name: string; branch: string }, usedHostnames: Set<string>): string {
+    let hostname = env.name.replace(/[^a-z0-9-]/gi, '-').toLowerCase();
+    if (usedHostnames.has(hostname)) {
+      const branch = env.branch.replace(/[^a-z0-9-]/gi, '-').toLowerCase();
+      hostname = `${hostname}-${branch}`;
+    }
+    let suffix = 2;
+    while (usedHostnames.has(hostname)) {
+      hostname = `${env.name.replace(/[^a-z0-9-]/gi, '-').toLowerCase()}-${suffix++}`;
+    }
+    return hostname;
+  }
+
   private async stopSideBySide(): Promise<void> {
     // Kill all side-by-side tunnels
     for (const [, tunnel] of this.sideBySideTunnels) {
       this.killProcess(tunnel);
     }
     this.sideBySideTunnels.clear();
+    this.compareMappings.clear();
 
     await this.proxyManager.removeAll();
     this.sideBySideEnvs = [];

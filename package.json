@@ -2,7 +2,7 @@
   "name": "cloudev",
   "displayName": "Cloudev",
   "description": "Manage cloud development environments (Ona/Gitpod, Codespaces) from VS Code",
-  "version": "0.4.0",
+  "version": "0.5.0",
   "publisher": "Yanix",
   "engines": {
     "vscode": "^1.85.0"
@@ -186,6 +186,24 @@
         "title": "Stop Side-by-Side"
       },
       {
+        "command": "cloudev.addCompare",
+        "category": "Cloudev",
+        "title": "Compare with this env",
+        "icon": "$(git-compare)"
+      },
+      {
+        "command": "cloudev.removeCompare",
+        "category": "Cloudev",
+        "title": "Remove from Compare",
+        "icon": "$(close)"
+      },
+      {
+        "command": "cloudev.openCompare",
+        "category": "Cloudev",
+        "title": "Open Both in Browser",
+        "icon": "$(link-external)"
+      },
+      {
         "command": "cloudev.syncHistory",
         "category": "Cloudev",
         "title": "Sync Shell History",
@@ -218,17 +236,27 @@
         },
         {
           "command": "cloudev.openInNewWindow",
-          "when": "view == cloudev.environments && viewItem =~ /^environment-running|^environment-forwarding/",
+          "when": "view == cloudev.environments && viewItem =~ /^environment-running|^environment-forwarding|^environment-comparing/",
           "group": "inline@1"
         },
         {
           "command": "cloudev.startPortForwarding",
-          "when": "view == cloudev.environments && viewItem =~ /^environment-running/",
+          "when": "view == cloudev.environments && viewItem =~ /^environment-running/ && !cloudev.isForwarding",
+          "group": "inline@2"
+        },
+        {
+          "command": "cloudev.addCompare",
+          "when": "view == cloudev.environments && viewItem =~ /^environment-running/ && cloudev.isForwarding",
           "group": "inline@2"
         },
         {
           "command": "cloudev.stopPortForwarding",
           "when": "view == cloudev.environments && viewItem =~ /^environment-forwarding/",
+          "group": "inline@2"
+        },
+        {
+          "command": "cloudev.removeCompare",
+          "when": "view == cloudev.environments && viewItem =~ /^environment-comparing/",
           "group": "inline@2"
         },
         {
@@ -263,12 +291,12 @@
         },
         {
           "command": "cloudev.stopEnvironment",
-          "when": "view == cloudev.environments && viewItem =~ /^environment-running|^environment-forwarding/",
+          "when": "view == cloudev.environments && viewItem =~ /^environment-running|^environment-forwarding|^environment-comparing/",
           "group": "1_lifecycle@2"
         },
         {
           "command": "cloudev.restartEnvironment",
-          "when": "view == cloudev.environments && viewItem =~ /^environment-running|^environment-forwarding/",
+          "when": "view == cloudev.environments && viewItem =~ /^environment-running|^environment-forwarding|^environment-comparing/",
           "group": "1_lifecycle@3"
         },
         {
@@ -277,13 +305,28 @@
           "group": "2_ports@1"
         },
         {
+          "command": "cloudev.addCompare",
+          "when": "view == cloudev.environments && viewItem =~ /^environment-running/ && cloudev.isForwarding",
+          "group": "2_ports@2"
+        },
+        {
           "command": "cloudev.stopPortForwarding",
           "when": "view == cloudev.environments && viewItem =~ /^environment-forwarding/",
           "group": "2_ports@1"
         },
         {
+          "command": "cloudev.removeCompare",
+          "when": "view == cloudev.environments && viewItem =~ /^environment-comparing/",
+          "group": "2_ports@1"
+        },
+        {
+          "command": "cloudev.openCompare",
+          "when": "view == cloudev.environments && viewItem =~ /^environment-comparing/",
+          "group": "2_ports@2"
+        },
+        {
           "command": "cloudev.openInNewWindow",
-          "when": "view == cloudev.environments && viewItem =~ /^environment-running|^environment-forwarding/",
+          "when": "view == cloudev.environments && viewItem =~ /^environment-running|^environment-forwarding|^environment-comparing/",
           "group": "3_connect@1"
         },
         {
@@ -298,7 +341,7 @@
         },
         {
           "command": "cloudev.copySshCommand",
-          "when": "view == cloudev.environments && viewItem =~ /^environment-running|^environment-forwarding/",
+          "when": "view == cloudev.environments && viewItem =~ /^environment-running|^environment-forwarding|^environment-comparing/",
           "group": "4_copy@2"
         },
         {
@@ -313,7 +356,7 @@
         },
         {
           "command": "cloudev.syncHistory",
-          "when": "view == cloudev.environments && viewItem =~ /^environment-running|^environment-forwarding/",
+          "when": "view == cloudev.environments && viewItem =~ /^environment-running|^environment-forwarding|^environment-comparing/",
           "group": "4b_history@1"
         },
         {

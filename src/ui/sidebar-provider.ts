@@ -37,6 +37,8 @@ export class EnvironmentNode extends vscode.TreeItem {
     public readonly isForwarding: boolean,
     public readonly forwardedPorts: number[],
     isFavorite?: boolean,
+    public readonly isComparing?: boolean,
+    public readonly compareHostname?: string,
   ) {
     super(
       env.name || env.id,
@@ -50,16 +52,22 @@ export class EnvironmentNode extends vscode.TreeItem {
     const branchText = env.branch || '';
     if (isForwarding && forwardedPorts.length > 0) {
       this.description = `${star}${branchText} (${forwardedPorts.length} ports)`;
+    } else if (isComparing && compareHostname) {
+      this.description = `${star}${compareHostname}.localhost`;
     } else {
       this.description = `${star}${branchText}`;
     }
 
-    // Status-based icon — forwarding env gets radio-tower, running gets green circle
+    // Status-based icon — forwarding env gets radio-tower, comparing gets git-compare, running gets green circle
     switch (env.status) {
       case 'running':
-        this.iconPath = this.isForwarding
-          ? new vscode.ThemeIcon('radio-tower', new vscode.ThemeColor('testing.iconPassed'))
-          : new vscode.ThemeIcon('circle-filled', new vscode.ThemeColor('testing.iconPassed'));
+        if (this.isForwarding) {
+          this.iconPath = new vscode.ThemeIcon('radio-tower', new vscode.ThemeColor('testing.iconPassed'));
+        } else if (this.isComparing) {
+          this.iconPath = new vscode.ThemeIcon('git-compare', new vscode.ThemeColor('charts.blue'));
+        } else {
+          this.iconPath = new vscode.ThemeIcon('circle-filled', new vscode.ThemeColor('testing.iconPassed'));
+        }
         break;
       case 'starting':
       case 'creating':
@@ -78,7 +86,9 @@ export class EnvironmentNode extends vscode.TreeItem {
     // Context value drives menu actions. Append .fav for favorites so
     // package.json can show "Add to Favorites" vs "Remove from Favorites".
     let cv: string;
-    if (this.isForwarding) {
+    if (this.isComparing) {
+      cv = 'environment-comparing';
+    } else if (this.isForwarding) {
       cv = 'environment-forwarding';
     } else if (env.status === 'running') {
       cv = 'environment-running';
@@ -101,6 +111,9 @@ export class EnvironmentNode extends vscode.TreeItem {
     ];
     if (this.isForwarding) {
       tooltipLines.push(`**Port forwarding active** (${forwardedPorts.length} ports)`, '');
+    }
+    if (this.isComparing && compareHostname) {
+      tooltipLines.push(`**Comparing** — ${compareHostname}.localhost`, '');
     }
     tooltipLines.push(`Repository: ${env.repositoryUrl}`);
     if (env.webUrl) {
@@ -228,15 +241,19 @@ export class SidebarProvider implements vscode.TreeDataProvider<TreeNode> {
 
     if (element instanceof ProjectNode) {
       const pf = this.store.getPortForwarding();
-      const nodes = element.environments.map(
-        (env) =>
-          new EnvironmentNode(
-            env,
-            pf.activeEnvId === env.id,
-            pf.activeEnvId === env.id ? pf.ports : [],
-            this.isEnvFavorite(env.id),
-          ),
-      );
+      const nodes = element.environments.map((env) => {
+        const isForwarding = pf.activeEnvId === env.id;
+        const sbsEntry = pf.sideBySide.find((s) => s.envId === env.id);
+        const isComparing = !isForwarding && !!sbsEntry;
+        return new EnvironmentNode(
+          env,
+          isForwarding,
+          isForwarding ? pf.ports : [],
+          this.isEnvFavorite(env.id),
+          isComparing,
+          sbsEntry?.hostname,
+        );
+      });
       // Sort: favorites first, then alphabetical
       nodes.sort((a, b) => {
         const aFav = this.isEnvFavorite(a.env.id) ? 0 : 1;
