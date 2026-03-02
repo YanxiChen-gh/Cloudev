@@ -1,6 +1,6 @@
 import { ChildProcess, execFile, spawn } from 'child_process';
 import { Environment, Project, MachineClass } from '../../types';
-import { EnvironmentProvider, CreateOpts } from './types';
+import { EnvironmentProvider, CreateOpts, PortMapping } from './types';
 import { mapCodespace, parseCodespacePorts } from './codespaces-parser';
 
 const GH_BIN = 'gh';
@@ -121,8 +121,8 @@ export class CodespacesProvider implements EnvironmentProvider {
     }
   }
 
-  spawnTunnel(envId: string, ports: number[]): ChildProcess {
-    const portArgs = ports.map((p) => `${p}:${p}`);
+  spawnTunnel(envId: string, portMappings: PortMapping[]): ChildProcess {
+    const portArgs = portMappings.map((m) => `${m.local}:${m.remote}`);
     return spawn(GH_BIN, ['codespace', 'ports', 'forward', ...portArgs, '-c', envId], {
       stdio: 'pipe',
     });

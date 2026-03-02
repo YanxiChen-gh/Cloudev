@@ -1,7 +1,7 @@
 import { ChildProcess } from 'child_process';
 import { EventEmitter } from 'events';
 import { Environment, Project, MachineClass } from '../../types';
-import { EnvironmentProvider, CreateOpts } from '../../daemon/providers/types';
+import { EnvironmentProvider, CreateOpts, PortMapping } from '../../daemon/providers/types';
 
 const MOCK_ENVS: Environment[] = [
   {
@@ -100,7 +100,7 @@ export class MockProvider implements EnvironmentProvider {
     return { ports: this.ports, labels: {} };
   }
 
-  spawnTunnel(_envId: string, _ports: number[]): ChildProcess {
+  spawnTunnel(_envId: string, _portMappings: PortMapping[]): ChildProcess {
     // Return a fake ChildProcess-like EventEmitter that emits 'exit' on kill
     const fake = new EventEmitter() as ChildProcess;
     fake.kill = () => {
