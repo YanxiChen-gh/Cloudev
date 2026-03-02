@@ -7,6 +7,11 @@ export interface CreateOpts {
   branch?: string;
 }
 
+export interface PortMapping {
+  remote: number;  // port on the remote environment
+  local: number;   // hidden local port for the SSH tunnel
+}
+
 export interface EnvironmentProvider {
   readonly id: string;
   readonly displayName: string;
@@ -24,7 +29,7 @@ export interface EnvironmentProvider {
 
   // Port forwarding support
   discoverPorts(envId: string): Promise<{ ports: number[]; labels: Record<number, string>; urls?: Record<number, string> }>;
-  spawnTunnel(envId: string, ports: number[]): ChildProcess;
+  spawnTunnel(envId: string, portMappings: PortMapping[]): ChildProcess;
 
   // SSH
   sshHost(envId: string): string;

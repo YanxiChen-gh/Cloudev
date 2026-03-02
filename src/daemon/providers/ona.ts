@@ -1,7 +1,7 @@
 import { ChildProcess, execFile, spawn } from 'child_process';
 import * as fs from 'fs/promises';
 import { Environment, Project, MachineClass } from '../../types';
-import { EnvironmentProvider, CreateOpts } from './types';
+import { EnvironmentProvider, CreateOpts, PortMapping } from './types';
 import { parseSsOutput, parseDockerPorts, getPortLabel, parseGitpodPorts, mapEnvironment, mapProject } from './ona-parser';
 
 const GITPOD_BIN = '/usr/local/bin/gitpod';
@@ -147,7 +147,7 @@ export class OnaProvider implements EnvironmentProvider {
     return { ports, labels, urls: Object.keys(urls).length > 0 ? urls : undefined };
   }
 
-  spawnTunnel(envId: string, ports: number[]): ChildProcess {
+  spawnTunnel(envId: string, portMappings: PortMapping[]): ChildProcess {
     const host = this.sshHost(envId);
     const args: string[] = [
       '-N',
@@ -155,8 +155,8 @@ export class OnaProvider implements EnvironmentProvider {
       '-o', `ConnectTimeout=${SSH_TIMEOUT_S}`,
       '-o', 'StrictHostKeyChecking=no',
     ];
-    for (const port of ports) {
-      args.push('-L', `${port}:localhost:${port}`);
+    for (const m of portMappings) {
+      args.push('-L', `${m.local}:localhost:${m.remote}`);
     }
     args.push(host);
     return spawn('ssh', args, { stdio: 'pipe' });

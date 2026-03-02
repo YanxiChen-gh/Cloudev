@@ -1,12 +1,34 @@
 import { ChildProcess } from 'child_process';
 import { ClientMessage, DaemonState, PortForwardingState } from '../../types';
+import { PortMapping } from '../providers/types';
 import { DaemonService, ServiceContext } from '../service';
 import { readPersistedState, writePersistedState } from '../state-file';
 import { classifyPortOwner } from '../port-owner';
+import { LocalProxyManager } from '../local-proxy';
 
 const DISCOVERY_INTERVAL_MS = 5_000;
 const SIGKILL_DELAY_MS = 2_000;
 const OWNERSHIP_CHECK_DELAY_MS = 3_000;
+
+import * as net from 'net';
+
+/** Get an OS-assigned ephemeral port by briefly binding to port 0. */
+async function allocateHiddenPort(): Promise<number> {
+  return new Promise((resolve, reject) => {
+    const srv = net.createServer();
+    srv.listen(0, '127.0.0.1', () => {
+      const port = (srv.address() as net.AddressInfo).port;
+      srv.close(() => resolve(port));
+    });
+    srv.on('error', reject);
+  });
+}
+
+interface CachedDiscovery {
+  ports: number[];
+  labels: Record<number, string>;
+  urls: Record<number, string>;
+}
 
 export class PortForwardingService implements DaemonService {
   readonly id = 'port-forwarding';
@@ -22,6 +44,13 @@ export class PortForwardingService implements DaemonService {
   private error: string | undefined;
   private isDiscovering = false;
   private ownershipCheckScheduled = false;
+
+  // Proxy: owns user-facing ports, routes to hidden tunnel ports
+  private proxyManager = new LocalProxyManager();
+  // Maps user-facing port → hidden tunnel port for the active env
+  private portMappings = new Map<number, number>();
+  // Port cache: remember last-known ports per env for instant switch
+  private portCache = new Map<string, CachedDiscovery>();
 
   constructor(private readonly ctx: ServiceContext) {}
 
@@ -100,20 +129,70 @@ export class PortForwardingService implements DaemonService {
   }
 
   private async startForwarding(envId: string): Promise<void> {
-    if (this.activeEnvId && this.activeEnvId !== envId) {
-      await this.stopForwarding();
-    }
     if (this.activeEnvId === envId) return;
 
     const provider = this.ctx.getProvider(envId);
     if (!provider) throw new Error(`No provider found for environment ${envId}`);
 
+    // If switching from another env, do instant switch via proxy
+    if (this.activeEnvId) {
+      await this.switchTo(envId);
+      return;
+    }
+
+    // First-time forwarding (no active env)
     this.activeEnvId = envId;
     this.setStatus('connecting');
     writePersistedState({ activeForwardingEnvId: envId });
 
+    // Use cache for instant start if available
+    const cached = this.portCache.get(envId);
+    if (cached && cached.ports.length > 0) {
+      await this.applyPorts(envId, cached.ports, cached.labels, cached.urls);
+    }
+
+    // Always do a fresh discovery (updates cache + corrects if stale)
     await this.discoverAndTunnel();
     this.discoveryTimer = setInterval(() => this.discoverAndTunnel(), DISCOVERY_INTERVAL_MS);
+  }
+
+  /**
+   * Instant switch: spawn new tunnel → switch proxies → kill old tunnel in background.
+   * The proxy never releases the user-facing port — just changes upstream.
+   */
+  private async switchTo(newEnvId: string): Promise<void> {
+    const provider = this.ctx.getProvider(newEnvId);
+    if (!provider) throw new Error(`No provider found for environment ${newEnvId}`);
+
+    // Stop discovery timer for old env
+    if (this.discoveryTimer) {
+      clearInterval(this.discoveryTimer);
+      this.discoveryTimer = null;
+    }
+
+    const oldTunnel = this.tunnelProcess;
+    this.tunnelProcess = null;
+
+    // Update active env immediately
+    this.activeEnvId = newEnvId;
+    this.setStatus('connecting');
+    writePersistedState({ activeForwardingEnvId: newEnvId });
+
+    // Use cached ports for new env if available — instant UI update
+    const cached = this.portCache.get(newEnvId);
+    if (cached && cached.ports.length > 0) {
+      await this.applyPorts(newEnvId, cached.ports, cached.labels, cached.urls);
+      this.setStatus('active');
+    }
+
+    // Start fresh discovery + tunnel for new env (verifies cache, finds new ports)
+    await this.discoverAndTunnel();
+    this.discoveryTimer = setInterval(() => this.discoverAndTunnel(), DISCOVERY_INTERVAL_MS);
+
+    // Kill old tunnel in background (fire-and-forget, doesn't block switch)
+    if (oldTunnel) {
+      this.killProcess(oldTunnel);
+    }
   }
 
   private async stopForwarding(): Promise<void> {
@@ -122,6 +201,8 @@ export class PortForwardingService implements DaemonService {
       this.discoveryTimer = null;
     }
     await this.killTunnel();
+    await this.proxyManager.removeAll();
+    this.portMappings.clear();
     this.activeEnvId = null;
     this.currentPorts = [];
     this.currentLabels = {};
@@ -131,6 +212,71 @@ export class PortForwardingService implements DaemonService {
     this.isDiscovering = false;
     this.setStatus('idle');
     writePersistedState({});
+  }
+
+  /**
+   * Apply a port list: allocate hidden ports, spawn tunnel, create/update proxies.
+   * Used both for cached ports (instant) and fresh discovery.
+   */
+  private async applyPorts(
+    envId: string,
+    ports: number[],
+    labels: Record<number, string>,
+    urls: Record<number, string>,
+  ): Promise<void> {
+    const provider = this.ctx.getProvider(envId);
+    if (!provider) return;
+
+    // Kill existing tunnel if any (for this env)
+    await this.killTunnel();
+
+    this.currentPorts = ports;
+    this.currentLabels = labels;
+    this.currentUrls = urls;
+    this.portConflicts = {};
+    this.ownershipCheckScheduled = false;
+
+    if (ports.length === 0) {
+      await this.proxyManager.removeAll();
+      this.portMappings.clear();
+      return;
+    }
+
+    // Allocate hidden ports (OS-assigned to avoid collisions)
+    const mappings: PortMapping[] = [];
+    for (const remotePort of ports) {
+      mappings.push({ remote: remotePort, local: await allocateHiddenPort() });
+    }
+
+    this.portMappings.clear();
+    for (const m of mappings) {
+      this.portMappings.set(m.remote, m.local);
+    }
+
+    // Spawn tunnel to hidden ports
+    this.tunnelProcess = provider.spawnTunnel(envId, mappings);
+    this.setupTunnelMonitoring();
+
+    // Create/update proxies
+    for (const m of mappings) {
+      try {
+        await this.proxyManager.ensureProxy(m.remote, m.local);
+      } catch (err) {
+        console.error(`[port-forwarding] Failed to create proxy for port ${m.remote}: ${(err as Error).message}`);
+        this.portConflicts[m.remote] = `Failed to bind: ${(err as Error).message}`;
+      }
+    }
+
+    // Remove proxies for ports no longer forwarded
+    for (const proxiedPort of this.proxyManager.getProxiedPorts()) {
+      if (!ports.includes(proxiedPort)) {
+        await this.proxyManager.removeProxy(proxiedPort);
+      }
+    }
+
+    // Schedule ownership check
+    setTimeout(() => this.checkPortOwnership(), OWNERSHIP_CHECK_DELAY_MS);
+    this.ownershipCheckScheduled = true;
   }
 
   private async discoverAndTunnel(): Promise<void> {
@@ -147,33 +293,31 @@ export class PortForwardingService implements DaemonService {
       }
 
       const result = await provider.discoverPorts(this.activeEnvId);
-      const newPorts = result.ports;
+      const newPorts = result.ports.filter((p) => p >= 1024);
       newPorts.sort((a, b) => a - b);
 
-      this.currentLabels = result.labels;
-      this.currentUrls = result.urls ?? {};
+      const newLabels = result.labels;
+      const newUrls = result.urls ?? {};
+
+      // Update cache
+      this.portCache.set(this.activeEnvId, {
+        ports: newPorts,
+        labels: newLabels,
+        urls: newUrls,
+      });
 
       if (!this.portsEqual(newPorts, this.currentPorts)) {
-        await this.killTunnel();
-        this.currentPorts = newPorts;
-        this.portConflicts = {};
-        this.ownershipCheckScheduled = false;
-
-        if (newPorts.length > 0) {
-          this.tunnelProcess = provider.spawnTunnel(this.activeEnvId, newPorts);
-          this.setupTunnelMonitoring();
-
-          // Schedule ownership check after tunnel has time to bind
-          setTimeout(() => this.checkPortOwnership(), OWNERSHIP_CHECK_DELAY_MS);
-          this.ownershipCheckScheduled = true;
+        await this.applyPorts(this.activeEnvId, newPorts, newLabels, newUrls);
+        this.setStatus('active');
+      } else {
+        // Ports unchanged — just update labels/urls and check ownership
+        this.currentLabels = newLabels;
+        this.currentUrls = newUrls;
+        if (this.tunnelProcess && this.ownershipCheckScheduled) {
+          await this.checkPortOwnership();
+        } else if (this.status === 'connecting') {
+          this.setStatus('active');
         }
-
-        this.setStatus('active');
-      } else if (this.tunnelProcess && this.ownershipCheckScheduled) {
-        // Periodic ownership check — who actually holds each port?
-        await this.checkPortOwnership();
-      } else if (this.status === 'connecting') {
-        this.setStatus('active');
       }
     } catch (err) {
       const msg = (err as Error).message;
@@ -185,20 +329,14 @@ export class PortForwardingService implements DaemonService {
   }
 
   // ---------------------------------------------------------------------------
-  // Port ownership check — single source of truth
+  // Port ownership check
   // ---------------------------------------------------------------------------
 
-  /**
-   * For each forwarded port, check who actually holds the local binding.
-   * Classifies as: ours (our tunnel PID), stale (another SSH tunnel),
-   * other (unrelated process), or none (not bound).
-   */
   private async checkPortOwnership(): Promise<void> {
     if (!this.activeEnvId || this.currentPorts.length === 0) return;
 
-    const ourPid = this.tunnelProcess?.pid;
+    const ourPid = process.pid;
     const updated: Record<number, string> = {};
-    let changed = false;
 
     await Promise.all(
       this.currentPorts.map(async (port) => {
@@ -206,19 +344,14 @@ export class PortForwardingService implements DaemonService {
 
         switch (result.status) {
           case 'ours':
-            // Our tunnel has it — no conflict
             break;
           case 'stale':
-            // Another SSH process (old tunnel or VS Code forwarder)
             updated[port] = result.description;
             break;
           case 'other':
-            // Non-SSH process holds the port
             updated[port] = result.description;
             break;
           case 'none':
-            // Nothing bound — port couldn't be forwarded (privileged, etc.)
-            // Don't warn — SSH stderr already handles bind failures
             break;
         }
       }),
@@ -226,10 +359,6 @@ export class PortForwardingService implements DaemonService {
 
     if (JSON.stringify(updated) !== JSON.stringify(this.portConflicts)) {
       this.portConflicts = updated;
-      changed = true;
-    }
-
-    if (changed) {
       this.ctx.broadcast();
     }
   }
@@ -241,15 +370,20 @@ export class PortForwardingService implements DaemonService {
   private setupTunnelMonitoring(): void {
     if (!this.tunnelProcess) return;
 
-    this.tunnelProcess.on('exit', (code, signal) => {
-      if (this.activeEnvId && this.tunnelProcess) {
+    // Capture reference — only react if this is still the active tunnel
+    const proc = this.tunnelProcess;
+
+    proc.on('exit', (code, signal) => {
+      if (this.tunnelProcess === proc) {
         this.tunnelProcess = null;
         console.error(`[port-forwarding] Tunnel for ${this.activeEnvId} exited (code=${code}, signal=${signal})`);
         this.setStatus('error', `Tunnel exited (code=${code}, signal=${signal})`);
       }
+      // else: old tunnel from before a switch — ignore
     });
 
-    this.tunnelProcess.stderr?.on('data', (data: Buffer) => {
+    proc.stderr?.on('data', (data: Buffer) => {
+      if (this.tunnelProcess !== proc) return; // stale tunnel
       const msg = data.toString().trim();
       if (msg && this.activeEnvId) {
         console.error(`[port-forwarding] SSH stderr: ${msg}`);
@@ -260,10 +394,13 @@ export class PortForwardingService implements DaemonService {
 
   private killTunnel(): Promise<void> {
     if (!this.tunnelProcess) return Promise.resolve();
-
     const proc = this.tunnelProcess;
     this.tunnelProcess = null;
+    return this.killProcess(proc);
+  }
 
+  /** Kill a process with SIGTERM → SIGKILL fallback. Fire-and-forget safe. */
+  private killProcess(proc: ChildProcess): Promise<void> {
     return new Promise<void>((resolve) => {
       let resolved = false;
       const done = () => {
