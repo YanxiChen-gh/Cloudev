@@ -327,8 +327,12 @@ export function registerCommands(
         if (pf.status === 'active' && pf.activeEnvId) {
           interface PortQuickPickItem extends vscode.QuickPickItem {
             port?: number;
-            action?: 'switch' | 'stop';
+            action?: 'switch' | 'stop' | 'stop-comparing';
+            removeEnvId?: string;
           }
+
+          const comparing = pf.sideBySide.filter((s) => s.envId !== pf.activeEnvId);
+          const isComparing = comparing.length > 0;
 
           const items: PortQuickPickItem[] = pf.ports.map((port) => {
             const label_text = pf.portLabels[port];
@@ -340,22 +344,50 @@ export function registerCommands(
             };
           });
 
+          // Show compared envs when in compare mode
+          if (isComparing) {
+            items.push(
+              { label: 'Comparing', kind: vscode.QuickPickItemKind.Separator } as PortQuickPickItem,
+            );
+            for (const s of comparing) {
+              items.push({
+                label: `$(git-compare) ${s.envName}`,
+                description: `${s.hostname}.localhost`,
+                detail: 'Remove from compare',
+                removeEnvId: s.envId,
+              });
+            }
+          }
+
           items.push(
             { label: '', kind: vscode.QuickPickItemKind.Separator } as PortQuickPickItem,
             { label: '$(arrow-swap) Switch environment', action: 'switch' },
+          );
+          if (isComparing) {
+            items.push({ label: '$(close) Stop comparing', action: 'stop-comparing' });
+          }
+          items.push(
             { label: '$(debug-disconnect) Stop forwarding', action: 'stop' },
           );
 
           const picked = await vscode.window.showQuickPick(items, {
-            placeHolder: `Ports for ${pf.activeEnvName} (${pf.ports.length} ports)`,
+            placeHolder: isComparing
+              ? `Ports for ${pf.activeEnvName} + ${comparing.length} comparing`
+              : `Ports for ${pf.activeEnvName} (${pf.ports.length} ports)`,
           });
 
           if (!picked) return;
           if (picked.action === 'stop') {
             await client.stopPortForwarding();
+          } else if (picked.action === 'stop-comparing') {
+            // Remove all compared envs one by one, keeping primary forwarding
+            for (const s of comparing) {
+              await client.removeCompare(s.envId);
+            }
           } else if (picked.action === 'switch') {
-            // Fall through to env picker below
             await showEnvPicker();
+          } else if (picked.removeEnvId) {
+            await client.removeCompare(picked.removeEnvId);
           } else if (picked.port) {
             await vscode.env.openExternal(
               vscode.Uri.parse(`http://localhost:${picked.port}`),
@@ -814,6 +846,136 @@ export function registerCommands(
     }),
   );
 
+  // --- Add to Compare (right-click on running env while forwarding) ---
+  context.subscriptions.push(
+    vscode.commands.registerCommand(
+      'cloudev.addCompare',
+      async (node?: { env?: Environment }) => {
+        const envId = node?.env?.id ?? (await pickEnvironment(store, 'running'));
+        if (!envId) return;
+
+        const pf = store.getPortForwarding();
+        if (!pf.activeEnvId) {
+          vscode.window.showInformationMessage(
+            'Start port forwarding on an environment first, then compare.',
+          );
+          return;
+        }
+        if (envId === pf.activeEnvId) {
+          vscode.window.showInformationMessage(
+            'This environment is already the active forwarding target.',
+          );
+          return;
+        }
+
+        await vscode.window.withProgress(
+          {
+            location: vscode.ProgressLocation.Notification,
+            title: `Adding ${store.getEnvironment(envId)?.name ?? envId} to compare...`,
+          },
+          () => client.addCompare(envId),
+        );
+
+        // Pick best web port and show actionable notification
+        const updatedPf = store.getPortForwarding();
+        const added = updatedPf.sideBySide.find((s) => s.envId === envId);
+        const primary = updatedPf.sideBySide.find((s) => s.envId === updatedPf.activeEnvId);
+        if (!added || !primary || updatedPf.ports.length === 0) return;
+
+        const lastUsed = context.workspaceState.get<number>(LAST_COMPARE_PORT_KEY);
+        const webPort = pickWebPort(updatedPf.ports, updatedPf.portLabels, lastUsed);
+
+        // Collect all URLs for "Copy URLs" — primary first, then all compared envs
+        const allUrls: string[] = [];
+        for (const s of updatedPf.sideBySide) {
+          for (const port of updatedPf.ports) {
+            allUrls.push(`http://${s.hostname}.localhost:${port}`);
+          }
+        }
+
+        const action = await vscode.window.showInformationMessage(
+          `Comparing ${primary.envName} ↔ ${added.envName} (port ${webPort})`,
+          'Open Both', 'Other port...', 'Copy URLs',
+        );
+
+        if (action === 'Open Both') {
+          context.workspaceState.update(LAST_COMPARE_PORT_KEY, webPort);
+          // Open primary first, then compared env — gives user two tabs to arrange
+          await vscode.env.openExternal(
+            vscode.Uri.parse(`http://${primary.hostname}.localhost:${webPort}`),
+          );
+          await vscode.env.openExternal(
+            vscode.Uri.parse(`http://${added.hostname}.localhost:${webPort}`),
+          );
+        } else if (action === 'Other port...') {
+          interface PortPickItem extends vscode.QuickPickItem {
+            port: number;
+          }
+          const items: PortPickItem[] = updatedPf.ports.map((p) => ({
+            label: `localhost:${p}`,
+            description: updatedPf.portLabels[p] || '',
+            detail: `${primary.hostname}.localhost:${p}  ↔  ${added.hostname}.localhost:${p}`,
+            port: p,
+          }));
+          const picked = await vscode.window.showQuickPick(items, {
+            placeHolder: `Pick a port to open for both environments`,
+          });
+          if (picked) {
+            context.workspaceState.update(LAST_COMPARE_PORT_KEY, picked.port);
+            await vscode.env.openExternal(
+              vscode.Uri.parse(`http://${primary.hostname}.localhost:${picked.port}`),
+            );
+            await vscode.env.openExternal(
+              vscode.Uri.parse(`http://${added.hostname}.localhost:${picked.port}`),
+            );
+          }
+        } else if (action === 'Copy URLs') {
+          await vscode.env.clipboard.writeText(allUrls.join('\n'));
+        }
+      },
+    ),
+  );
+
+  // --- Remove from Compare ---
+  context.subscriptions.push(
+    vscode.commands.registerCommand(
+      'cloudev.removeCompare',
+      async (node?: { env?: Environment }) => {
+        const envId = node?.env?.id;
+        if (!envId) return;
+
+        await client.removeCompare(envId);
+      },
+    ),
+  );
+
+  // --- Open Compare (open both primary + compared env in browser) ---
+  context.subscriptions.push(
+    vscode.commands.registerCommand(
+      'cloudev.openCompare',
+      async (node?: { env?: Environment }) => {
+        const envId = node?.env?.id;
+        if (!envId) return;
+
+        const pf = store.getPortForwarding();
+        const entry = pf.sideBySide.find((s) => s.envId === envId);
+        const primary = pf.sideBySide.find((s) => s.envId === pf.activeEnvId);
+        if (!entry || !primary || pf.ports.length === 0) return;
+
+        const lastUsed = context.workspaceState.get<number>(LAST_COMPARE_PORT_KEY);
+        const webPort = pickWebPort(pf.ports, pf.portLabels, lastUsed);
+
+        context.workspaceState.update(LAST_COMPARE_PORT_KEY, webPort);
+        await vscode.env.openExternal(
+          vscode.Uri.parse(`http://${primary.hostname}.localhost:${webPort}`),
+        );
+        await vscode.env.openExternal(
+          vscode.Uri.parse(`http://${entry.hostname}.localhost:${webPort}`),
+        );
+      },
+    ),
+  );
+
   // --- Sync Shell History ---
   context.subscriptions.push(
     vscode.commands.registerCommand(
@@ -855,6 +1017,57 @@ export function registerCommands(
 // ---------------------------------------------------------------------------
 // Helpers
 // ---------------------------------------------------------------------------
+
+// ---------------------------------------------------------------------------
+// Web port heuristic for compare notifications
+// ---------------------------------------------------------------------------
+
+const LAST_COMPARE_PORT_KEY = 'cloudev.lastComparePort';
+
+const WEB_KEYWORDS = [
+  'nginx', 'node', 'vite', 'next', 'webpack', 'rails', 'django',
+  'gunicorn', 'uvicorn', 'flask', 'express', 'http', 'web', 'app', 'server',
+];
+
+const WELL_KNOWN_WEB_PORTS = [3000, 8080, 5173, 4200, 8000, 5000, 1776];
+
+/**
+ * Pick the most likely web port from a list of forwarded ports.
+ *
+ * Priority:
+ * 1. lastUsedPort — if it's in the current port list, reuse it.
+ * 2. Process name heuristic — first port whose label contains a web-ish keyword.
+ * 3. Well-known web ports — first match from a ranked list.
+ * 4. Lowest port — ultimate fallback.
+ */
+function pickWebPort(
+  ports: number[],
+  labels: Record<number, string>,
+  lastUsedPort?: number,
+): number {
+  if (ports.length === 0) return 0;
+
+  // 1. Last used
+  if (lastUsedPort !== undefined && ports.includes(lastUsedPort)) {
+    return lastUsedPort;
+  }
+
+  // 2. Label heuristic
+  for (const port of ports) {
+    const label = (labels[port] ?? '').toLowerCase();
+    if (label && WEB_KEYWORDS.some((kw) => label.includes(kw))) {
+      return port;
+    }
+  }
+
+  // 3. Well-known web ports
+  for (const wk of WELL_KNOWN_WEB_PORTS) {
+    if (ports.includes(wk)) return wk;
+  }
+
+  // 4. Lowest
+  return ports[0];
+}
 
 async function pickEnvironment(
   store: StateStore,

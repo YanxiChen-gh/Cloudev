@@ -144,8 +144,16 @@ export async function activate(
   let lastPfError: string | undefined;
   let lastHistoryError: string | undefined;
   let shownVscodeRemoteHint = false;
+  let lastIsForwarding = false;
   store.on('changed', () => {
     const pf = store.getPortForwarding();
+
+    // Update context key for "Compare with this env" menu visibility
+    const isForwarding = pf.activeEnvId !== null && pf.status === 'active';
+    if (isForwarding !== lastIsForwarding) {
+      lastIsForwarding = isForwarding;
+      vscode.commands.executeCommand('setContext', 'cloudev.isForwarding', isForwarding);
+    }
     if (pf.status === 'error' && pf.error && pf.error !== lastPfError) {
       lastPfError = pf.error;
       output.error(`Port forwarding error: ${pf.error}`);

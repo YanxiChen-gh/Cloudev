@@ -23,6 +23,7 @@ The extension never calls SSH or CLI commands directly. All mutations go through
 | Provider interface (what each cloud backend must implement) | `src/daemon/providers/types.ts` |
 | Ona/Gitpod provider (multi-context CLI wrapper) | `src/daemon/providers/ona.ts` |
 | Codespaces provider (gh CLI wrapper) | `src/daemon/providers/codespaces.ts` |
+| Shell history sync service | `src/daemon/services/shell-history-sync.ts` |
 | Daemon service plugin interface | `src/daemon/service.ts` |
 | Daemon entry point + message routing | `src/daemon/index.ts` |
 | IPC socket server (framing, client mgmt, grace period) | `src/daemon/ipc-server.ts` |
@@ -60,7 +61,7 @@ No changes needed to IPC server, message routing, or existing services.
 4. **Add provider-specific open command branch** in `src/ui/commands.ts` (`openInNewWindow` command)
 5. **Verify build**: `npm run compile`
 
-The `EnvironmentProvider` interface requires: `checkAvailability`, `listEnvironments`, `start`, `stop`, `restart`, `create`, `delete`, `discoverPorts` (returns `{ports, labels, urls?}`), `spawnTunnel`, `sshHost`, `syncSshConfig`, `listProjects`. Optional: `listMachineClasses`.
+The `EnvironmentProvider` interface requires: `checkAvailability`, `listEnvironments`, `start`, `stop`, `restart`, `create`, `delete`, `discoverPorts` (returns `{ports, labels, urls?}`), `spawnTunnel`, `sshHost`, `syncSshConfig`, `listProjects`. Optional: `listMachineClasses`, `execRemoteCommand`.
 
 Existing providers: **Ona** (`ona.ts`, gitpod CLI) and **Codespaces** (`codespaces.ts`, gh CLI). Both use injectable exec functions for testing.
 
@@ -71,7 +72,7 @@ Existing providers: **Ona** (`ona.ts`, gitpod CLI) and **Codespaces** (`codespac
 - **IPC framing**: newline-delimited JSON. `JSON.stringify(msg) + '\n'`. Buffer incoming data and split on `'\n'`, keeping the last incomplete segment. Never pretty-print JSON on the wire.
 - **Request/response correlation**: client sets a UUID `requestId`, daemon echoes it back in `response` messages.
 - **Commands**: support dual invocation — tree view node argument OR command palette quick-pick fallback. Pattern: `node?.env?.id ?? await pickEnvironment(store, 'running')`.
-- **package.json menus**: `contextValue` on tree items must exactly match the `when` clauses. Values: `environment-running`, `environment-stopped`, `environment-forwarding`, `environment-starting`, `port`, `port-with-url`.
+- **package.json menus**: `contextValue` on tree items must exactly match the `when` clauses. Values: `environment-running`, `environment-stopped`, `environment-forwarding`, `environment-comparing`, `environment-starting`, `port`, `port-with-url`.
 - **Command naming**: use `category: "Cloudev"` + short `title` (e.g. `"Stop"`). Context menus show the title; command palette shows `Cloudev: Stop`.
 - **Port labels**: `docker ps` output parsed for container names, with well-known port fallback. See `ona-parser.ts`: `parseDockerPorts()`, `getPortLabel()`.
 - **Port public URLs**: Ona uses `gitpod env port list` for public URLs, Codespaces uses `browseUrl` from `gh codespace ports`. Shown in port tooltip + "Copy Public URL" context menu.
@@ -86,8 +87,10 @@ Existing providers: **Ona** (`ona.ts`, gitpod CLI) and **Codespaces** (`codespac
 - **Right-click**: full grouped context menu (Lifecycle > Ports > Connect > Copy > Danger)
 - **Status bar click**: port QuickPick when forwarding active, env picker when idle
 - **Forwarding indicator**: env icon changes from `circle-filled` to `radio-tower` (green) when forwarding
+- **Compare indicator**: env icon changes to `git-compare` (blue) when being compared; description shows `hostname.localhost`
 - **Port children**: collapsed by default under forwarded env, with docker container labels
 - **Dangerous ops**: Stop/Restart/Delete show modal confirmation dialogs
+- **Additive compare**: right-click running env while forwarding → "Compare with this env". Inline `$(git-compare)` icon when `cloudev.isForwarding` context key is true. `$(close)` inline icon to remove. "Open Both in Browser" right-click to re-open compare tabs.
 
 ## Things to watch out for
 
@@ -99,6 +102,9 @@ Existing providers: **Ona** (`ona.ts`, gitpod CLI) and **Codespaces** (`codespac
 - **`isDiscovering` mutex**: prevents overlapping port discovery when SSH is slow.
 - **Docker port labels**: `docker ps` runs in parallel with `ss -tln` over SSH. Falls back gracefully if docker is not available.
 - **Codespaces OAuth scope**: `gh` requires the `codespace` scope which isn't granted by default. `checkAvailability()` detects this and shows a helpful error. Fix: `gh auth refresh -h github.com -s codespace`.
+- **Shell history sync**: Two-pass bidirectional — collect from all envs first (pass 1), then push merged diff back (pass 2). Per-shell-type storage (`~/.cloudev/shell-history-bash`, `~/.cloudev/shell-history-zsh`). Set-based dedup via `Set` diff. Single SSH call per env per pass using `===CLOUDEV_SHELL_SEP===` markers to split shell outputs. `isSyncing` mutex prevents overlapping syncs.
+- **Additive compare**: `addCompare(envId)` transitions TCP proxies → HTTP proxies on first call (adding both active and new env), then adds more routes on subsequent calls. `removeCompare(envId)` removes one env; when only the primary remains, transitions HTTP → TCP. `compareMappings` tracks per-env hidden port allocations. `stopForwarding()` cleans up any active compare session before tearing down. `cloudev.isForwarding` context key (set via `setContext` in `extension.ts`) controls inline icon visibility.
+- **Web port heuristic**: `pickWebPort()` in `commands.ts` picks the best port for compare notifications: last-used → label keyword match → well-known web ports → lowest. `lastComparePort` persisted in `workspaceState`.
 
 ## Provider implementations
 

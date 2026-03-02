@@ -143,6 +143,14 @@ export class DaemonClient extends EventEmitter {
     await this.sendRequest({ type: 'port-forwarding.stop-side-by-side', requestId: '' });
   }
 
+  async addCompare(envId: string): Promise<void> {
+    await this.sendRequest({ type: 'port-forwarding.add-compare', requestId: '', envId });
+  }
+
+  async removeCompare(envId: string): Promise<void> {
+    await this.sendRequest({ type: 'port-forwarding.remove-compare', requestId: '', envId });
+  }
+
   async refresh(): Promise<void> {
     await this.sendRequest({ type: 'environments.refresh', requestId: '' });
   }

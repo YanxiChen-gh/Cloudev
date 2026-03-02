@@ -59,12 +59,19 @@ export class StatusBarManager implements vscode.Disposable {
     if (pf.status === 'active' && pf.activeEnvName) {
       const countStr =
         pf.ports.length > 0 ? `${pf.ports.length} ports` : 'discovering...';
-      this.portItem.text = `$(plug) ${pf.activeEnvName} (${countStr})`;
+      // Show compare count when side-by-side is active (exclude the primary env)
+      const compareCount = pf.sideBySide.length > 0
+        ? pf.sideBySide.filter((s) => s.envId !== pf.activeEnvId).length
+        : 0;
+      const compareStr = compareCount > 0 ? ` + ${compareCount} comparing` : '';
+      this.portItem.text = `$(plug) ${pf.activeEnvName} (${countStr}${compareStr})`;
       this.portItem.backgroundColor = undefined;
       this.portItem.color = new vscode.ThemeColor(
         'statusBarItem.prominentForeground',
       );
-      this.portItem.tooltip = `Forwarding ${pf.ports.length} ports for ${pf.activeEnvName}. Click to switch.`;
+      this.portItem.tooltip = compareCount > 0
+        ? `Forwarding ${pf.ports.length} ports for ${pf.activeEnvName} + ${compareCount} env(s) comparing. Click to switch.`
+        : `Forwarding ${pf.ports.length} ports for ${pf.activeEnvName}. Click to switch.`;
     } else if (pf.status === 'connecting') {
       this.portItem.text = '$(loading~spin) Ports: connecting...';
       this.portItem.backgroundColor = undefined;
