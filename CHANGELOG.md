@@ -2,6 +2,12 @@
 
 All notable changes to the Cloudev extension will be documented in this file.
 
+## [0.5.2] - 2026-03-02
+
+### Changed
+- **Compare commands renamed with "Web"**: "Compare with this env" → "Web Compare", "Remove from Compare" → "Remove Web Compare", "Compare in Browser" → "Open Web Compare", "Stop comparing" → "Stop web compare". Makes it clear that compare uses HTTP hostname routing and only works for web UIs, not raw TCP (databases, gRPC).
+- **README**: added HTTP-only limitation note to side-by-side web compare feature description.
+
 ## [0.5.1] - 2026-03-02
 
 ### Fixed

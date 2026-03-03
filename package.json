@@ -2,7 +2,7 @@
   "name": "cloudev",
   "displayName": "Cloudev",
   "description": "Manage cloud development environments (Ona/Gitpod, Codespaces) from VS Code",
-  "version": "0.5.1",
+  "version": "0.5.2",
   "publisher": "Yanix",
   "engines": {
     "vscode": "^1.85.0"
@@ -188,19 +188,19 @@
       {
         "command": "cloudev.addCompare",
         "category": "Cloudev",
-        "title": "Compare with this env",
+        "title": "Web Compare",
         "icon": "$(git-compare)"
       },
       {
         "command": "cloudev.removeCompare",
         "category": "Cloudev",
-        "title": "Remove from Compare",
+        "title": "Remove Web Compare",
         "icon": "$(close)"
       },
       {
         "command": "cloudev.openCompare",
         "category": "Cloudev",
-        "title": "Compare in Browser",
+        "title": "Open Web Compare",
         "icon": "$(link-external)"
       },
       {
