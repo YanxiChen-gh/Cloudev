@@ -90,7 +90,7 @@ Existing providers: **Ona** (`ona.ts`, gitpod CLI) and **Codespaces** (`codespac
 - **Compare indicator**: env icon changes to `git-compare` (blue) when being compared; description shows `hostname.localhost`
 - **Port children**: collapsed by default under forwarded env, with docker container labels
 - **Dangerous ops**: Stop/Restart/Delete show modal confirmation dialogs
-- **Additive compare**: right-click running env while forwarding → "Compare with this env". Inline `$(git-compare)` icon when `cloudev.isForwarding` context key is true. `$(close)` inline icon to remove. "Open Both in Browser" right-click to re-open compare tabs.
+- **Additive compare**: right-click running env while forwarding → "Web Compare". Inline `$(git-compare)` icon when `cloudev.isForwarding` context key is true. `$(close)` inline icon to remove. "Open Web Compare" right-click to re-open compare tabs. HTTP-only — routes by Host header, so only works for web traffic. Non-HTTP ports (databases, gRPC) fall through to the primary env's default upstream.
 
 ## Things to watch out for
 

@@ -364,7 +364,7 @@ export function registerCommands(
             { label: '$(arrow-swap) Switch environment', action: 'switch' },
           );
           if (isComparing) {
-            items.push({ label: '$(close) Stop comparing', action: 'stop-comparing' });
+            items.push({ label: '$(close) Stop web compare', action: 'stop-comparing' });
           }
           items.push(
             { label: '$(debug-disconnect) Stop forwarding', action: 'stop' },
@@ -895,8 +895,8 @@ export function registerCommands(
 
         const envCount = updatedPf.sideBySide.length;
         const summary = envCount === 2
-          ? `Comparing ${primary.envName} ↔ ${added.envName} (port ${webPort})`
-          : `Comparing ${envCount} envs (port ${webPort})`;
+          ? `Web compare: ${primary.envName} ↔ ${added.envName} (port ${webPort})`
+          : `Web compare: ${envCount} envs (port ${webPort})`;
 
         const action = await vscode.window.showInformationMessage(
           summary,
