@@ -2,7 +2,7 @@
   "name": "cloudev",
   "displayName": "Cloudev",
   "description": "Manage cloud development environments (Ona/Gitpod, Codespaces) from VS Code",
-  "version": "0.5.2",
+  "version": "0.5.3",
   "publisher": "Yanix",
   "engines": {
     "vscode": "^1.85.0"
@@ -404,6 +404,26 @@
           "default": 0,
           "minimum": 0,
           "description": "Auto-sync shell history every N minutes (0 = disabled). Bidirectional sync with all running environments."
+        },
+        "cloudev.binaryPaths.gitpod": {
+          "type": "string",
+          "default": "",
+          "description": "Absolute path to the gitpod CLI binary. Leave empty for auto-detection."
+        },
+        "cloudev.binaryPaths.gh": {
+          "type": "string",
+          "default": "",
+          "description": "Absolute path to the gh (GitHub CLI) binary. Leave empty for auto-detection."
+        },
+        "cloudev.binaryPaths.ssh": {
+          "type": "string",
+          "default": "",
+          "description": "Absolute path to the ssh binary. Leave empty for auto-detection."
+        },
+        "cloudev.binaryPaths.lsof": {
+          "type": "string",
+          "default": "",
+          "description": "Absolute path to lsof. Leave empty for auto-detection."
         }
       }
     }

@@ -140,7 +140,30 @@ export async function activate(
     }),
   );
 
-  // 12. Log forwarding + history errors, detect VS Code Remote conflicts
+  // 12. Configure binary path overrides from settings
+  const sendBinaryConfig = () => {
+    if (!client.isConnected()) return;
+    const config = vscode.workspace.getConfiguration('cloudev');
+    const overrides: Record<string, string | undefined> = {
+      gitpod: config.get<string>('binaryPaths.gitpod') || undefined,
+      gh: config.get<string>('binaryPaths.gh') || undefined,
+      ssh: config.get<string>('binaryPaths.ssh') || undefined,
+      lsof: config.get<string>('binaryPaths.lsof') || undefined,
+    };
+    if (Object.values(overrides).some((v) => v)) {
+      client.configureBinaries(overrides).catch(() => {});
+    }
+  };
+  sendBinaryConfig();
+  context.subscriptions.push(
+    vscode.workspace.onDidChangeConfiguration((e) => {
+      if (e.affectsConfiguration('cloudev.binaryPaths')) {
+        sendBinaryConfig();
+      }
+    }),
+  );
+
+  // 13. Log forwarding + history errors, detect VS Code Remote conflicts
   let lastPfError: string | undefined;
   let lastHistoryError: string | undefined;
   let shownVscodeRemoteHint = false;

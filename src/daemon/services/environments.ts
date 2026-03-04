@@ -156,6 +156,21 @@ export class EnvironmentsService implements DaemonService {
     this.pollTimer = setInterval(() => this.poll(), this.pollIntervalMs);
   }
 
+  async recheckProviders(): Promise<void> {
+    this.providerStatuses = await Promise.all(
+      this.providers.map(async (p) => {
+        const status = await p.checkAvailability();
+        return {
+          id: p.id,
+          displayName: p.displayName,
+          available: status.available,
+          error: status.error,
+        };
+      }),
+    );
+    await this.poll();
+  }
+
   async stop(): Promise<void> {
     if (this.pollTimer) {
       clearInterval(this.pollTimer);

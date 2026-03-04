@@ -111,7 +111,9 @@ export type ClientMessage =
   // Shell history sync service
   | { type: 'history.collect'; requestId: string; envId?: string }
   | { type: 'history.clear'; requestId: string }
-  | { type: 'history.configure'; requestId: string; periodicSyncMinutes: number };
+  | { type: 'history.configure'; requestId: string; periodicSyncMinutes: number }
+  // Configuration
+  | { type: 'configure.binaries'; requestId: string; overrides: { gitpod?: string; gh?: string; ssh?: string; lsof?: string } };
 
 // ---------------------------------------------------------------------------
 // IPC Protocol — Daemon → Client messages
