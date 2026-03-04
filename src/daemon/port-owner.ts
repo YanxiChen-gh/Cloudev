@@ -4,9 +4,9 @@
  */
 
 import { execFile } from 'child_process';
+import { getBinaries } from './bin-resolver';
 
 const EXEC_TIMEOUT = 2_000;
-const LSOF_BIN = '/usr/sbin/lsof';
 
 export interface PortOwnerInfo {
   command: string;
@@ -26,14 +26,14 @@ export const dockerEnricher: PortOwnerEnricher = async (owner, port) => {
   if (!cmd.includes('docker') && !cmd.includes('vpnkit') && !cmd.includes('com.docker')) {
     return null;
   }
-  const name = await exec('docker', ['ps', '--filter', `publish=${port}`, '--format', '{{.Names}}']);
+  const name = await exec(getBinaries().docker, ['ps', '--filter', `publish=${port}`, '--format', '{{.Names}}']);
   return name ? `docker: ${name}` : null;
 };
 
 /** Enriches SSH processes with the remote host target. */
 export const sshEnricher: PortOwnerEnricher = async (owner) => {
   if (owner.command.toLowerCase() !== 'ssh') return null;
-  const args = await exec('ps', ['-p', owner.pid, '-o', 'args=']);
+  const args = await exec(getBinaries().ps, ['-p', owner.pid, '-o', 'args=']);
   if (!args) return null;
   const host = parseSshHost(args);
   return host ? `ssh tunnel to ${host}` : null;
@@ -142,7 +142,7 @@ async function getPortOwners(port: number): Promise<PortOwnerInfo[]> {
 /** Run a single lsof call to get all TCP listeners, grouped by port. */
 function snapshotAllListeners(): Promise<Map<number, PortOwnerInfo[]>> {
   return new Promise((resolve) => {
-    execFile(LSOF_BIN, ['-iTCP', '-sTCP:LISTEN', '-n', '-P'], { timeout: 5_000 }, (_err, stdout) => {
+    execFile(getBinaries().lsof, ['-iTCP', '-sTCP:LISTEN', '-n', '-P'], { timeout: 5_000 }, (_err, stdout) => {
       const map = new Map<number, PortOwnerInfo[]>();
       if (!stdout || !stdout.trim()) { resolve(map); return; }
       const lines = stdout.trim().split('\n');

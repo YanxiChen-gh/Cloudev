@@ -3,8 +3,8 @@ import * as fs from 'fs/promises';
 import { Environment, Project, MachineClass } from '../../types';
 import { EnvironmentProvider, CreateOpts, PortMapping } from './types';
 import { parseSsOutput, parseDockerPorts, getPortLabel, parseGitpodPorts, mapEnvironment, mapProject } from './ona-parser';
+import { getBinaries } from '../bin-resolver';
 
-const GITPOD_BIN = '/usr/local/bin/gitpod';
 const CLI_TIMEOUT_MS = 30_000;
 const SSH_TIMEOUT_S = 5;
 
@@ -12,7 +12,7 @@ export type ExecFn = (args: string[]) => Promise<string>;
 
 function defaultExec(args: string[]): Promise<string> {
   return new Promise((resolve, reject) => {
-    const child = execFile(GITPOD_BIN, args, {
+    const child = execFile(getBinaries().gitpod, args, {
       timeout: CLI_TIMEOUT_MS,
       maxBuffer: 10 * 1024 * 1024,
     }, (err, stdout, stderr) => {
@@ -41,10 +41,11 @@ export class OnaProvider implements EnvironmentProvider {
 
   async checkAvailability(): Promise<{ available: boolean; error?: string }> {
     if (!this.skipBinaryCheck) {
+      const gitpodPath = getBinaries().gitpod;
       try {
-        await fs.access(GITPOD_BIN, fs.constants.X_OK);
+        await fs.access(gitpodPath, fs.constants.X_OK);
       } catch {
-        return { available: false, error: `CLI not found at ${GITPOD_BIN}` };
+        return { available: false, error: `CLI not found at ${gitpodPath}` };
       }
     }
 
@@ -159,7 +160,7 @@ export class OnaProvider implements EnvironmentProvider {
       args.push('-L', `${m.local}:localhost:${m.remote}`);
     }
     args.push(host);
-    return spawn('ssh', args, { stdio: 'pipe' });
+    return spawn(getBinaries().ssh, args, { stdio: 'pipe' });
   }
 
   sshHost(envId: string): string {
@@ -272,7 +273,7 @@ export class OnaProvider implements EnvironmentProvider {
 
   private execSsh(host: string, command: string): Promise<string> {
     return new Promise((resolve, reject) => {
-      execFile('ssh', [
+      execFile(getBinaries().ssh, [
         '-o', `ConnectTimeout=${SSH_TIMEOUT_S}`,
         '-o', 'StrictHostKeyChecking=no',
         '-o', 'BatchMode=yes',

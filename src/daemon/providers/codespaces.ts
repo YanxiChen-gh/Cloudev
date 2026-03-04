@@ -2,8 +2,8 @@ import { ChildProcess, execFile, spawn } from 'child_process';
 import { Environment, Project, MachineClass } from '../../types';
 import { EnvironmentProvider, CreateOpts, PortMapping } from './types';
 import { mapCodespace, parseCodespacePorts } from './codespaces-parser';
+import { getBinaries } from '../bin-resolver';
 
-const GH_BIN = 'gh';
 const CLI_TIMEOUT_MS = 30_000;
 const CODESPACE_FIELDS = 'name,state,repository,gitStatus,machineName';
 
@@ -11,7 +11,7 @@ export type GhExecFn = (args: string[]) => Promise<string>;
 
 function defaultGhExec(args: string[]): Promise<string> {
   return new Promise((resolve, reject) => {
-    execFile(GH_BIN, args, {
+    execFile(getBinaries().gh, args, {
       timeout: CLI_TIMEOUT_MS,
       maxBuffer: 10 * 1024 * 1024,
     }, (err, stdout, stderr) => {
@@ -123,7 +123,7 @@ export class CodespacesProvider implements EnvironmentProvider {
 
   spawnTunnel(envId: string, portMappings: PortMapping[]): ChildProcess {
     const portArgs = portMappings.map((m) => `${m.local}:${m.remote}`);
-    return spawn(GH_BIN, ['codespace', 'ports', 'forward', ...portArgs, '-c', envId], {
+    return spawn(getBinaries().gh, ['codespace', 'ports', 'forward', ...portArgs, '-c', envId], {
       stdio: 'pipe',
     });
   }

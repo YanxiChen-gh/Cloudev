@@ -167,6 +167,10 @@ export class DaemonClient extends EventEmitter {
     await this.sendRequest({ type: 'history.configure', requestId: '', periodicSyncMinutes });
   }
 
+  async configureBinaries(overrides: { gitpod?: string; gh?: string; ssh?: string; lsof?: string }): Promise<void> {
+    await this.sendRequest({ type: 'configure.binaries', requestId: '', overrides });
+  }
+
   async listProjects(providerId: string): Promise<unknown[]> {
     const result = await this.sendRequest({
       type: 'environments.listProjects',

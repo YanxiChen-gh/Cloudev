@@ -15,6 +15,7 @@ import { OnaProvider } from './providers/ona';
 import { CodespacesProvider } from './providers/codespaces';
 import { ClientMessage, DaemonState } from '../types';
 import { getExtensionVersion } from '../version';
+import { resolveBinaries } from './bin-resolver';
 
 // Cache version at startup — if files change on disk (VSIX reinstall),
 // this stale value triggers a version mismatch and daemon restart.
@@ -52,7 +53,10 @@ async function main(): Promise<void> {
   fs.writeFileSync(PID_PATH, String(process.pid));
   console.log(`Daemon starting (pid=${process.pid})`);
 
-  // 4. Initialize providers
+  // 4. Resolve binary paths from user's shell PATH
+  resolveBinaries();
+
+  // 5. Initialize providers
   const providers = [new OnaProvider(), new CodespacesProvider()];
 
   // 5. Create IPC server
@@ -102,6 +106,17 @@ async function main(): Promise<void> {
           return;
         }
         case 'ping': {
+          ipcServer.sendTo(clientId, {
+            type: 'response',
+            requestId: msg.requestId,
+            success: true,
+          });
+          return;
+        }
+        case 'configure.binaries': {
+          const m = msg as Extract<ClientMessage, { type: 'configure.binaries' }>;
+          resolveBinaries(m.overrides);
+          await environmentsService.recheckProviders();
           ipcServer.sendTo(clientId, {
             type: 'response',
             requestId: msg.requestId,
