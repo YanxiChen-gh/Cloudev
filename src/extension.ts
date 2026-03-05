@@ -7,7 +7,7 @@ import { StateStore } from './client/state';
 import { SidebarProvider } from './ui/sidebar-provider';
 import { StatusBarManager } from './ui/status-bar';
 import { registerCommands } from './ui/commands';
-import { getExtensionVersion } from './version';
+import { getExtensionVersion, isNewerVersion } from './version';
 
 export async function activate(
   context: vscode.ExtensionContext,
@@ -32,7 +32,7 @@ export async function activate(
     try {
       const { daemonVersion } = await client.subscribe();
       const extVersion = getExtensionVersion();
-      if (extVersion !== 'unknown' && (!daemonVersion || daemonVersion !== extVersion)) {
+      if (extVersion !== 'unknown' && (!daemonVersion || isNewerVersion(extVersion, daemonVersion))) {
         console.log(`Cloudev: daemon version mismatch (daemon=${daemonVersion ?? 'old'}, extension=${extVersion}), restarting`);
         await restartDaemon(client);
         await client.subscribe();
@@ -92,7 +92,7 @@ export async function activate(
     try {
       const { daemonVersion } = await client.subscribe();
       const extVersion = getExtensionVersion();
-      if (extVersion !== 'unknown' && (!daemonVersion || daemonVersion !== extVersion)) {
+      if (extVersion !== 'unknown' && (!daemonVersion || isNewerVersion(extVersion, daemonVersion))) {
         await restartDaemon(client);
         await client.subscribe();
         statusBar.setDaemonHealth('connected');
