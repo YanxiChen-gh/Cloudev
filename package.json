@@ -2,7 +2,7 @@
   "name": "cloudev",
   "displayName": "Cloudev",
   "description": "Manage cloud development environments (Ona/Gitpod, Codespaces) from VS Code",
-  "version": "0.5.4",
+  "version": "0.5.5",
   "publisher": "Yanix",
   "engines": {
     "vscode": "^1.85.0"
