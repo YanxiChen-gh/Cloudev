@@ -7,6 +7,7 @@ import { classifyPortOwner } from '../port-owner';
 import { LocalProxyManager } from '../local-proxy';
 
 const DISCOVERY_INTERVAL_MS = 5_000;
+const MAX_DISCOVERY_INTERVAL_MS = 60_000;
 const SIGKILL_DELAY_MS = 2_000;
 const OWNERSHIP_CHECK_DELAY_MS = 3_000;
 
@@ -44,6 +45,7 @@ export class PortForwardingService implements DaemonService {
   private error: string | undefined;
   private isDiscovering = false;
   private ownershipCheckScheduled = false;
+  private consecutiveDiscoveryFailures = 0;
 
   // Proxy: owns user-facing ports, routes to hidden tunnel ports
   private proxyManager = new LocalProxyManager();
@@ -181,7 +183,7 @@ export class PortForwardingService implements DaemonService {
     // Always do a fresh discovery (updates cache + corrects if stale)
     await this.discoverAndTunnel();
     if (this.activeEnvId !== envId) return; // stopped during await
-    this.discoveryTimer = setInterval(() => this.discoverAndTunnel(), DISCOVERY_INTERVAL_MS);
+    this.scheduleNextDiscovery();
   }
 
   /**
@@ -194,7 +196,7 @@ export class PortForwardingService implements DaemonService {
 
     // Stop discovery timer for old env
     if (this.discoveryTimer) {
-      clearInterval(this.discoveryTimer);
+      clearTimeout(this.discoveryTimer);
       this.discoveryTimer = null;
     }
 
@@ -203,6 +205,7 @@ export class PortForwardingService implements DaemonService {
 
     // Update active env immediately
     this.activeEnvId = newEnvId;
+    this.consecutiveDiscoveryFailures = 0;
     this.setStatus('connecting');
     writePersistedState({ activeForwardingEnvId: newEnvId });
 
@@ -215,7 +218,7 @@ export class PortForwardingService implements DaemonService {
 
     // Start fresh discovery + tunnel for new env (verifies cache, finds new ports)
     await this.discoverAndTunnel();
-    this.discoveryTimer = setInterval(() => this.discoverAndTunnel(), DISCOVERY_INTERVAL_MS);
+    this.scheduleNextDiscovery();
 
     // Kill old tunnel in background (fire-and-forget, doesn't block switch)
     if (oldTunnel) {
@@ -225,9 +228,10 @@ export class PortForwardingService implements DaemonService {
 
   private async stopForwarding(): Promise<void> {
     if (this.discoveryTimer) {
-      clearInterval(this.discoveryTimer);
+      clearTimeout(this.discoveryTimer);
       this.discoveryTimer = null;
     }
+    this.consecutiveDiscoveryFailures = 0;
     // Clean up any active compare session
     if (this.sideBySideEnvs.length > 0) {
       for (const [, tunnel] of this.sideBySideTunnels) {
@@ -316,6 +320,27 @@ export class PortForwardingService implements DaemonService {
     this.ownershipCheckScheduled = true;
   }
 
+  /** Schedule the next discovery with exponential backoff on consecutive failures. */
+  private scheduleNextDiscovery(): void {
+    if (this.discoveryTimer) {
+      clearTimeout(this.discoveryTimer);
+      this.discoveryTimer = null;
+    }
+    if (!this.activeEnvId) return;
+
+    const delay = Math.min(
+      DISCOVERY_INTERVAL_MS * Math.pow(2, this.consecutiveDiscoveryFailures),
+      MAX_DISCOVERY_INTERVAL_MS,
+    );
+    if (this.consecutiveDiscoveryFailures > 0) {
+      console.log(`[port-forwarding] Backing off: next discovery in ${delay / 1000}s (${this.consecutiveDiscoveryFailures} consecutive failures)`);
+    }
+    this.discoveryTimer = setTimeout(async () => {
+      await this.discoverAndTunnel();
+      this.scheduleNextDiscovery();
+    }, delay);
+  }
+
   private async discoverAndTunnel(): Promise<void> {
     if (!this.activeEnvId) return;
     if (this.isDiscovering) return;
@@ -361,8 +386,11 @@ export class PortForwardingService implements DaemonService {
           this.setStatus('active');
         }
       }
+
+      this.consecutiveDiscoveryFailures = 0;
     } catch (err) {
       if (this.activeEnvId !== envId) return; // env changed, ignore error
+      this.consecutiveDiscoveryFailures++;
       const msg = (err as Error).message;
       console.error(`[port-forwarding] Error for ${envId}: ${msg}`);
       this.setStatus('error', msg);
@@ -597,7 +625,7 @@ export class PortForwardingService implements DaemonService {
 
     // Stop discovery timer — it would call applyPorts which overwrites HTTP proxies with TCP
     if (this.discoveryTimer) {
-      clearInterval(this.discoveryTimer);
+      clearTimeout(this.discoveryTimer);
       this.discoveryTimer = null;
     }
 
@@ -778,7 +806,8 @@ export class PortForwardingService implements DaemonService {
 
       // Restart discovery timer now that we're back to regular TCP mode
       if (!this.discoveryTimer) {
-        this.discoveryTimer = setInterval(() => this.discoverAndTunnel(), DISCOVERY_INTERVAL_MS);
+        this.consecutiveDiscoveryFailures = 0;
+        this.scheduleNextDiscovery();
       }
     }
 

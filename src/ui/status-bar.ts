@@ -10,7 +10,7 @@ export class StatusBarManager implements vscode.Disposable {
   private daemonItem: vscode.StatusBarItem;
   private changeListener: () => void;
   private _daemonHealth: DaemonHealthStatus = 'disconnected';
-  private lastNotifiedError: string | undefined;
+  private hasNotifiedError = false;
 
   constructor(
     private readonly store: StateStore,
@@ -72,6 +72,7 @@ export class StatusBarManager implements vscode.Disposable {
       this.portItem.tooltip = compareCount > 0
         ? `Forwarding ${pf.ports.length} ports for ${pf.activeEnvName} + ${compareCount} env(s) comparing. Click to switch.`
         : `Forwarding ${pf.ports.length} ports for ${pf.activeEnvName}. Click to switch.`;
+      this.hasNotifiedError = false;
     } else if (pf.status === 'connecting') {
       this.portItem.text = '$(loading~spin) Ports: connecting...';
       this.portItem.backgroundColor = undefined;
@@ -84,9 +85,9 @@ export class StatusBarManager implements vscode.Disposable {
       );
       this.portItem.color = undefined;
       this.portItem.tooltip = `Error: ${pf.error ?? 'Unknown error'}. Click to retry.`;
-      // Show notification once per unique error
-      if (pf.error && pf.error !== this.lastNotifiedError) {
-        this.lastNotifiedError = pf.error;
+      // Show notification once per error episode (reset when status recovers)
+      if (pf.error && !this.hasNotifiedError) {
+        this.hasNotifiedError = true;
         vscode.window.showWarningMessage(
           `Port forwarding error: ${pf.error}`,
           'Show Output', 'Copy Error',
@@ -104,7 +105,7 @@ export class StatusBarManager implements vscode.Disposable {
       this.portItem.backgroundColor = undefined;
       this.portItem.color = undefined;
       this.portItem.tooltip = 'No port forwarding active. Click to start.';
-      this.lastNotifiedError = undefined;
+      this.hasNotifiedError = false;
     }
 
     // Environment count item
